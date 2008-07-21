@@ -2,6 +2,9 @@
 #include "obuilder_p.h"
 
 #include <QtXml/QXmlStreamWriter>
+#include <QHash>
+
+#include "styleattributes.h"
 
 namespace Bamboo {
 
@@ -15,10 +18,16 @@ private:
     Builder* q_ptr;
 	QIODevice* device;
 	QXmlStreamWriter xml;
+	QHash<const Style*, StyleAttributes> styles;
 };
 
-Builder::Builder() {
-    d_ptr = new BuilderPrivate(this);
+Builder::Builder() : Orchid::Builder(new BuilderPrivate(this)) {
+}
+
+Builder::Builder(QIODevice* device) : Orchid::Builder(new BuilderPrivate(this)) {
+	Q_D(Builder);
+	
+	d->device = device;
 }
 
 QXmlStreamWriter* Builder::xml() {
@@ -31,6 +40,16 @@ void Builder::setDevice(QIODevice* device) {
 
 	Q_D(Builder);
 	d->xml.setDevice(device);
+}
+
+StyleAttributes Builder::attributes(const Style* style) {
+	Q_D(Builder);
+	return d->styles.value(style);
+}
+
+void Builder::regStyle(const Style* style, const QString& prefix) {
+	Q_D(Builder);
+	d->styles.insert(style, StyleAttributes(prefix));
 }
 
 }

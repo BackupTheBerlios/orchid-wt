@@ -17,7 +17,4 @@ Fragment::~Fragment() {
 	delete d_ptr;
 }
 
-void Fragment::getDependencies(Dependencies& deps) const {
-}
-
 }

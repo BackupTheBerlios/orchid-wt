@@ -3,8 +3,6 @@
 
 #include <QObject>
 
-class Dependencies;
-
 namespace Bamboo {
 
 class Builder;
@@ -17,7 +15,6 @@ public:
 	virtual ~Fragment();
 public:
 	virtual void build(Builder* builder) = 0;
-	virtual void getDependencies(Dependencies& deps) const;
 protected:
     Fragment(FragmentPrivate &dd, QObject* parent = 0);
 	FragmentPrivate*const d_ptr;

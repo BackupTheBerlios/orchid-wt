@@ -6,8 +6,10 @@
 
 #include <QXmlStreamWriter>
 #include "builder.h"
-#include "dependency.h"
 
+#include <QHash>
+
+#include "style.h"
 
 namespace Bamboo {
 
@@ -16,6 +18,7 @@ public:
 	Q_DECLARE_PUBLIC(Document);
 public:
 	Fragment* mainFragment;
+	QHash<Style*,QString> styleUrls;
 };
 
 Document::Document() : Fragment(*new DocumentPrivate) {
@@ -25,9 +28,6 @@ Document::Document() : Fragment(*new DocumentPrivate) {
 
 void Document::build(Builder* builder) {
 	Q_D(Document);
-
-	Dependencies deps;
-	if(d->mainFragment) d->mainFragment->getDependencies(deps);
 
 	QString htmlNs = "http://www.w3.org/1999/xhtml";
 
@@ -41,8 +41,21 @@ void Document::build(Builder* builder) {
 	writer->writeStartElement(htmlNs, "head");
 	writer->writeTextElement(htmlNs, "title", "testTitle");
 	
-	foreach(Dependency dep, deps) {
-		dep.writeToHead(builder);
+	QHash<Style*, QString>::const_iterator i;
+	for(i = d->styleUrls.constBegin(); i != d->styleUrls.constEnd(); ++i) {
+		if(i.value().isEmpty()) {
+			writer->writeStartElement("style");
+			writer->writeAttribute("type", "text/css");
+			writer->writeCharacters(i.key()->content());
+			writer->writeEndElement();
+			
+		} else {
+			writer->writeEmptyElement("link");
+			writer->writeAttribute("rel", "stylesheet");
+			writer->writeAttribute("type", "text/css");
+			writer->writeAttribute("href", i.value());
+		}
+		builder->regStyle(i.key(), "");
 	}
 
 	writer->writeEndElement();
@@ -58,6 +71,16 @@ void Document::build(Builder* builder) {
 void Document::setMainFragment(Fragment* fragment) {
 	Q_D(Document);
 	d->mainFragment = fragment;
+}
+
+void Document::addGlobalStyle(Style* style) {
+	Q_D(Document);
+	d->styleUrls.insert(style, QString());
+}
+
+void Document::addGlobalStyle(Style* style, const QString& url) {
+	Q_D(Document);
+	d->styleUrls.insert(style, url);
 }
 
 }

@@ -18,7 +18,12 @@ Builder::Builder() {
     d_ptr = new BuilderPrivate(this);
 }
 
+Builder::Builder(BuilderPrivate* dd) {
+	d_ptr = dd;
+}
+
 Builder::~Builder() {
+	delete d_ptr;
 }
 
 QIODevice* Builder::device() const {

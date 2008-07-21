@@ -20,6 +20,8 @@ public:
 
 	// makes a global url from an local url
 	QUrl resolve(const QUrl& url);
+protected:
+	Builder(BuilderPrivate* dd);
 private:
 	Q_DECLARE_PRIVATE(Builder)
 protected:

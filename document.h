@@ -5,9 +5,8 @@
 
 namespace Bamboo {
 
-class Header {
-public:
-};
+class Resource;
+class Style;
 
 class DocumentPrivate;
 
@@ -18,6 +17,9 @@ public:
 public:
 	void build(Builder* builder);
 	void setMainFragment(Fragment* fragment);
+public:
+	void addGlobalStyle(Style*);
+	void addGlobalStyle(Style*, const QString& url);
 protected:
 	Document(DocumentPrivate& dd);
 private:

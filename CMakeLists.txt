@@ -9,14 +9,20 @@ include(${QT_USE_FILE})
 include_directories(${QT_INCLUDE_DIRS})
 add_definitions(${QT_DEFINITIONS})
 
+include_directories(
+	${CMAKE_CURRENT_BINARY_DIR}
+)
+
 set(page_SRC
 	builder.cpp
-	dependency.cpp
 	document.cpp
 	fragment.cpp
 	main.cpp
 	mainwindow.cpp
 	obuilder.cpp
+	resource.cpp
+	styleattributes.cpp
+	style.cpp
 )
 
 qt4_automoc(${page_SRC})
