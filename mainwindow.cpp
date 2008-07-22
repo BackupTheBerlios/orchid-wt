@@ -77,6 +77,7 @@ MainWindow::MainWindow() {
 	doc.setMainFragment(&fragment);
 	doc.build(&builder);
 	
+// 	webView->setUrl(QUrl("http://localhost:8000/test.html?1"));
 	webView->setContent(buf.data());
 	sourceView->setPlainText(buf.data());
 }

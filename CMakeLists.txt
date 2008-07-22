@@ -15,12 +15,16 @@ include_directories(
 
 set(page_SRC
 	builder.cpp
+	clientinfo.cpp
 	document.cpp
 	fragment.cpp
+	httpservice.cpp
 	main.cpp
 	mainwindow.cpp
+	manuallyshared.cpp
 	obuilder.cpp
 	resource.cpp
+	service.cpp
 	styleattributes.cpp
 	style.cpp
 )

@@ -10,6 +10,10 @@ namespace Orchid {
 
 class BuilderPrivate;
 
+enum AbortReason {
+	HTTPMethodNotAllowed
+};
+
 class Builder {
 public:
 	Builder();
@@ -20,6 +24,9 @@ public:
 
 	// makes a global url from an local url
 	QUrl resolve(const QUrl& url);
+
+public:
+	void failedMethodNotAllowed();
 protected:
 	Builder(BuilderPrivate* dd);
 private:

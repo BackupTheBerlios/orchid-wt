@@ -16,9 +16,9 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>27</y>
+     <y>25</y>
      <width>602</width>
-     <height>398</height>
+     <height>402</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout" >
@@ -30,15 +30,15 @@
       <widget class="QTreeView" name="treeView" />
       <widget class="QTabWidget" name="tabWidget" >
        <property name="currentIndex" >
-        <number>1</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab" >
         <property name="geometry" >
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>435</width>
-          <height>350</height>
+          <width>439</width>
+          <height>362</height>
          </rect>
         </property>
         <attribute name="title" >
@@ -61,8 +61,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>435</width>
-          <height>350</height>
+          <width>439</width>
+          <height>362</height>
          </rect>
         </property>
         <attribute name="title" >
@@ -89,7 +89,7 @@
      <x>0</x>
      <y>0</y>
      <width>602</width>
-     <height>27</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
@@ -97,9 +97,9 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>425</y>
+     <y>427</y>
      <width>602</width>
-     <height>24</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
