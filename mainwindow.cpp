@@ -13,6 +13,9 @@
 #include "style.h"
 #include "styleattributes.h"
 
+#include "resourcemodel.h"
+
+
 class MyStyle : public Bamboo::Style {
 public:
 	void writeHeading(Bamboo::Builder* builder, const QString& text) const;
@@ -76,6 +79,23 @@ MainWindow::MainWindow() {
 	doc.addGlobalStyle(&myStyle);
 	doc.setMainFragment(&fragment);
 	doc.build(&builder);
+
+
+	// Create sample resources
+	Orchid::Resource::Resource *t1 = new Orchid::Resource::Resource();
+	Orchid::Resource::Resource *t2 = new Orchid::Resource::Resource();
+	Orchid::Resource::Resource *t3 = new Orchid::Resource::Resource();
+	Orchid::Resource::Resource *t4 = new Orchid::Resource::Resource();
+	Orchid::ModelResource *res2 = new Orchid::ModelResource();
+	Orchid::ModelResource *res = new Orchid::ModelResource();
+
+	res2->addResource("test1", t1);
+	res2->addResource("test2", t2),
+	res->addResource("test3", t3);
+	res->addResource("dir", res2);
+	res->addResource("test4", t4);
+	
+	treeView->setModel(new Orchid::ResourceModel(res, this));
 	
 // 	webView->setUrl(QUrl("http://localhost:8000/test.html?1"));
 	webView->setContent(buf.data());

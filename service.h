@@ -5,16 +5,18 @@
 
 namespace Orchid {
 
+namespace Resource {
 class Resource;
+}
 
 class Service : public QObject {
 public:
 	Service();
 public:
-	void setRoot(Resource* root);
-	Resource* root() const;
+	void setRoot(Resource::Resource* root);
+	Resource::Resource* root() const;
 private:
-	Resource* m_root;
+	Resource::Resource* m_root;
 };
 
 

@@ -4,10 +4,6 @@
 #include "httpservice.h"
 #include "resource.h"
 
-// class MyResource : public Orchid::Resource {
-// };
-
-
 int main(int argc, char** argv) {
     QApplication app(argc, argv);
 

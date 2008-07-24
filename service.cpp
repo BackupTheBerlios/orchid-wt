@@ -6,11 +6,11 @@ Service::Service() {
 	m_root = 0;
 }
 
-void Service::setRoot(Resource* root) {
+void Service::setRoot(Resource::Resource* root) {
 	m_root = root;
 }
 
-Resource* Service::root() const {
+Resource::Resource* Service::root() const {
 	return m_root;
 }
 

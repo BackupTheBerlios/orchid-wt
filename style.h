@@ -7,7 +7,7 @@ namespace Bamboo {
 
 class Builder;
 
-class Style : public Orchid::Resource {
+class Style : public Orchid::Resource::Resource {
 public:
 	virtual QString content() const;
 };

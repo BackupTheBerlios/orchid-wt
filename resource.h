@@ -8,16 +8,23 @@ namespace Orchid {
 
 class Builder;
 
+namespace Resource {
+
 class Resource {
 public:
 	virtual ~Resource() {}
-// public:
-// 	QString url() const;
-// private:
-// 	QString m_url;
 };
 
-class RestResource : public Resource {
+class Handle;
+class IDirectory {
+public:
+	virtual QStringList childs() const = 0;
+	virtual Handle child(const QString& name) = 0;
+};
+
+}
+
+class RestResource : public Resource::Resource {
 public:
 	virtual void get(Builder* builder);
 	virtual void post(Builder* builder);
@@ -33,7 +40,7 @@ private:
 	QString m_text;
 };
 
-class AbstractDirectoryResource : public Resource {
+class AbstractDirectoryResource : public Resource::Resource {
 public:
 	virtual QStringList subDirs() const = 0;
 };

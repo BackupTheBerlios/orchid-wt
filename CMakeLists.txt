@@ -24,6 +24,8 @@ set(page_SRC
 	manuallyshared.cpp
 	obuilder.cpp
 	resource.cpp
+	resourcekeep.cpp
+	resourcemodel.cpp
 	service.cpp
 	styleattributes.cpp
 	style.cpp
