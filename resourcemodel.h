@@ -13,7 +13,7 @@ class ModelResource : public Resource::Resource, public Resource::IDirectory {
 public:
 	bool addResource(const QString& name, Resource::Resource* res);
 	QStringList childs() const;
-	Orchid::Resource::Handle child(const QString& name);
+	Orchid::Resource::Handle child(const QString& name) const;
 public:
 	Orchid::Resource::Keep m_keep;
 	QHash<QString, Orchid::Resource::Handle> m_childs;
@@ -31,6 +31,8 @@ public:
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+	
+	Resource::Handle resource(const QModelIndex &index) const;
 protected:
 	ResourceModelPrivate* d_ptr;
 private:

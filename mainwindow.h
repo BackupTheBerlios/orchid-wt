@@ -3,14 +3,16 @@
 
 #include <QMainWindow>
 
-#include "ui_mainwindow.h"
+#include "resourcekeep.h"
 
-class TeamListModel;
+#include "ui_mainwindow.h"
 
 class MainWindow : public QMainWindow, private Ui::MainWindow {
 	Q_OBJECT
 public:
 	MainWindow();
+private:
+	Orchid::Resource::Handle m_root;
 };
 
 #endif

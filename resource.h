@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QUrl>
 
 namespace Orchid {
 
@@ -10,32 +11,39 @@ class Builder;
 
 namespace Resource {
 
+class Handle;
 class Resource {
 public:
 	virtual ~Resource() {}
+public:
+	static Handle locateUrl(const Handle& handle, const QUrl& url);
 };
 
-class Handle;
 class IDirectory {
 public:
 	virtual QStringList childs() const = 0;
-	virtual Handle child(const QString& name) = 0;
+	virtual Handle child(const QString& name) const = 0;
+};
+
+class IRedirecting {
+public:
+	virtual Handle locate(const QUrl& url) const = 0;
 };
 
 }
 
 class RestResource : public Resource::Resource {
 public:
-	virtual void get(Builder* builder);
-	virtual void post(Builder* builder);
-	virtual void put(Builder* builder);
+	virtual void methodGet(Builder* builder);
+	virtual void methodPost(Builder* builder);
+	virtual void methodPut(Builder* builder);
 };
 
 class SimpleTextResource : public RestResource {
 public:
 	SimpleTextResource(const QString& text);
 public:
-	void get(Builder* builder);
+	void methodGet(Builder* builder);
 private:
 	QString m_text;
 };

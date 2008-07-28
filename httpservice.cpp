@@ -45,7 +45,7 @@ void HttpServiceProcess::read() {
 			
 			RestResource* res = dynamic_cast<RestResource*>(m_service->root());
 			if(res) 
-				res->get(&builder);
+				res->methodGet(&builder);
 // 			else
 			
 // 			m_socket->write("<pre>");

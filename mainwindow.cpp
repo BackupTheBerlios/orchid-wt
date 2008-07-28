@@ -64,14 +64,18 @@ void MyFragment::build(Bamboo::Builder* builder) {
 
 MainWindow::MainWindow() {
 	setupUi(this);
+
+
 	Bamboo::Builder builder;
 	QBuffer buf;
 	buf.open(QIODevice::WriteOnly);
 	
 	builder.setDevice(&buf);
 
+
 	MyStyle myStyle;
 	myStyle.setHeading("background-color: red");
+
 	
 	MyFragment fragment;
 	fragment.style = &myStyle;
@@ -89,11 +93,16 @@ MainWindow::MainWindow() {
 	Orchid::ModelResource *res2 = new Orchid::ModelResource();
 	Orchid::ModelResource *res = new Orchid::ModelResource();
 
+
 	res2->addResource("test1", t1);
 	res2->addResource("test2", t2),
 	res->addResource("test3", t3);
 	res->addResource("dir", res2);
 	res->addResource("test4", t4);
+
+	m_root.init(res);
+
+	qDebug() << "located: " << Orchid::Resource::Resource::locateUrl(m_root, QUrl("dir/test1")).name();
 	
 	treeView->setModel(new Orchid::ResourceModel(res, this));
 	

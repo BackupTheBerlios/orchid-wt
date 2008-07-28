@@ -19,7 +19,7 @@ QStringList ModelResource::childs() const {
 	return m_childs.keys();
 }
 
-Orchid::Resource::Handle ModelResource::child(const QString& name) {
+Orchid::Resource::Handle ModelResource::child(const QString& name) const {
 	return m_childs.value(name);
 }
 
