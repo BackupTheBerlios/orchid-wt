@@ -15,7 +15,7 @@ class Document : public Fragment {
 public:
 	Document();
 public:
-	void build(Builder* builder);
+	void build(HtmlStreamWriter* writer);
 	void setMainFragment(Fragment* fragment);
 public:
 	void addGlobalStyle(Style*);

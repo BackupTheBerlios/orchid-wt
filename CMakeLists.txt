@@ -14,15 +14,15 @@ include_directories(
 )
 
 set(page_SRC
-	builder.cpp
 	clientinfo.cpp
 	document.cpp
 	fragment.cpp
+	htmlstreamwriter.cpp
 	httpservice.cpp
 	main.cpp
 	mainwindow.cpp
 	manuallyshared.cpp
-	obuilder.cpp
+	request.cpp
 	resource.cpp
 	resourcekeep.cpp
 	resourcemodel.cpp

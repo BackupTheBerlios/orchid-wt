@@ -7,7 +7,7 @@
 
 namespace Orchid {
 
-class Builder;
+class Request;
 
 namespace Resource {
 
@@ -34,16 +34,16 @@ public:
 
 class RestResource : public Resource::Resource {
 public:
-	virtual void methodGet(Builder* builder);
-	virtual void methodPost(Builder* builder);
-	virtual void methodPut(Builder* builder);
+	virtual void methodGet(Request* request);
+	virtual void methodPost(Request* request);
+	virtual void methodPut(Request* request);
 };
 
 class SimpleTextResource : public RestResource {
 public:
 	SimpleTextResource(const QString& text);
 public:
-	void methodGet(Builder* builder);
+	void methodGet(Request* request);
 private:
 	QString m_text;
 };

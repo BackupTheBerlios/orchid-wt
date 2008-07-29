@@ -8,7 +8,7 @@
 
 #include <QtDebug>
 
-#include "obuilder.h"
+#include "request.h"
 #include "resource.h"
 
 #include "httpservice.moc"
@@ -16,9 +16,9 @@
 namespace Orchid {
 
 
-Request::Request(QIODevice* device) {
-	m_device = device;
-}
+// Request::Request(QIODevice* device) {
+// 	m_device = device;
+// }
 
 
 HttpServiceProcess::HttpServiceProcess(HttpService* service, QAbstractSocket* socket) {
@@ -40,12 +40,12 @@ void HttpServiceProcess::read() {
 			qDebug() << requestHeader.path();
 
 			process();
-			Builder builder;
-			builder.setDevice(m_socket);
+			Request request;
+			request.setDevice(m_socket);
 			
 			RestResource* res = dynamic_cast<RestResource*>(m_service->root());
 			if(res) 
-				res->methodGet(&builder);
+				res->methodGet(&request);
 // 			else
 			
 // 			m_socket->write("<pre>");

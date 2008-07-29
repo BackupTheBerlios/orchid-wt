@@ -3,14 +3,14 @@
 
 namespace Orchid {
 
-class BuilderPrivate {
-	Q_DECLARE_PUBLIC(Builder)
+class RequestPrivate {
+	Q_DECLARE_PUBLIC(Request)
 public:
-    BuilderPrivate(Builder *builder)
-        : q_ptr(builder)
+    RequestPrivate(Request *request)
+        : q_ptr(request)
     { }
 private:
-    Builder* q_ptr;
+    Request* q_ptr;
 	QIODevice* device;
 };
 

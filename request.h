@@ -8,16 +8,16 @@ class QUrl;
 
 namespace Orchid {
 
-class BuilderPrivate;
+class RequestPrivate;
 
 enum AbortReason {
 	HTTPMethodNotAllowed
 };
 
-class Builder {
+class Request {
 public:
-	Builder();
-	virtual ~Builder();
+	Request();
+	virtual ~Request();
 public:
 	QIODevice* device() const;
 	virtual void setDevice(QIODevice* device);
@@ -28,11 +28,11 @@ public:
 public:
 	void failedMethodNotAllowed();
 protected:
-	Builder(BuilderPrivate* dd);
+	Request(RequestPrivate* dd);
 private:
-	Q_DECLARE_PRIVATE(Builder)
+	Q_DECLARE_PRIVATE(Request)
 protected:
-	BuilderPrivate* d_ptr;
+	RequestPrivate* d_ptr;
 };
 
 }

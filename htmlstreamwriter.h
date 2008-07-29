@@ -1,29 +1,33 @@
 #ifndef _BAMBOO_BUILDER_H_
 #define _BAMBOO_BUILDER_H_
 
-#include "obuilder.h"
+#include <QtGlobal>
 
 class QXmlStreamWriter;
+class QIODevice;
+class QString;
 
 namespace Bamboo {
 	
 class StyleAttributes;
 class Style;
 
-class BuilderPrivate;
+class HtmlStreamWriterPrivate;
 
-class Builder : public Orchid::Builder {
+class HtmlStreamWriter {
 public:
-	Builder();
-	Builder(QIODevice* device);
+	HtmlStreamWriter();
+	HtmlStreamWriter(QIODevice* device);
 public:
-	QXmlStreamWriter* xml();
+	QXmlStreamWriter* xmlWriter();
 	void setDevice(QIODevice* device);
 public:
 	StyleAttributes attributes(const Style* style);
 	void regStyle(const Style* style, const QString& prefix);
 private:
-	Q_DECLARE_PRIVATE(Builder)
+	Q_DECLARE_PRIVATE(HtmlStreamWriter)
+protected:
+	HtmlStreamWriterPrivate* d_ptr;
 };
 
 }

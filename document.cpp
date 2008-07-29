@@ -5,7 +5,7 @@
 #include "fragment_p.h"
 
 #include <QXmlStreamWriter>
-#include "builder.h"
+#include "htmlstreamwriter.h"
 
 #include <QHash>
 
@@ -26,46 +26,46 @@ Document::Document() : Fragment(*new DocumentPrivate) {
 	d->mainFragment = 0;
 }
 
-void Document::build(Builder* builder) {
+void Document::build(HtmlStreamWriter* writer) {
 	Q_D(Document);
 
 	QString htmlNs = "http://www.w3.org/1999/xhtml";
 
-	QXmlStreamWriter* writer = builder->xml();
-	writer->setAutoFormatting(true);
-	writer->writeStartDocument();
-	writer->writeDTD("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
+	QXmlStreamWriter* xml = writer->xmlWriter();
+	xml->setAutoFormatting(true);
+	xml->writeStartDocument();
+	xml->writeDTD("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
 			"\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
-	writer->writeDefaultNamespace(htmlNs);
-	writer->writeStartElement(htmlNs, "html");
-	writer->writeStartElement(htmlNs, "head");
-	writer->writeTextElement(htmlNs, "title", "testTitle");
+	xml->writeDefaultNamespace(htmlNs);
+	xml->writeStartElement(htmlNs, "html");
+	xml->writeStartElement(htmlNs, "head");
+	xml->writeTextElement(htmlNs, "title", "testTitle");
 	
 	QHash<Style*, QString>::const_iterator i;
 	for(i = d->styleUrls.constBegin(); i != d->styleUrls.constEnd(); ++i) {
 		if(i.value().isEmpty()) {
-			writer->writeStartElement("style");
-			writer->writeAttribute("type", "text/css");
-			writer->writeCharacters(i.key()->content());
-			writer->writeEndElement();
+			xml->writeStartElement("style");
+			xml->writeAttribute("type", "text/css");
+			xml->writeCharacters(i.key()->content());
+			xml->writeEndElement();
 			
 		} else {
-			writer->writeEmptyElement("link");
-			writer->writeAttribute("rel", "stylesheet");
-			writer->writeAttribute("type", "text/css");
-			writer->writeAttribute("href", i.value());
+			xml->writeEmptyElement("link");
+			xml->writeAttribute("rel", "stylesheet");
+			xml->writeAttribute("type", "text/css");
+			xml->writeAttribute("href", i.value());
 		}
-		builder->regStyle(i.key(), "");
+		writer->regStyle(i.key(), "");
 	}
 
-	writer->writeEndElement();
-	writer->writeStartElement(htmlNs, "body");
+	xml->writeEndElement();
+	xml->writeStartElement(htmlNs, "body");
 
-	if(d->mainFragment) d->mainFragment->build(builder);
+	if(d->mainFragment) d->mainFragment->build(writer);
 
-	writer->writeEndElement();
-	writer->writeEndElement();
-	writer->writeEndDocument();
+	xml->writeEndElement();
+	xml->writeEndElement();
+	xml->writeEndDocument();
 }
 
 void Document::setMainFragment(Fragment* fragment) {

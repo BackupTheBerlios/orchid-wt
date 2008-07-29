@@ -11,14 +11,14 @@ namespace Orchid {
 class HttpServiceDaemon;
 class HttpService;
 
-class Request {
-public:
-	Request(QIODevice* device);
-public:
-	QIODevice* device() const;
-private:
-	QIODevice* m_device;
-};
+// class Request {
+// public:
+// 	Request(QIODevice* device);
+// public:
+// 	QIODevice* device() const;
+// private:
+// 	QIODevice* m_device;
+// };
 
 class HttpServiceProcess : public QObject {
 	Q_OBJECT

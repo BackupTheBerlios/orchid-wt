@@ -1,7 +1,6 @@
 #include "style.h" 
 
 #include "styleattributes.h"
-#include "builder.h"
 
 #include <QXmlStreamWriter>
 

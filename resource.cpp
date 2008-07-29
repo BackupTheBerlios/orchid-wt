@@ -1,5 +1,5 @@
 #include "resource.h" 
-#include "obuilder.h"
+#include "request.h"
 #include "resourcekeep.h"
 
 #include <QTextStream>
@@ -39,16 +39,16 @@ Handle Resource::locateUrl(const Handle& handle, const QUrl& url) {
 
 }
 
-void RestResource::methodGet(Builder* builder) {
-// 	builder->abortMethodNotAllowed();
+void RestResource::methodGet(Request* request) {
+// 	request->abortMethodNotAllowed();
 }
 
-void RestResource::methodPost(Builder* builder) {
-// 	builder->abortMethodNotAllowed();
+void RestResource::methodPost(Request* request) {
+// 	request->abortMethodNotAllowed();
 }
 
-void RestResource::methodPut(Builder* builder) {
-// 	builder->abortMethodNotAllowed();
+void RestResource::methodPut(Request* request) {
+// 	request->abortMethodNotAllowed();
 }
 
 
@@ -56,8 +56,8 @@ SimpleTextResource::SimpleTextResource(const QString& text) {
 	m_text = text;
 }
 
-void SimpleTextResource::methodGet(Builder* builder) {
-	QTextStream stream(builder->device());
+void SimpleTextResource::methodGet(Request* request) {
+	QTextStream stream(request->device());
 	stream << m_text;
 }
 

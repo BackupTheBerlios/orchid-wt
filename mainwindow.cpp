@@ -6,7 +6,7 @@
 #include <QtDebug>
 #include <QXmlStreamWriter>
 
-#include "builder.h"
+#include "htmlstreamwriter.h"
 
 #include "document.h"
 
@@ -18,16 +18,16 @@
 
 class MyStyle : public Bamboo::Style {
 public:
-	void writeHeading(Bamboo::Builder* builder, const QString& text) const;
+	void writeHeading(Bamboo::HtmlStreamWriter* writer, const QString& text) const;
 	void setHeading(const QString& heading);
 	QString content() const;
 private:
 	QString m_headingStyle;
 };
 
-void MyStyle::writeHeading(Bamboo::Builder* builder, const QString& text) const {
-	Bamboo::StyleAttributes attrs = builder->attributes(this);
-	QXmlStreamWriter* xml = builder->xml();
+void MyStyle::writeHeading(Bamboo::HtmlStreamWriter* writer, const QString& text) const {
+	Bamboo::StyleAttributes attrs = writer->attributes(this);
+	QXmlStreamWriter* xml = writer->xmlWriter();
 
 	xml->writeStartElement("h1");
 	QString classname = attrs.classname("heading1");
@@ -51,26 +51,26 @@ QString MyStyle::content() const {
 
 class MyFragment : public Bamboo::Fragment {
 public:
-	void build(Bamboo::Builder* builder);
+	void build(Bamboo::HtmlStreamWriter* writer);
 public:
 	MyStyle* style;
 };
 
-void MyFragment::build(Bamboo::Builder* builder) {
-	QXmlStreamWriter* writer = builder->xml();
-	style->writeHeading(builder, "Test");
-	writer->writeTextElement("p", "This is a very simple Test-Page");
+void MyFragment::build(Bamboo::HtmlStreamWriter* writer) {
+	QXmlStreamWriter* xml = writer->xmlWriter();
+	style->writeHeading(writer, "Test");
+	xml->writeTextElement("p", "This is a very simple Test-Page");
 }
 
 MainWindow::MainWindow() {
 	setupUi(this);
 
 
-	Bamboo::Builder builder;
+	Bamboo::HtmlStreamWriter writer;
 	QBuffer buf;
 	buf.open(QIODevice::WriteOnly);
 	
-	builder.setDevice(&buf);
+	writer.setDevice(&buf);
 
 
 	MyStyle myStyle;
@@ -82,7 +82,7 @@ MainWindow::MainWindow() {
 	Bamboo::Document doc;
 	doc.addGlobalStyle(&myStyle);
 	doc.setMainFragment(&fragment);
-	doc.build(&builder);
+	doc.build(&writer);
 
 
 	// Create sample resources
