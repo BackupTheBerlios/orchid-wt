@@ -1,5 +1,5 @@
-#ifndef _ORCHID_BUILDER_H_
-#define _ORCHID_BUILDER_H_
+#ifndef _ORCHID_REQUEST_H_
+#define _ORCHID_REQUEST_H_
 
 #include <QtCore/qnamespace.h>
 #include <QtCore/QIODevice>

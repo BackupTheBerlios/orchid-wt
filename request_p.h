@@ -1,5 +1,5 @@
-#ifndef _ORCHID_BUILDER_P_H_
-#define _ORCHID_BUILDER_P_H_
+#ifndef _ORCHID_REQUEST_PRIVATE_H_
+#define _ORCHID_REQUEST_PRIVATE_H_
 
 namespace Orchid {
 

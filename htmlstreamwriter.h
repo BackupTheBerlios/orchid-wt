@@ -1,5 +1,5 @@
-#ifndef _BAMBOO_BUILDER_H_
-#define _BAMBOO_BUILDER_H_
+#ifndef _BAMBOO_HTMLSTREAMWRITER_H_
+#define _BAMBOO_HTMLSTREAMWRITER_H_
 
 #include <QtGlobal>
 

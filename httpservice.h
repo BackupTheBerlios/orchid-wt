@@ -1,5 +1,5 @@
-#ifndef _HTTPSERVICE_H_
-#define _HTTPSERVICE_H_
+#ifndef _ORCHID_HTTPSERVICE_H_
+#define _ORCHID_HTTPSERVICE_H_
 
 #include "service.h"
 
