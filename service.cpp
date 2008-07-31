@@ -1,16 +1,24 @@
-#include "service.h" 
+#include "service.h"
+#include "service_p.h"
+
+#include "service.moc"
 
 namespace Orchid {
 
-Service::Service() {
+Service::Service() : d_ptr(new ServicePrivate(this)) {
+}
+
+Service::Service(ServicePrivate* dd) : d_ptr(dd) {
 }
 
 void Service::setRoot(const Resource::Handle& root) {
-	m_root = root;
+	Q_D(Service);
+	d->root = root;
 }
 
 Resource::Handle Service::root() const {
-	return m_root;
+	Q_D(const Service);
+	return d->root;
 }
 
 }

@@ -104,16 +104,20 @@ void HttpServiceProcess::read() {
 	}
 }
 
-HttpService::HttpService(int port) : m_port(port) {
-	connect(&m_server, SIGNAL(newConnection()), this, SLOT(acceptConnection()));
-	if(!m_server.listen(QHostAddress::Any, port)) {
+
+HttpService::HttpService(int port) : Service(new HttpServicePrivate(this)) {
+	Q_D(HttpService);
+	d->port = port;
+	connect(&d->server, SIGNAL(newConnection()), this, SLOT(acceptConnection()));
+	if(!d->server.listen(QHostAddress::Any, port)) {
 		qWarning() << QString("Server failed to bind to port %1").arg(port);
 	}
 }
 
 void HttpService::acceptConnection() {
+	Q_D(HttpService);
 	qDebug() << "acceptConnection";
-	HttpServiceProcess* process = new HttpServiceProcess(this, m_server.nextPendingConnection());
+	HttpServiceProcess* process = new HttpServiceProcess(this, d->server.nextPendingConnection());
 }
 
 }
