@@ -28,8 +28,6 @@ public:
 	~HttpServiceProcess();
 public slots:
 	void read();
-protected:
-	void process();
 private:
 	HttpService* m_service;
 	QString m_requestStr;

@@ -30,6 +30,11 @@ public:
 	virtual Handle locate(const QUrl& url) const = 0;
 };
 
+class IQueryable {
+public:
+	virtual void query(Request* request) = 0;
+};
+
 }
 
 class RestResource : public Resource::Resource {
@@ -39,11 +44,12 @@ public:
 	virtual void methodPut(Request* request);
 };
 
-class SimpleTextResource : public RestResource {
+class SimpleTextResource : public RestResource, public Resource::IQueryable {
 public:
 	SimpleTextResource(const QString& text);
 public:
 	void methodGet(Request* request);
+	void query(Request* request);
 private:
 	QString m_text;
 };

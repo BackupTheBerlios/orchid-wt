@@ -14,16 +14,21 @@
 #include "styleattributes.h"
 
 #include "resourcemodel.h"
+#include "request.h"
 
 
-class MyStyle : public Bamboo::Style {
+class BambooResource : public Orchid::Resource::Resource, public Orchid::Resource::IQueryable {
 public:
-	void writeHeading(Bamboo::HtmlStreamWriter* writer, const QString& text) const;
-	void setHeading(const QString& heading);
-	QString content() const;
+	void addStyle(Bamboo::Style* style);
+	void setMainFragment(Bamboo::Fragment* fragment);
+	void query(Orchid::Request* request);
 private:
-	QString m_headingStyle;
+	Bamboo::Document m_doc;
 };
+
+
+
+
 
 void MyStyle::writeHeading(Bamboo::HtmlStreamWriter* writer, const QString& text) const {
 	Bamboo::StyleAttributes attrs = writer->attributes(this);
@@ -49,12 +54,6 @@ QString MyStyle::content() const {
 }
 
 
-class MyFragment : public Bamboo::Fragment {
-public:
-	void build(Bamboo::HtmlStreamWriter* writer);
-public:
-	MyStyle* style;
-};
 
 void MyFragment::build(Bamboo::HtmlStreamWriter* writer) {
 	QXmlStreamWriter* xml = writer->xmlWriter();
@@ -62,7 +61,28 @@ void MyFragment::build(Bamboo::HtmlStreamWriter* writer) {
 	xml->writeTextElement("p", "This is a very simple Test-Page");
 }
 
-MainWindow::MainWindow() {
+void BambooResource::addStyle(Bamboo::Style* style) {
+	m_doc.addGlobalStyle(style);
+}
+
+void BambooResource::setMainFragment(Bamboo::Fragment* fragment) {
+	m_doc.setMainFragment(fragment);
+}
+
+void BambooResource::query(Orchid::Request* request) {
+	if(request->method() != Orchid::HttpGetMethod) {
+// 		request.setStatus(RequestMethodNotAllowed);
+		return;
+	}
+	if(!request->open(QIODevice::ReadWrite)) return;
+	
+	Bamboo::HtmlStreamWriter writer;
+	writer.setDevice(request);
+	m_doc.build(&writer);
+	
+}
+
+MainWindow::MainWindow() : m_service(8000) {
 	setupUi(this);
 
 
@@ -73,17 +93,20 @@ MainWindow::MainWindow() {
 	writer.setDevice(&buf);
 
 
-	MyStyle myStyle;
-	myStyle.setHeading("background-color: red");
+	m_style.setHeading("background-color: red");
 
 	
-	MyFragment fragment;
-	fragment.style = &myStyle;
+	m_fragment.style = &m_style;
 	Bamboo::Document doc;
-	doc.addGlobalStyle(&myStyle);
-	doc.setMainFragment(&fragment);
+	doc.addGlobalStyle(&m_style);
+	doc.setMainFragment(&m_fragment);
 	doc.build(&writer);
+	
+	BambooResource *sample = new BambooResource();
+	sample->addStyle(&m_style);
+	sample->setMainFragment(&m_fragment);
 
+	Orchid::SimpleTextResource *text = new Orchid::SimpleTextResource("Hello World");
 
 	// Create sample resources
 	Orchid::Resource::Resource *t1 = new Orchid::Resource::Resource();
@@ -94,6 +117,8 @@ MainWindow::MainWindow() {
 	Orchid::ModelResource *res = new Orchid::ModelResource();
 
 
+	res2->addResource("sample.html", sample);
+	res2->addResource("text.txt", text);
 	res2->addResource("test1", t1);
 	res2->addResource("test2", t2),
 	res->addResource("test3", t3);
@@ -102,11 +127,17 @@ MainWindow::MainWindow() {
 
 	m_root.init(res);
 
-	qDebug() << "located: " << Orchid::Resource::Resource::locateUrl(m_root, QUrl("dir/test1")).name();
+	
+	m_service.setRoot(m_root);
+
+
+	qDebug() << "located: " << Orchid::Resource::Resource::locateUrl(m_root, QUrl("dir/sample.html")).name();
 	
 	treeView->setModel(new Orchid::ResourceModel(res, this));
 	
-// 	webView->setUrl(QUrl("http://localhost:8000/test.html?1"));
-	webView->setContent(buf.data());
+	webView->setUrl(QUrl("http://localhost:8000/dir/sample.html?1"));
+// 	webView->setContent(buf.data());
 	sourceView->setPlainText(buf.data());
+	
+
 }

@@ -148,8 +148,11 @@ QVariant ResourceModel::data(const QModelIndex &index, int role) const {
 	if(index.column() == 0) {
 		return node->handle.name();
 	} else {
-		if(dynamic_cast<Resource::IDirectory*>(node->handle.resource()))
+		Resource::Resource* resource = node->handle.resource();
+		if(dynamic_cast<Resource::IDirectory*>(resource))
 			return "Directory";
+		if(dynamic_cast<Resource::IQueryable*>(resource))
+			return "Queryable";
 		return "Resource";
 	}
 }

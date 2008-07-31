@@ -26,14 +26,50 @@ Request::~Request() {
 	delete d_ptr;
 }
 
-QIODevice* Request::device() const {
-	Q_D(const Request);
-	return d->device;
+RequestMethod Request::method() const { return UnknownMethod; }
+
+
+SimpleRequest::SimpleRequest()
+	: Request(new SimpleRequestPrivate(this))
+{
 }
 
-void Request::setDevice(QIODevice* device) {
-	Q_D(Request);
-	d->device = device;
+QIODevice* SimpleRequest::readDevice() const {
+	Q_D(const SimpleRequest);
+	return d->readDevice;
+}
+
+QIODevice* SimpleRequest::writeDevice() const {
+	Q_D(const SimpleRequest);
+	return d->writeDevice;
+}
+
+void SimpleRequest::setDevice(QIODevice* device) {
+	Q_D(SimpleRequest);
+	d->readDevice = device;
+	d->writeDevice = device;
+}
+
+void SimpleRequest::setReadDevice(QIODevice* device) {
+	Q_D(SimpleRequest);
+	d->readDevice = device;
+	d->writeDevice = device;
+}
+
+void SimpleRequest::setWriteDevice(QIODevice* device) {
+	Q_D(SimpleRequest);
+	d->readDevice = device;
+	d->writeDevice = device;
+}
+
+qint64 SimpleRequest::readData(char* data, qint64 size) {
+	Q_D(SimpleRequest);
+	return d->readDevice->read(data, size);
+}
+
+qint64 SimpleRequest::writeData(const char* data, qint64 size) {
+	Q_D(SimpleRequest);
+	return d->writeDevice->write(data, size);
 }
 
 }

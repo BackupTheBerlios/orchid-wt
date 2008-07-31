@@ -3,20 +3,18 @@
 
 #include <QObject>
 
-namespace Orchid {
+#include "resourcekeep.h"
 
-namespace Resource {
-class Resource;
-}
+namespace Orchid {
 
 class Service : public QObject {
 public:
 	Service();
 public:
-	void setRoot(Resource::Resource* root);
-	Resource::Resource* root() const;
+	void setRoot(const Resource::Handle& root);
+	Resource::Handle root() const;
 private:
-	Resource::Resource* m_root;
+	Resource::Handle m_root;
 };
 
 

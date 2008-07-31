@@ -9,9 +9,19 @@ public:
     RequestPrivate(Request *request)
         : q_ptr(request)
     { }
-private:
+protected:
     Request* q_ptr;
-	QIODevice* device;
+};
+
+class SimpleRequestPrivate : public RequestPrivate {
+	Q_DECLARE_PUBLIC(SimpleRequest)
+public:
+	SimpleRequestPrivate(SimpleRequest *request)
+		: RequestPrivate(request)
+	{ }
+public:
+	QIODevice* readDevice;
+	QIODevice* writeDevice;
 };
 
 }

@@ -3,14 +3,13 @@
 namespace Orchid {
 
 Service::Service() {
-	m_root = 0;
 }
 
-void Service::setRoot(Resource::Resource* root) {
+void Service::setRoot(const Resource::Handle& root) {
 	m_root = root;
 }
 
-Resource::Resource* Service::root() const {
+Resource::Handle Service::root() const {
 	return m_root;
 }
 

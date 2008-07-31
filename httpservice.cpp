@@ -10,15 +10,58 @@
 
 #include "request.h"
 #include "resource.h"
+#include "resourcekeep.h"
 
 #include "httpservice.moc"
 
 namespace Orchid {
 
+class HttpServiceRequest : public SimpleRequest {
+public:
+	HttpServiceRequest(const QHttpRequestHeader& header);
+	RequestMethod method() const;
+	bool open(QIODevice::OpenMode mode);
+private:
+	QHttpRequestHeader m_header;
+};
 
-// Request::Request(QIODevice* device) {
-// 	m_device = device;
-// }
+HttpServiceRequest::HttpServiceRequest(const QHttpRequestHeader& header) : m_header(header) {
+}
+
+RequestMethod HttpServiceRequest::method() const {
+	if(m_header.method() == "GET") return HttpGetMethod;
+	if(m_header.method() == "POST") return HttpPostMethod;
+	if(m_header.method() == "PUT") return HttpPutMethod;
+	if(m_header.method() == "DELETE") return HttpDeleteMethod;
+	return UnknownMethod;
+}
+
+bool HttpServiceRequest::open(QIODevice::OpenMode mode) {
+	Q_ASSERT(mode.testFlag(QIODevice::WriteOnly));
+	if(openMode() != QIODevice::NotOpen) return false;
+	
+	QIODevice* input = readDevice();
+	if(mode.testFlag(QIODevice::ReadOnly) && input->openMode() == QIODevice::NotOpen) {
+		if(!input->open(mode & ~(QIODevice::WriteOnly | QIODevice::Append  | QIODevice::Truncate)))
+			return false;
+	}
+	QIODevice* output = writeDevice();
+	if(output->openMode() == QIODevice::NotOpen) {
+		if(!input->open(mode & ~QIODevice::ReadOnly))
+			return false;
+	}
+	
+	QHttpResponseHeader header(200, "OK");
+
+	// TODO change this to local independant
+	header.setValue("date", QDateTime::currentDateTime().toString("ddd, dd MMM yyyy hh:mm:ss") + " GMT");
+	header.setValue("content-type", "text/html");
+	output->write(header.toString().toAscii());
+	
+	return QIODevice::open(mode);
+}
+
+
 
 
 HttpServiceProcess::HttpServiceProcess(HttpService* service, QAbstractSocket* socket) {
@@ -37,37 +80,26 @@ void HttpServiceProcess::read() {
 		if(line == "\r\n") {
 			QHttpRequestHeader requestHeader = QHttpRequestHeader(m_requestStr);
 
-			qDebug() << requestHeader.path();
+			QString path = requestHeader.path();
+			qDebug() << path;
+			path.remove(0, 1);
+			qDebug() << path;
 
-			process();
-			Request request;
+			HttpServiceRequest request(requestHeader);
 			request.setDevice(m_socket);
 			
-			RestResource* res = dynamic_cast<RestResource*>(m_service->root());
-			if(res) 
-				res->methodGet(&request);
-// 			else
+			Resource::IQueryable* res = dynamic_cast<Resource::IQueryable*>(Resource::Resource::locateUrl(m_service->root(), path).resource());
+			if(res) {
+				res->query(&request);
+			} else {
+// 				request.setStatus(RequestNotFound);
+			}
 			
-// 			m_socket->write("<pre>");
-// 			m_socket->write(requestHeader.toString().toAscii());
-// 			m_socket
-// 			m_socket->write("</pre>");
-
-
 			m_socket->disconnectFromHost();
 			return;
 		}
 		m_requestStr += line;
 	}
-}
-
-void HttpServiceProcess::process() {
-	QHttpResponseHeader header(200, "OK");
-
-	// TODO change this to local independant
-	header.setValue("date", QDateTime::currentDateTime().toString("ddd, dd MMM yyyy hh:mm:ss") + " GMT");
-	header.setValue("content-type", "text/html");
-	m_socket->write(header.toString().toAscii());
 }
 
 HttpService::HttpService(int port) : m_port(port) {

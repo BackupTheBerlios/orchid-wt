@@ -4,6 +4,8 @@
 
 #include <QTextStream>
 
+#include <QtDebug>
+
 namespace Orchid {
 
 namespace Resource {
@@ -57,7 +59,16 @@ SimpleTextResource::SimpleTextResource(const QString& text) {
 }
 
 void SimpleTextResource::methodGet(Request* request) {
-	QTextStream stream(request->device());
+	qDebug() << "methodGet";
+	if(!request->open(QIODevice::ReadWrite)) return;
+	QTextStream stream(request);
+	stream << m_text;
+}
+
+void SimpleTextResource::query(Request* request) {
+	qDebug() << "query";
+	if(!request->open(QIODevice::ReadWrite)) return;
+	QTextStream stream(request);
 	stream << m_text;
 }
 
