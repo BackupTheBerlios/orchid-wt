@@ -27,9 +27,6 @@ private:
 };
 
 
-
-
-
 void MyStyle::writeHeading(Bamboo::HtmlStreamWriter* writer, const QString& text) const {
 	Bamboo::StyleAttributes attrs = writer->attributes(this);
 	QXmlStreamWriter* xml = writer->xmlWriter();
@@ -52,7 +49,6 @@ void MyStyle::setHeading(const QString& heading) {
 QString MyStyle::content() const {
 	return QString(".heading1 { ") + m_headingStyle + "}";
 }
-
 
 
 void MyFragment::build(Bamboo::HtmlStreamWriter* writer) {
@@ -85,22 +81,8 @@ void BambooResource::query(Orchid::Request* request) {
 MainWindow::MainWindow() : m_service(8000) {
 	setupUi(this);
 
-
-	Bamboo::HtmlStreamWriter writer;
-	QBuffer buf;
-	buf.open(QIODevice::WriteOnly);
-	
-	writer.setDevice(&buf);
-
-
 	m_style.setHeading("background-color: red");
-
-	
 	m_fragment.style = &m_style;
-	Bamboo::Document doc;
-	doc.addGlobalStyle(&m_style);
-	doc.setMainFragment(&m_fragment);
-	doc.build(&writer);
 	
 	BambooResource *sample = new BambooResource();
 	sample->addStyle(&m_style);
@@ -111,33 +93,23 @@ MainWindow::MainWindow() : m_service(8000) {
 	// Create sample resources
 	Orchid::Resource::Resource *t1 = new Orchid::Resource::Resource();
 	Orchid::Resource::Resource *t2 = new Orchid::Resource::Resource();
-	Orchid::Resource::Resource *t3 = new Orchid::Resource::Resource();
-	Orchid::Resource::Resource *t4 = new Orchid::Resource::Resource();
-	Orchid::ModelResource *res2 = new Orchid::ModelResource();
+	Orchid::ModelResource *dir = new Orchid::ModelResource();
 	Orchid::ModelResource *res = new Orchid::ModelResource();
 
-
-	res2->addResource("sample.html", sample);
-	res2->addResource("text.txt", text);
-	res2->addResource("test1", t1);
-	res2->addResource("test2", t2),
-	res->addResource("test3", t3);
-	res->addResource("dir", res2);
-	res->addResource("test4", t4);
+	dir->addResource("sample.html", sample);
+	dir->addResource("text.txt", text);
+	res->addResource("dir", dir);
+	res->addResource("test1", t1);
+	res->addResource("test2", t2),
 
 	m_root.init(res);
-
 	
 	m_service.setRoot(m_root);
 
 
-	qDebug() << "located: " << Orchid::Resource::Resource::locateUrl(m_root, QUrl("dir/sample.html")).name();
-	
-	treeView->setModel(new Orchid::ResourceModel(res, this));
-	
+	treeView->setModel(new Orchid::ResourceModel(res, this));	
 	webView->setUrl(QUrl("http://localhost:8000/dir/sample.html?1"));
-// 	webView->setContent(buf.data());
-	sourceView->setPlainText(buf.data());
 	
-
+	// TODO load sourceView from local server
+// 	sourceView->setPlainText(buf.data());
 }

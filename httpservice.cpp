@@ -1,4 +1,5 @@
 #include "httpservice.h"
+#include "httpservice_p.h"
 
 #include <QtNetwork/QTcpServer>
 #include <QtNetwork/QTcpSocket>
@@ -13,6 +14,7 @@
 #include "resourcekeep.h"
 
 #include "httpservice.moc"
+#include "httpservice_p.moc"
 
 namespace Orchid {
 

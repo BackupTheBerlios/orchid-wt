@@ -37,26 +37,13 @@ public:
 
 }
 
-class RestResource : public Resource::Resource {
-public:
-	virtual void methodGet(Request* request);
-	virtual void methodPost(Request* request);
-	virtual void methodPut(Request* request);
-};
-
-class SimpleTextResource : public RestResource, public Resource::IQueryable {
+class SimpleTextResource : public Resource::Resource, public Resource::IQueryable {
 public:
 	SimpleTextResource(const QString& text);
 public:
-	void methodGet(Request* request);
 	void query(Request* request);
 private:
 	QString m_text;
-};
-
-class AbstractDirectoryResource : public Resource::Resource {
-public:
-	virtual QStringList subDirs() const = 0;
 };
 
 };

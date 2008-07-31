@@ -41,28 +41,8 @@ Handle Resource::locateUrl(const Handle& handle, const QUrl& url) {
 
 }
 
-void RestResource::methodGet(Request* request) {
-// 	request->abortMethodNotAllowed();
-}
-
-void RestResource::methodPost(Request* request) {
-// 	request->abortMethodNotAllowed();
-}
-
-void RestResource::methodPut(Request* request) {
-// 	request->abortMethodNotAllowed();
-}
-
-
 SimpleTextResource::SimpleTextResource(const QString& text) {
 	m_text = text;
-}
-
-void SimpleTextResource::methodGet(Request* request) {
-	qDebug() << "methodGet";
-	if(!request->open(QIODevice::ReadWrite)) return;
-	QTextStream stream(request);
-	stream << m_text;
 }
 
 void SimpleTextResource::query(Request* request) {
