@@ -6,8 +6,6 @@
 
 namespace Bamboo {
 
-class Builder;
-
 class StyleAttributes;
 
 class StyleAttributesData : public QSharedData {

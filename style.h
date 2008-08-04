@@ -1,15 +1,18 @@
 #ifndef _STYLE_H_
 #define _STYLE_H_
 
-#include "resource.h"
+#include <QtCore/QString>
 
 namespace Bamboo {
 
-class Builder;
-
-class Style : public Orchid::Resource::Resource {
+class Style {
 public:
 	virtual QString content() const;
+};
+
+class Css30Style : public Style {
+public:
+	QString classdef();
 };
 
 }

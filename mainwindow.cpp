@@ -53,7 +53,12 @@ QString MyStyle::content() const {
 
 void MyFragment::build(Bamboo::HtmlStreamWriter* writer) {
 	QXmlStreamWriter* xml = writer->xmlWriter();
-	style->writeHeading(writer, "Test");
+	writer->writeBeginSpecial(Bamboo::HtmlSpecialSection);
+	writer->writeBeginSpecial(Bamboo::HtmlSpecialSection);
+	writer->writeSimpleSpecial(Bamboo::HtmlSpecialHeading, "Test");
+	writer->writeEndSpecial();
+	writer->writeEndSpecial();
+// 	style->writeHeading(writer, "Test");
 	xml->writeTextElement("p", "This is a very simple Test-Page");
 }
 
@@ -72,7 +77,7 @@ void BambooResource::query(Orchid::Request* request) {
 	}
 	if(!request->open(QIODevice::ReadWrite)) return;
 	
-	Bamboo::HtmlStreamWriter writer;
+	Bamboo::XHtml11StreamWriter writer;
 	writer.setDevice(request);
 	m_doc.build(&writer);
 	
@@ -105,7 +110,6 @@ MainWindow::MainWindow() : m_service(8000) {
 	m_root.init(res);
 	
 	m_service.setRoot(m_root);
-
 
 	treeView->setModel(new Orchid::ResourceModel(res, this));	
 	webView->setUrl(QUrl("http://localhost:8000/dir/sample.html?1"));
