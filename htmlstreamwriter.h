@@ -18,6 +18,8 @@ enum HtmlSpecial {
 	HtmlSpecialBlock = 1,
 	HtmlSpecialSection,
 	HtmlSpecialHeading,
+	HtmlSpecialTextCode,
+	HtmlSpecialTextAbbreviation,
 };
 
 class HtmlStreamWriter {
@@ -35,6 +37,7 @@ public:
 	virtual void writeSimpleSpecial(HtmlSpecial special, const QString& text) = 0;
 	virtual void writeBeginSpecial(HtmlSpecial special) = 0;
 	virtual void writeEndSpecial() = 0;
+	virtual void writeCharacters(const QString& str) = 0;
 protected:
 	HtmlStreamWriter(HtmlStreamWriterPrivate* dd);
 private:
@@ -52,6 +55,7 @@ public:
 	void writeSimpleSpecial(HtmlSpecial special, const QString& text);
 	void writeBeginSpecial(HtmlSpecial special);
 	void writeEndSpecial();
+	void writeCharacters(const QString& str);
 private:
 	Q_DECLARE_PRIVATE(XHtml11StreamWriter)
 };

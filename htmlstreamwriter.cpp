@@ -132,6 +132,9 @@ void XHtml11StreamWriter::writeBeginSpecial(HtmlSpecial special) {
 				default: d->xml.writeStartElement("h6"); break;
 			}
 			break;
+		case HtmlSpecialTextCode:
+			d->xml.writeStartElement("code"); break;
+		default: d->xml.writeStartElement("span"); break;
 	}
 	XHtml11StreamWriterPrivate::Entry entry;
 	entry.special = special;
@@ -151,6 +154,11 @@ void XHtml11StreamWriter::writeEndSpecial() {
 			d->xml.writeEndElement();
 			break;
 	}
+}
+
+void XHtml11StreamWriter::writeCharacters(const QString& str) {
+	Q_D(XHtml11StreamWriter);
+	d->xml.writeCharacters(str);
 }
 
 }

@@ -141,21 +141,49 @@ int ResourceModel::columnCount(const QModelIndex &parent) const {
 
 QVariant ResourceModel::data(const QModelIndex &index, int role) const {
 	Q_D(const ResourceModel);
-	if(role != Qt::DisplayRole) return QVariant();
-	
 	ResourceModelPrivate::Node *node = d->node(index);
+	if(!node) return QVariant();
 	
-	if(index.column() == 0) {
-		return node->handle.name();
-	} else {
-		Resource::Resource* resource = node->handle.resource();
-		if(dynamic_cast<Resource::IDirectory*>(resource))
-			return "Directory";
-		if(dynamic_cast<Resource::IQueryable*>(resource))
-			return "Queryable";
-		return "Resource";
+	switch(role) {
+		case Qt::DisplayRole:
+			if(index.column() == 0) {
+				return node->handle.name();
+			} else if(index.column() == 1) {
+				Resource::Resource* resource = node->handle.resource();
+				if(dynamic_cast<Resource::IDirectory*>(resource))
+					return "Directory";
+				if(dynamic_cast<Resource::IQueryable*>(resource))
+					return "Queryable";
+				return "Resource";
+			}
+			break;
+		case Qt::ToolTipRole:
+			return path(index);
 	}
+	return QVariant();
 }
 
+QString ResourceModel::path(const QModelIndex &index) const {
+	Q_D(const ResourceModel);
+	
+	ResourceModelPrivate::Node *node = d->node(index);
+	if(!node) return QString();
+	
+	QStringList path;
+	while(node) {
+		path.prepend(node->handle.name());
+		node = node->parent;
+	}
+	return path.join("/");
+}
+
+Resource::Handle ResourceModel::resource(const QModelIndex &index) const {
+	Q_D(const ResourceModel);
+	
+	ResourceModelPrivate::Node *node = d->node(index);
+	if(!node) return Resource::Handle();
+	
+	return node->handle;
+}
 
 }

@@ -15,6 +15,10 @@ namespace Bamboo {
 class HtmlStreamWriter;
 }
 
+namespace Orchid {
+class ResourceModel;
+}
+
 class MyStyle : public Bamboo::Style {
 	public:
 		void writeHeading(Bamboo::HtmlStreamWriter* writer, const QString& text) const;
@@ -36,7 +40,10 @@ class MainWindow : public QMainWindow, private Ui::MainWindow {
 	Q_OBJECT
 public:
 	MainWindow();
+public slots:
+	void activateResource(const QModelIndex& index);
 private:
+	Orchid::ResourceModel* m_model;
 	Orchid::Resource::Handle m_root;
 	MyStyle m_style;
 	MyFragment m_fragment;

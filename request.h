@@ -19,12 +19,14 @@ enum RequestStatus {
 
 enum RequestMethod {
 	UnknownMethod     = 0x0000,
-	HttpGetMethod     = 0x0001,
-	HttpPostMethod    = 0x0002,
-	HttpHeadMethod    = 0x0004,
-	HttpPutMethod     = 0x0008,
-	HttpDeleteMethod  = 0x0010,
-	HttpOptionsMethod = 0x0020,
+	GetMethod         = 0x0001,
+	// HttpMethodFlag = 0x0040
+	HttpGetMethod     = 0x0041,
+	HttpPostMethod    = 0x0042,
+	HttpHeadMethod    = 0x0044,
+	HttpPutMethod     = 0x0048,
+	HttpDeleteMethod  = 0x0050,
+	HttpOptionsMethod = 0x0060,
 };
 
 class Request : public QIODevice {
@@ -60,7 +62,8 @@ public:
 	void setWriteDevice(QIODevice* device);
 	qint64 readData(char*, qint64);
 	qint64 writeData(const char*, qint64);
-
+	virtual RequestMethod method() const;
+	virtual bool open(QIODevice::OpenMode mode);
 protected:
 	SimpleRequest(SimpleRequestPrivate* dd);
 private:

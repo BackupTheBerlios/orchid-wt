@@ -42,16 +42,18 @@ bool HttpServiceRequest::open(QIODevice::OpenMode mode) {
 	Q_ASSERT(mode.testFlag(QIODevice::WriteOnly));
 	if(openMode() != QIODevice::NotOpen) return false;
 	
-	QIODevice* input = readDevice();
-	if(mode.testFlag(QIODevice::ReadOnly) && input->openMode() == QIODevice::NotOpen) {
-		if(!input->open(mode & ~(QIODevice::WriteOnly | QIODevice::Append  | QIODevice::Truncate)))
-			return false;
-	}
+// 	QIODevice* input = readDevice();
+// 	if(mode.testFlag(QIODevice::ReadOnly) && input->openMode() == QIODevice::NotOpen) {
+// 		if(!input->open(mode & ~(QIODevice::WriteOnly | QIODevice::Append  | QIODevice::Truncate)))
+// 			return false;
+// 	}
 	QIODevice* output = writeDevice();
-	if(output->openMode() == QIODevice::NotOpen) {
-		if(!input->open(mode & ~QIODevice::ReadOnly))
-			return false;
-	}
+// 	if(output->openMode() == QIODevice::NotOpen) {
+// 		if(!input->open(mode & ~QIODevice::ReadOnly))
+// 			return false;
+// 	}
+	if(!SimpleRequest::open(mode)) return false;
+	
 	
 	QHttpResponseHeader header(200, "OK");
 
@@ -60,7 +62,8 @@ bool HttpServiceRequest::open(QIODevice::OpenMode mode) {
 	header.setValue("content-type", "text/html");
 	output->write(header.toString().toAscii());
 	
-	return QIODevice::open(mode);
+// 	return QIODevice::open(mode);
+	return true;
 }
 
 

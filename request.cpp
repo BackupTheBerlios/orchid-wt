@@ -72,4 +72,27 @@ qint64 SimpleRequest::writeData(const char* data, qint64 size) {
 	return d->writeDevice->write(data, size);
 }
 
+RequestMethod SimpleRequest::method() const {
+	return GetMethod;
+}
+
+bool SimpleRequest::open(QIODevice::OpenMode mode) {
+	Q_D(SimpleRequest);
+	if(d->readDevice && mode.testFlag(QIODevice::ReadOnly) &&
+		d->readDevice->openMode() == QIODevice::NotOpen)
+	{
+		if(!d->readDevice->open(mode & ~QIODevice::ReadOnly))
+			return false;
+	}
+	if(d->writeDevice && mode.testFlag(QIODevice::WriteOnly) &&
+		d->writeDevice->openMode() == QIODevice::NotOpen)
+	{
+		if(!d->writeDevice->open(mode & ~(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Truncate)))
+			return false;
+	}
+	
+	return QIODevice::open(mode);
+}
+
+
 }

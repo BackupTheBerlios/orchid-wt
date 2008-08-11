@@ -51,6 +51,60 @@ QString MyStyle::content() const {
 }
 
 
+
+
+
+
+
+
+
+class HtmlTextManip;
+class HtmlTextStream {
+public:
+	HtmlTextStream(Bamboo::HtmlStreamWriter* writer);
+public:
+	inline Bamboo::HtmlStreamWriter* writer() const;
+	inline HtmlTextStream& operator<<(HtmlTextStream&(*)(HtmlTextStream&));
+	inline HtmlTextStream& operator<<(const HtmlTextManip&);
+	inline HtmlTextStream& operator<<(const QString& str);
+private:
+	Bamboo::HtmlStreamWriter* m_writer;
+};
+
+inline Bamboo::HtmlStreamWriter* HtmlTextStream::writer() const {
+	return m_writer;
+}
+
+inline HtmlTextStream& HtmlTextStream::operator<<(HtmlTextStream&(*fp)(HtmlTextStream&)) {
+	return fp(*this);
+}
+
+inline HtmlTextStream& HtmlTextStream::operator<<(const QString& str) {
+	m_writer->writeCharacters(str);
+	return *this;
+}
+
+HtmlTextStream::HtmlTextStream(Bamboo::HtmlStreamWriter* writer) : m_writer(writer) {
+}
+
+HtmlTextStream& code(HtmlTextStream& s) { s.writer()->writeBeginSpecial(Bamboo::HtmlSpecialTextCode); return s; }
+
+HtmlTextStream& end(HtmlTextStream& s) { s.writer()->writeEndSpecial(); return s; }
+
+
+class HtmlTextManip {
+public:
+	virtual HtmlTextStream& apply(HtmlTextStream&) = 0;
+};
+
+class abbreviation : public HtmlTextManip {
+	HtmlTextStream& apply(HtmlTextStream& s) {
+		s.writer()->writeBeginSpecial(Bamboo::HtmlSpecialTextAbbreviation);
+		return s;
+	}
+};
+
+
 void MyFragment::build(Bamboo::HtmlStreamWriter* writer) {
 	QXmlStreamWriter* xml = writer->xmlWriter();
 	writer->writeBeginSpecial(Bamboo::HtmlSpecialSection);
@@ -58,6 +112,9 @@ void MyFragment::build(Bamboo::HtmlStreamWriter* writer) {
 	writer->writeSimpleSpecial(Bamboo::HtmlSpecialHeading, "Test");
 	writer->writeEndSpecial();
 	writer->writeEndSpecial();
+	HtmlTextStream stream(writer);
+	stream << "A sample of code: " << code << "int main();" << end;
+	
 // 	style->writeHeading(writer, "Test");
 	xml->writeTextElement("p", "This is a very simple Test-Page");
 }
@@ -71,7 +128,7 @@ void BambooResource::setMainFragment(Bamboo::Fragment* fragment) {
 }
 
 void BambooResource::query(Orchid::Request* request) {
-	if(request->method() != Orchid::HttpGetMethod) {
+	if(!(request->method() & Orchid::GetMethod)) {
 // 		request.setStatus(RequestMethodNotAllowed);
 		return;
 	}
@@ -111,9 +168,28 @@ MainWindow::MainWindow() : m_service(8000) {
 	
 	m_service.setRoot(m_root);
 
-	treeView->setModel(new Orchid::ResourceModel(res, this));	
+	m_model = new Orchid::ResourceModel(res, this);
+	treeView->setModel(m_model);
+	connect(treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activateResource(const QModelIndex&)));
+
 	webView->setUrl(QUrl("http://localhost:8000/dir/sample.html?1"));
 	
 	// TODO load sourceView from local server
 // 	sourceView->setPlainText(buf.data());
+}
+
+void MainWindow::activateResource(const QModelIndex& index) {
+	Orchid::Resource::Handle handle(m_model->resource(index));
+	Orchid::Resource::IQueryable* res = dynamic_cast<Orchid::Resource::IQueryable*>(handle.resource());
+
+	if(res) {
+		QBuffer buf;
+		Orchid::SimpleRequest request;
+		request.setDevice(&buf);
+		res->query(&request);
+		sourceView->setPlainText(buf.data());
+	}
+
+	QString url = "http://localhost:8000" + m_model->path(index);
+	webView->setUrl(QUrl(url));
 }
