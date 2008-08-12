@@ -1,8 +1,8 @@
 #include <QApplication>
 
 #include "mainwindow.h"
-#include "httpservice.h"
-#include "resource.h"
+// #include "httpservice.h"
+// #include "resource.h"
 
 int main(int argc, char** argv) {
     QApplication app(argc, argv);

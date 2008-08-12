@@ -1,7 +1,7 @@
 #ifndef _ORCHID_SERVICE_PRIVATE_H_
 #define _ORCHID_SERVICE_PRIVATE_H_
 
-#include "resourcekeep.h"
+#include <stem/resourcekeep.h>
 
 namespace Orchid {
 

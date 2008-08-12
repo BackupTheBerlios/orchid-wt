@@ -6,17 +6,17 @@
 #include <QtDebug>
 #include <QXmlStreamWriter>
 
-#include "htmlstreamwriter.h"
+#include <flower/htmlstreamwriter.h>
 
-#include "document.h"
+#include <flower/document.h>
 
-#include "style.h"
-#include "styleattributes.h"
+#include <flower/style.h>
+#include <flower/styleattributes.h>
 
-#include "resourcemodel.h"
-#include "request.h"
+#include <stem/resourcemodel.h>
+#include <stem/request.h>
 
-#include "htmlstreams.h"
+#include <flower/htmlstreams.h>
 
 
 class BambooResource : public Orchid::Resource::Resource, public Orchid::Resource::IQueryable {

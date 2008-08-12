@@ -3,13 +3,13 @@
 
 #include <QMainWindow>
 
-#include "resourcekeep.h"
+#include <stem/resourcekeep.h>
 
 #include "ui_mainwindow.h"
 
-#include "style.h"
-#include "fragment.h"
-#include "httpservice.h"
+#include <flower/style.h>
+#include <flower/fragment.h>
+#include <root/httpservice.h>
 
 namespace Bamboo {
 class HtmlStreamWriter;

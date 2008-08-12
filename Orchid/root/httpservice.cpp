@@ -9,9 +9,9 @@
 
 #include <QtDebug>
 
-#include "request.h"
-#include "resource.h"
-#include "resourcekeep.h"
+#include <stem/request.h>
+#include <stem/resource.h>
+#include <stem/resourcekeep.h>
 
 #include "httpservice.moc"
 #include "httpservice_p.moc"
