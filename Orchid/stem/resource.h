@@ -37,7 +37,7 @@ public:
 
 }
 
-class SimpleTextResource : public Resource::Resource, public Resource::IQueryable {
+class SimpleTextResource : public ::Orchid::Resource::Resource, public ::Orchid::Resource::IQueryable {
 public:
 	SimpleTextResource(const QString& text);
 public:

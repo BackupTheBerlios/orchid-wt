@@ -4,7 +4,7 @@
 
 #include <QXmlStreamWriter>
 
-namespace Bamboo {
+namespace Orchid {
 
 QString Style::content() const {
 	return QString();

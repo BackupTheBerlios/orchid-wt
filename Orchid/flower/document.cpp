@@ -11,7 +11,7 @@
 
 #include "style.h"
 
-namespace Bamboo {
+namespace Orchid {
 
 class DocumentPrivate : public FragmentPrivate {
 public:

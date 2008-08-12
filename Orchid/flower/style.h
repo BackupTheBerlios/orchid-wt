@@ -3,7 +3,7 @@
 
 #include <QtCore/QString>
 
-namespace Bamboo {
+namespace Orchid {
 
 class Style {
 public:

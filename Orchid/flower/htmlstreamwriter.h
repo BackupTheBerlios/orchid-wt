@@ -8,7 +8,7 @@ class QIODevice;
 class QString;
 class QVariant;
 
-namespace Bamboo {
+namespace Orchid {
 	
 class StyleAttributes;
 class Style;

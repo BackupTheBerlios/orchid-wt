@@ -1,6 +1,6 @@
 #include "htmlstreams.h"
 
-namespace Bamboo {
+namespace Orchid {
 
 namespace HTML {
 

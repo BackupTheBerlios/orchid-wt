@@ -5,7 +5,7 @@
 #include "htmlstreamwriter.h"
 #include <QtCore/QVariant>
 
-namespace Bamboo {
+namespace Orchid {
 
 namespace HTML {
 
@@ -29,8 +29,8 @@ public:
 	inline InlineStream heading();
 	inline InlineStream paragraph();
 	inline InlineStream text();
-	inline BlockStream& operator<<(const ::Bamboo::HTML::heading& obj);
-	inline BlockStream& operator<<(const ::Bamboo::HTML::paragraph& obj);
+	inline BlockStream& operator<<(const ::Orchid::HTML::heading& obj);
+	inline BlockStream& operator<<(const ::Orchid::HTML::paragraph& obj);
 	inline BlockStream& operator<<(const role& role);
 	inline BlockStream& operator<<(const id& id);
 	inline BlockStream& operator<<(const classname& name);
@@ -235,27 +235,27 @@ private:
 // }
 
 
-inline BlockStream& BlockStream::operator<<(const ::Bamboo::HTML::heading& h)
+inline BlockStream& BlockStream::operator<<(const HTML::heading& h)
 { return h.apply(*this); }
-inline BlockStream& BlockStream::operator<<(const ::Bamboo::HTML::paragraph& p)
+inline BlockStream& BlockStream::operator<<(const HTML::paragraph& p)
 { return p.apply(*this); }
-inline BlockStream& BlockStream::operator<<(const ::Bamboo::HTML::role& role)
+inline BlockStream& BlockStream::operator<<(const role& role)
 { return role.apply(*this); }
-inline BlockStream& BlockStream::operator<<(const ::Bamboo::HTML::id& id)
+inline BlockStream& BlockStream::operator<<(const id& id)
 { return id.apply(*this); }
-inline BlockStream& BlockStream::operator<<(const ::Bamboo::HTML::classname& name)
+inline BlockStream& BlockStream::operator<<(const classname& name)
 { return name.apply(*this); }
-inline BlockStream& BlockStream::operator<<(const ::Bamboo::HTML::language& lang)
+inline BlockStream& BlockStream::operator<<(const language& lang)
 { return lang.apply(*this); }
 inline InlineStream& InlineStream::operator<<(const abbreviation& abbr)
 { return abbr.apply(*this); }
-inline InlineStream& InlineStream::operator<<(const ::Bamboo::HTML::role& role)
+inline InlineStream& InlineStream::operator<<(const role& role)
 { return role.apply(*this); }
-inline InlineStream& InlineStream::operator<<(const ::Bamboo::HTML::id& id)
+inline InlineStream& InlineStream::operator<<(const id& id)
 { return id.apply(*this); }
-inline InlineStream& InlineStream::operator<<(const ::Bamboo::HTML::classname& name)
+inline InlineStream& InlineStream::operator<<(const classname& name)
 { return name.apply(*this); }
-inline InlineStream& InlineStream::operator<<(const ::Bamboo::HTML::language& lang)
+inline InlineStream& InlineStream::operator<<(const language& lang)
 { return lang.apply(*this); }
 
 }

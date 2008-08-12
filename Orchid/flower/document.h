@@ -3,9 +3,8 @@
 
 #include "fragment.h"
 
-namespace Bamboo {
+namespace Orchid {
 
-class Resource;
 class Style;
 
 class DocumentPrivate;

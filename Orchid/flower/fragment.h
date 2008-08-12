@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-namespace Bamboo {
+namespace Orchid {
 
 class HtmlStreamWriter;
 class FragmentPrivate;

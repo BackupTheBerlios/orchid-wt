@@ -3,7 +3,7 @@
 
 #include "fragment.h"
 
-namespace Bamboo {
+namespace Orchid {
 
 class FragmentPrivate {
 public:

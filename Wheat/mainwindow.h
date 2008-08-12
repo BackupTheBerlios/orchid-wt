@@ -11,26 +11,23 @@
 #include <flower/fragment.h>
 #include <root/httpservice.h>
 
-namespace Bamboo {
-class HtmlStreamWriter;
-}
-
 namespace Orchid {
+class HtmlStreamWriter;
 class ResourceModel;
 }
 
-class MyStyle : public Bamboo::Style {
+class MyStyle : public Orchid::Style {
 	public:
-		void writeHeading(Bamboo::HtmlStreamWriter* writer, const QString& text) const;
+		void writeHeading(Orchid::HtmlStreamWriter* writer, const QString& text) const;
 		void setHeading(const QString& heading);
 		QString content() const;
 	private:
 		QString m_headingStyle;
 };
 
-class MyFragment : public Bamboo::Fragment {
+class MyFragment : public Orchid::Fragment {
 	public:
-		void build(Bamboo::HtmlStreamWriter* writer);
+		void build(Orchid::HtmlStreamWriter* writer);
 	public:
 		MyStyle* style;
 };

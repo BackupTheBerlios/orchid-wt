@@ -4,22 +4,8 @@ include_directories(
 )
 
 set(orchid_root_SRC
-# 	clientinfo.cpp
-# 	document.cpp
-# 	fragment.cpp
-# 	htmlstreams.cpp
-# 	htmlstreamwriter.cpp
 	httpservice.cpp
-# 	main.cpp
-# 	mainwindow.cpp
-# 	manuallyshared.cpp
-# 	request.cpp
-# 	resource.cpp
-# 	resourcekeep.cpp
-# 	resourcemodel.cpp
 	service.cpp
-# 	styleattributes.cpp
-# 	style.cpp
 )
 
 qt4_automoc(${orchid_root_SRC})

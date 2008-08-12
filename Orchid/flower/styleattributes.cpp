@@ -2,7 +2,7 @@
 
 #include <QString>
 
-namespace Bamboo {
+namespace Orchid {
 
 StyleAttributes::StyleAttributes() {
 	d = new StyleAttributesData;

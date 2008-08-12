@@ -4,7 +4,7 @@
 #include <QSharedData>
 #include <QString>
 
-namespace Bamboo {
+namespace Orchid {
 
 class StyleAttributes;
 

@@ -13,24 +13,24 @@
 #include <flower/style.h>
 #include <flower/styleattributes.h>
 
-#include <stem/resourcemodel.h>
 #include <stem/request.h>
+#include <stem/resourcemodel.h>
 
 #include <flower/htmlstreams.h>
 
 
-class BambooResource : public Orchid::Resource::Resource, public Orchid::Resource::IQueryable {
+class OrchidResource : public Orchid::Resource::Resource, public Orchid::Resource::IQueryable {
 public:
-	void addStyle(Bamboo::Style* style);
-	void setMainFragment(Bamboo::Fragment* fragment);
+	void addStyle(Orchid::Style* style);
+	void setMainFragment(Orchid::Fragment* fragment);
 	void query(Orchid::Request* request);
 private:
-	Bamboo::Document m_doc;
+	Orchid::Document m_doc;
 };
 
 
-void MyStyle::writeHeading(Bamboo::HtmlStreamWriter* writer, const QString& text) const {
-	Bamboo::StyleAttributes attrs = writer->attributes(this);
+void MyStyle::writeHeading(Orchid::HtmlStreamWriter* writer, const QString& text) const {
+	Orchid::StyleAttributes attrs = writer->attributes(this);
 	QXmlStreamWriter* xml = writer->xmlWriter();
 
 	xml->writeStartElement("h1");
@@ -53,8 +53,8 @@ QString MyStyle::content() const {
 }
 
 
-void MyFragment::build(Bamboo::HtmlStreamWriter* writer) {
-	using namespace Bamboo::HTML;
+void MyFragment::build(Orchid::HtmlStreamWriter* writer) {
+	using namespace Orchid::HTML;
 
 	BlockStream blocks(writer);
 
@@ -63,7 +63,7 @@ void MyFragment::build(Bamboo::HtmlStreamWriter* writer) {
 
 	blocks.paragraph() << "The Pascal statement " <<code<<"i := 1;"<<end<< " assigns the literal value one to the variable <var>i</var>.";
 
-	(blocks << role(Bamboo::HtmlRoleDefinition)).paragraph() << "An " <<id("def-acronym")<< definition<<"acronym"<<end<< " is a word formed from the initial letters or groups of letters of words in a set phrase or series of words.";
+	(blocks << role(Orchid::HtmlRoleDefinition)).paragraph() << "An " <<id("def-acronym")<< definition<<"acronym"<<end<< " is a word formed from the initial letters or groups of letters of words in a set phrase or series of words.";
 
 	blocks.paragraph() << "Do " <<emphasis<<"not"<<end<< " phone before 9 a.m.";
 
@@ -92,22 +92,22 @@ void MyFragment::build(Bamboo::HtmlStreamWriter* writer) {
 	blocks << end;
 }
 
-void BambooResource::addStyle(Bamboo::Style* style) {
+void OrchidResource::addStyle(Orchid::Style* style) {
 	m_doc.addGlobalStyle(style);
 }
 
-void BambooResource::setMainFragment(Bamboo::Fragment* fragment) {
+void OrchidResource::setMainFragment(Orchid::Fragment* fragment) {
 	m_doc.setMainFragment(fragment);
 }
 
-void BambooResource::query(Orchid::Request* request) {
+void OrchidResource::query(Orchid::Request* request) {
 	if(!(request->method() & Orchid::GetMethod)) {
 // 		request.setStatus(RequestMethodNotAllowed);
 		return;
 	}
 	if(!request->open(QIODevice::ReadWrite)) return;
 	
-	Bamboo::XHtml11StreamWriter writer;
+	Orchid::XHtml11StreamWriter writer;
 	writer.setDevice(request);
 	m_doc.build(&writer);
 	
@@ -119,7 +119,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	m_style.setHeading("background-color: red");
 	m_fragment.style = &m_style;
 	
-	BambooResource *sample = new BambooResource();
+	OrchidResource *sample = new OrchidResource();
 	sample->addStyle(&m_style);
 	sample->setMainFragment(&m_fragment);
 

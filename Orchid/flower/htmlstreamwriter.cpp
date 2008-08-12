@@ -9,7 +9,7 @@
 
 #include "styleattributes.h"
 
-namespace Bamboo {
+namespace Orchid {
 	
 // TODO check whether we use the correct replacement for not supported tags:
 // * Section

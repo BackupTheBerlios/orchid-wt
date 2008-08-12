@@ -3,7 +3,7 @@
 
 #include "fragment.moc"
 
-namespace Bamboo {
+namespace Orchid {
 
 Fragment::Fragment(QObject* parent) : QObject(parent), d_ptr(new FragmentPrivate) {
 	d_ptr->q_ptr = this;
