@@ -152,7 +152,7 @@ Handle::Handle() : m_item(0) {
 }
 
 Handle::Handle(const Handle& handle) : m_item(handle.m_item) {
-	m_item->handleRefs.ref();
+	if(m_item) m_item->handleRefs.ref();
 }
 
 Handle::Handle(KeepItem* item) : m_item(item) {
@@ -210,7 +210,8 @@ QString Handle::name() const {
 Handle& Handle::operator=(const Handle& other) {
 	if(m_item == other.m_item) return *this;
 	
-	other.m_item->handleRefs.ref();
+	if(other.m_item)
+		other.m_item->handleRefs.ref();
 	if(m_item && !m_item->handleRefs.deref()) {
 		if(m_item->keep) {
 			// is keeped

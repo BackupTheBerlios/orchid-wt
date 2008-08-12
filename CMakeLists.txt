@@ -17,6 +17,7 @@ set(page_SRC
 	clientinfo.cpp
 	document.cpp
 	fragment.cpp
+	htmlstreams.cpp
 	htmlstreamwriter.cpp
 	httpservice.cpp
 	main.cpp

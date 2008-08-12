@@ -6,6 +6,7 @@
 class QXmlStreamWriter;
 class QIODevice;
 class QString;
+class QVariant;
 
 namespace Bamboo {
 	
@@ -18,8 +19,32 @@ enum HtmlSpecial {
 	HtmlSpecialBlock = 1,
 	HtmlSpecialSection,
 	HtmlSpecialHeading,
+	HtmlSpecialParagraph,
 	HtmlSpecialTextCode,
 	HtmlSpecialTextAbbreviation,
+	HtmlSpecialTextDefinition,
+	HtmlSpecialTextEmphasis,
+	HtmlSpecialTextKeyboard,
+	HtmlSpecialTextQuote,
+	HtmlSpecialTextSample,
+	HtmlSpecialTextSpan,
+	HtmlSpecialTextStrong,
+	HtmlSpecialTextSubscript,
+	HtmlSpecialTextSuperscript,
+	HtmlSpecialTextVariable
+};
+
+enum HtmlAttribute {
+	HtmlAttributeInlineFullText = 1,
+	HtmlAttributeRole,
+	HtmlAttributeId,
+	HtmlAttributeClassname,
+	HtmlAttributeLanguage,
+	AttributeListSize
+};
+
+enum HtmlRole {
+	HtmlRoleDefinition = 1,
 };
 
 class HtmlStreamWriter {
@@ -32,12 +57,14 @@ public:
 public:
 	StyleAttributes attributes(const Style* style);
 	void regStyle(const Style* style, const QString& prefix);
+	static QString defaultRoleName(HtmlRole role);
 public:
 	virtual void nextLinksTo(const QString& url) = 0;
 	virtual void writeSimpleSpecial(HtmlSpecial special, const QString& text) = 0;
 	virtual void writeBeginSpecial(HtmlSpecial special) = 0;
 	virtual void writeEndSpecial() = 0;
 	virtual void writeCharacters(const QString& str) = 0;
+	virtual void setAttribute(HtmlAttribute attr, const QVariant& val) = 0;
 protected:
 	HtmlStreamWriter(HtmlStreamWriterPrivate* dd);
 private:
@@ -56,6 +83,7 @@ public:
 	void writeBeginSpecial(HtmlSpecial special);
 	void writeEndSpecial();
 	void writeCharacters(const QString& str);
+	void setAttribute(HtmlAttribute attr, const QVariant& val);
 private:
 	Q_DECLARE_PRIVATE(XHtml11StreamWriter)
 };

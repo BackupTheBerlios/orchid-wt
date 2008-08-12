@@ -3,10 +3,17 @@
 #include <QtXml/QXmlStreamWriter>
 #include <QHash>
 #include <QStack>
+#include <QtCore/QVariant>
+
+#include <QtDebug> // TODO rm
 
 #include "styleattributes.h"
 
 namespace Bamboo {
+	
+// TODO check whether we use the correct replacement for not supported tags:
+// * Section
+// * Block
 
 class HtmlStreamWriterPrivate {
 	Q_DECLARE_PUBLIC(HtmlStreamWriter)
@@ -62,6 +69,14 @@ void HtmlStreamWriter::regStyle(const Style* style, const QString& prefix) {
 	d->styles.insert(style, StyleAttributes(prefix));
 }
 
+QString HtmlStreamWriter::defaultRoleName(HtmlRole role) {
+	switch(role) {
+		case HtmlRoleDefinition:
+			return "definition";
+	}
+	Q_ASSERT(false);
+}
+
 //            l s    ls     t tl  ts   tls
 // Span  -> - a span a+span - a   span a+span
 // Block -> - a div  a+div  p a+p p    a+p
@@ -85,6 +100,7 @@ public:
 public:
 	int section;
 	QStack<Entry> specialStack;
+	QHash<HtmlAttribute, QVariant> attributes;
 };
 
 XHtml11StreamWriter::XHtml11StreamWriter(QIODevice* device)
@@ -117,6 +133,9 @@ void XHtml11StreamWriter::writeSimpleSpecial(HtmlSpecial special, const QString&
 
 void XHtml11StreamWriter::writeBeginSpecial(HtmlSpecial special) {
 	Q_D(XHtml11StreamWriter);
+	if(d->attributes.contains(HtmlAttributeRole)) {
+		d->xml.writeComment("role=\""+defaultRoleName(static_cast<HtmlRole>(d->attributes.value(HtmlAttributeRole).toInt()))+"\"");
+	}
 	switch(special) {
 		case HtmlSpecialBlock: break;
 		case HtmlSpecialSection:
@@ -132,14 +151,51 @@ void XHtml11StreamWriter::writeBeginSpecial(HtmlSpecial special) {
 				default: d->xml.writeStartElement("h6"); break;
 			}
 			break;
+		case HtmlSpecialParagraph:
+			d->xml.writeStartElement("p"); break;
 		case HtmlSpecialTextCode:
 			d->xml.writeStartElement("code"); break;
+		case HtmlSpecialTextAbbreviation:
+			d->xml.writeStartElement("abbr");
+			if(d->attributes.contains(HtmlAttributeInlineFullText)) {
+				d->xml.writeAttribute("title", d->attributes.value(HtmlAttributeInlineFullText).toString());
+			}
+			break;
+		case HtmlSpecialTextDefinition:
+			d->xml.writeStartElement("dfn"); break;
+		case HtmlSpecialTextEmphasis:
+			d->xml.writeStartElement("em"); break;
+		case HtmlSpecialTextKeyboard:
+			d->xml.writeStartElement("kbd"); break;
+		case HtmlSpecialTextQuote:
+			d->xml.writeStartElement("q"); break;
+		case HtmlSpecialTextSample:
+			d->xml.writeStartElement("samp"); break;
+		case HtmlSpecialTextSpan:
+			d->xml.writeStartElement("span"); break;
+		case HtmlSpecialTextStrong:
+			d->xml.writeStartElement("strong"); break;
+		case HtmlSpecialTextSubscript:
+			d->xml.writeStartElement("sub"); break;
+		case HtmlSpecialTextSuperscript:
+			d->xml.writeStartElement("sup"); break;
+		case HtmlSpecialTextVariable:
+			d->xml.writeStartElement("var"); break;
 		default: d->xml.writeStartElement("span"); break;
+	}
+	if(d->attributes.contains(HtmlAttributeId)) {
+		d->xml.writeAttribute("id", d->attributes.value(HtmlAttributeId).toString());
+	}
+	if(d->attributes.contains(HtmlAttributeClassname)) {
+		d->xml.writeAttribute("class", d->attributes.value(HtmlAttributeClassname).toString());
+	}
+	if(d->attributes.contains(HtmlAttributeLanguage)) {
+		d->xml.writeAttribute("xml", "lang", d->attributes.value(HtmlAttributeLanguage).toString());
 	}
 	XHtml11StreamWriterPrivate::Entry entry;
 	entry.special = special;
 	d->specialStack.push(entry);
-	
+	d->attributes.clear();
 }
 
 void XHtml11StreamWriter::writeEndSpecial() {
@@ -159,6 +215,11 @@ void XHtml11StreamWriter::writeEndSpecial() {
 void XHtml11StreamWriter::writeCharacters(const QString& str) {
 	Q_D(XHtml11StreamWriter);
 	d->xml.writeCharacters(str);
+}
+
+void XHtml11StreamWriter::setAttribute(HtmlAttribute attr, const QVariant& val) {
+	Q_D(XHtml11StreamWriter);
+	d->attributes.insert(attr, val);
 }
 
 }

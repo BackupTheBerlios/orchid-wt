@@ -16,6 +16,8 @@
 #include "resourcemodel.h"
 #include "request.h"
 
+#include "htmlstreams.h"
+
 
 class BambooResource : public Orchid::Resource::Resource, public Orchid::Resource::IQueryable {
 public:
@@ -51,72 +53,43 @@ QString MyStyle::content() const {
 }
 
 
-
-
-
-
-
-
-
-class HtmlTextManip;
-class HtmlTextStream {
-public:
-	HtmlTextStream(Bamboo::HtmlStreamWriter* writer);
-public:
-	inline Bamboo::HtmlStreamWriter* writer() const;
-	inline HtmlTextStream& operator<<(HtmlTextStream&(*)(HtmlTextStream&));
-	inline HtmlTextStream& operator<<(const HtmlTextManip&);
-	inline HtmlTextStream& operator<<(const QString& str);
-private:
-	Bamboo::HtmlStreamWriter* m_writer;
-};
-
-inline Bamboo::HtmlStreamWriter* HtmlTextStream::writer() const {
-	return m_writer;
-}
-
-inline HtmlTextStream& HtmlTextStream::operator<<(HtmlTextStream&(*fp)(HtmlTextStream&)) {
-	return fp(*this);
-}
-
-inline HtmlTextStream& HtmlTextStream::operator<<(const QString& str) {
-	m_writer->writeCharacters(str);
-	return *this;
-}
-
-HtmlTextStream::HtmlTextStream(Bamboo::HtmlStreamWriter* writer) : m_writer(writer) {
-}
-
-HtmlTextStream& code(HtmlTextStream& s) { s.writer()->writeBeginSpecial(Bamboo::HtmlSpecialTextCode); return s; }
-
-HtmlTextStream& end(HtmlTextStream& s) { s.writer()->writeEndSpecial(); return s; }
-
-
-class HtmlTextManip {
-public:
-	virtual HtmlTextStream& apply(HtmlTextStream&) = 0;
-};
-
-class abbreviation : public HtmlTextManip {
-	HtmlTextStream& apply(HtmlTextStream& s) {
-		s.writer()->writeBeginSpecial(Bamboo::HtmlSpecialTextAbbreviation);
-		return s;
-	}
-};
-
-
 void MyFragment::build(Bamboo::HtmlStreamWriter* writer) {
-	QXmlStreamWriter* xml = writer->xmlWriter();
-	writer->writeBeginSpecial(Bamboo::HtmlSpecialSection);
-	writer->writeBeginSpecial(Bamboo::HtmlSpecialSection);
-	writer->writeSimpleSpecial(Bamboo::HtmlSpecialHeading, "Test");
-	writer->writeEndSpecial();
-	writer->writeEndSpecial();
-	HtmlTextStream stream(writer);
-	stream << "A sample of code: " << code << "int main();" << end;
-	
-// 	style->writeHeading(writer, "Test");
-	xml->writeTextElement("p", "This is a very simple Test-Page");
+	using namespace Bamboo::HTML;
+
+	BlockStream blocks(writer);
+
+	blocks << heading("Top") << section << heading("Test");
+	blocks.text() << "some inline text without paragraph or that like";
+
+	blocks.paragraph() << "The Pascal statement " <<code<<"i := 1;"<<end<< " assigns the literal value one to the variable <var>i</var>.";
+
+	(blocks << role(Bamboo::HtmlRoleDefinition)).paragraph() << "An " <<id("def-acronym")<< definition<<"acronym"<<end<< " is a word formed from the initial letters or groups of letters of words in a set phrase or series of words.";
+
+	blocks.paragraph() << "Do " <<emphasis<<"not"<<end<< " phone before 9 a.m.";
+
+	blocks.paragraph() << "To exit, type " <<keyboard<<"QUIT"<<end <<'.';
+
+	blocks.paragraph() << "I'm currently at Akademy an event of the " << abbreviation("K Desktop Environment") << "KDE." << end;
+
+// 	blocks.blockcode() << styleclass("program") << line << "program p(input, output);"<<end<<line<<"begin"<<end<<line<<"   writeln(\"Hello world\");"<<end<<line<<"end."<<end;
+
+	blocks.paragraph() << "John said, " <<quote/*("\"")*/<<"\"I saw Lucy at lunch, she told me "<< quote/*("'")*/<<"\'Mary wants you to get some ice cream on your way home.\'"<<end<< " I think I will get some at Jen and Berry's, on Gloucester Road.\""<<end;
+
+	blocks.paragraph() << "On starting, you will see the prompt " <<sample<<"$ "<<end<<'.';
+
+	blocks.paragraph() << "This operation is called the "<<classname("xref")<<span <<"transpose"<<end<<" or "<<classname("xref")<<span<<"inverse"<<end<<'.';
+
+	blocks.paragraph() << "On "<<strong<<"Monday"<<end<<" please put the rubbish out, but "<<emphasis<<"not"<<end<<" before nightfall!";
+
+	blocks.paragraph() << 'H'<<subscript<<'2'<<end<<'O';
+
+    blocks.paragraph() << "E = mc"<<superscript<<'2'<<end;
+	blocks.paragraph() << language("fr") << span<<'M'<<superscript<<"lle"<<end<<" Dupont"<<end;
+
+	blocks.paragraph() << "The parameter "<<variable<<"ncols"<<end<<" represents the number of colors to use.";
+
+// 	Html(tr("I'm currently at Akademy an event of the %1")).arg(abbreviation(tr("K Desktop Environment")));
+	blocks << end;
 }
 
 void BambooResource::addStyle(Bamboo::Style* style) {
@@ -158,7 +131,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	Orchid::ModelResource *dir = new Orchid::ModelResource();
 	Orchid::ModelResource *res = new Orchid::ModelResource();
 
-	dir->addResource("sample.html", sample);
+	res->addResource("sample.html", sample);
 	dir->addResource("text.txt", text);
 	res->addResource("dir", dir);
 	res->addResource("test1", t1);
@@ -172,7 +145,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	treeView->setModel(m_model);
 	connect(treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activateResource(const QModelIndex&)));
 
-	webView->setUrl(QUrl("http://localhost:8000/dir/sample.html?1"));
+	webView->setUrl(QUrl("http://localhost:8000/sample.html?1"));
 	
 	// TODO load sourceView from local server
 // 	sourceView->setPlainText(buf.data());
