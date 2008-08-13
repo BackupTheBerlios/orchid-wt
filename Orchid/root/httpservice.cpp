@@ -28,6 +28,7 @@ private:
 };
 
 HttpServiceRequest::HttpServiceRequest(const QHttpRequestHeader& header) : m_header(header) {
+	setUrl(header.path());
 }
 
 RequestMethod HttpServiceRequest::method() const {

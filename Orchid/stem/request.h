@@ -36,6 +36,7 @@ public:
 
 	// makes a global url from an local url
 	QUrl resolve(const QUrl& url);
+	QString url() const;
 public:
 // 	RequestStatus status() const;
 // 	virtual bool setStatus(RequestStatus reason, QVariant arg);
@@ -44,6 +45,8 @@ protected:
 	Request(RequestPrivate* dd);
 private:
 	Q_DECLARE_PRIVATE(Request)
+protected:
+	void setUrl(const QString& url);
 protected:
 	RequestPrivate* d_ptr;
 };

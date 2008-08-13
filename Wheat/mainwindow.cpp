@@ -18,6 +18,8 @@
 
 #include <flower/htmlstreams.h>
 
+#include <leaf/xmlmodelresource.h>
+
 
 class OrchidResource : public Orchid::Resource::Resource, public Orchid::Resource::IQueryable {
 public:
@@ -58,8 +60,7 @@ void MyFragment::build(Orchid::HtmlStreamWriter* writer) {
 
 	BlockStream blocks(writer);
 
-	blocks << heading("Top") << section << heading("Test");
-	blocks.text() << "some inline text without paragraph or that like";
+	blocks << heading("Top") << section << heading("Sub");
 
 	blocks.paragraph() << "The Pascal statement " <<code<<"i := 1;"<<end<< " assigns the literal value one to the variable <var>i</var>.";
 
@@ -128,8 +129,8 @@ MainWindow::MainWindow() : m_service(8000) {
 	// Create sample resources
 	Orchid::Resource::Resource *t1 = new Orchid::Resource::Resource();
 	Orchid::Resource::Resource *t2 = new Orchid::Resource::Resource();
-	Orchid::ModelResource *dir = new Orchid::ModelResource();
-	Orchid::ModelResource *res = new Orchid::ModelResource();
+	Orchid::ContainerResource *dir = new Orchid::ContainerResource();
+	Orchid::ContainerResource *res = new Orchid::ContainerResource();
 
 	res->addResource("sample.html", sample);
 	dir->addResource("text.txt", text);
@@ -142,27 +143,34 @@ MainWindow::MainWindow() : m_service(8000) {
 	m_service.setRoot(m_root);
 
 	m_model = new Orchid::ResourceModel(res, this);
+
+	res->addResource("resource.model", new Orchid::XmlModelResource(m_model));
+
 	treeView->setModel(m_model);
 	connect(treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activateResource(const QModelIndex&)));
 
-	webView->setUrl(QUrl("http://localhost:8000/sample.html?1"));
 	
-	// TODO load sourceView from local server
-// 	sourceView->setPlainText(buf.data());
+	connect(&reader, SIGNAL(requestFinished(int,bool)), this, SLOT(requestFinished(int,bool)));
+	reader.setHost("localhost", 8000);
 }
 
 void MainWindow::activateResource(const QModelIndex& index) {
 	Orchid::Resource::Handle handle(m_model->resource(index));
 	Orchid::Resource::IQueryable* res = dynamic_cast<Orchid::Resource::IQueryable*>(handle.resource());
 
-	if(res) {
-		QBuffer buf;
-		Orchid::SimpleRequest request;
-		request.setDevice(&buf);
-		res->query(&request);
-		sourceView->setPlainText(buf.data());
-	}
+	QString path = m_model->path(index);
+	reader.get(path, &result);
+}
 
-	QString url = "http://localhost:8000" + m_model->path(index);
-	webView->setUrl(QUrl(url));
+void MainWindow::requestFinished(int id, bool error) {
+	if(!error) {
+		result.close();
+		QByteArray content = result.data();
+		sourceView->setPlainText(content);
+		webView->setContent(content, "text/html", QUrl("http://localhost:8000/"));
+		result.setData(QByteArray());
+	} else {
+		sourceView->setPlainText("\n\n\t\tError reading resource!\n\n"+reader.errorString());
+		webView->setContent("<h1>Error</h1>Couldn't read resource"+reader.errorString().toUtf8());
+	}
 }

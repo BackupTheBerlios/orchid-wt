@@ -8,21 +8,6 @@
 
 namespace Orchid {
 
-bool ModelResource::addResource(const QString& name, Resource::Resource* res) {
-	Orchid::Resource::Handle handle = m_keep.getHandle(name);
-	handle.init(res, Orchid::Resource::KeepPersistant);
-	m_childs.insert(name, handle);
-	return true;
-}
-
-QStringList ModelResource::childs() const {
-	return m_childs.keys();
-}
-
-Orchid::Resource::Handle ModelResource::child(const QString& name) const {
-	return m_childs.value(name);
-}
-
 class ResourceModelPrivate {
 public:
 	class Node {
@@ -95,6 +80,8 @@ ResourceModel::~ResourceModel() {
 
 QModelIndex ResourceModel::index(int row, int column, const QModelIndex &parent) const {
 	Q_D(const ResourceModel);
+
+	if(parent.isValid() && parent.column() != 0) return QModelIndex();
 	
 	ResourceModelPrivate::Node* p = parent.isValid() ? d->node(parent) : d->root;
 
@@ -124,6 +111,8 @@ QModelIndex ResourceModel::parent(const QModelIndex &index) const {
 
 int ResourceModel::rowCount(const QModelIndex &parent) const {
 	Q_D(const ResourceModel);
+
+	if(parent.isValid() && parent.column() != 0) return 0;
 
 	ResourceModelPrivate::Node* node = parent.isValid() ? d->node(parent) : d->root;
 	

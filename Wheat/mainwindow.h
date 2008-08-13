@@ -10,6 +10,8 @@
 #include <flower/style.h>
 #include <flower/fragment.h>
 #include <root/httpservice.h>
+#include <QtNetwork/QHttp>
+#include <QtCore/QBuffer>
 
 namespace Orchid {
 class HtmlStreamWriter;
@@ -39,12 +41,16 @@ public:
 	MainWindow();
 public slots:
 	void activateResource(const QModelIndex& index);
+private slots:
+	void requestFinished(int id, bool error);
 private:
 	Orchid::ResourceModel* m_model;
 	Orchid::Resource::Handle m_root;
 	MyStyle m_style;
 	MyFragment m_fragment;
 	Orchid::HttpService m_service;
+	QHttp reader;
+	QBuffer result;
 };
 
 #endif

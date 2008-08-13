@@ -19,5 +19,6 @@ target_link_libraries(page
 	orchid-flower
 	orchid-root
 	orchid-stem
+	orchid-leaf
 )
  

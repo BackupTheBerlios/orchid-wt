@@ -1,6 +1,8 @@
 #ifndef _ORCHID_REQUEST_PRIVATE_H_
 #define _ORCHID_REQUEST_PRIVATE_H_
 
+#include <QString>
+
 namespace Orchid {
 
 class RequestPrivate {
@@ -11,6 +13,8 @@ public:
     { }
 protected:
     Request* q_ptr;
+private:
+	QString url;
 };
 
 class SimpleRequestPrivate : public RequestPrivate {

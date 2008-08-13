@@ -26,6 +26,17 @@ Request::~Request() {
 	delete d_ptr;
 }
 
+QString Request::url() const {
+	Q_D(const Request);
+	return d->url;
+}
+
+void Request::setUrl(const QString& url) {
+	Q_D(Request);
+	d->url = url;
+}
+
+
 RequestMethod Request::method() const { return UnknownMethod; }
 
 

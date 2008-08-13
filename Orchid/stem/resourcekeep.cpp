@@ -69,8 +69,8 @@ void KeepPrivate::releaseItem(KeepItem* item) {
 }
 
 bool KeepPrivate::initItem(KeepItem* item, Resource* resource, KeepingFlags flags) {
+	// only 1 thread can init an item
 	if(item->resource) return false;
-	QMutexLocker locker(&mutex);
 	item->resource = resource;
 	item->flags = flags;
 	if(!flags.testFlag(KeepExclusive)) {
@@ -121,7 +121,7 @@ Handle Keep::getHandle(const QString& name) {
 				
 			// relock to create the handle exclusively
 			locker.relock();
-			// tell other threads that we don't need to wait anymore
+			// remove the reference we took above
 			item->keepRefs--;
 		}
 	}

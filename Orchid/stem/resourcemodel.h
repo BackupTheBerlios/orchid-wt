@@ -9,16 +9,6 @@
 
 namespace Orchid {
 
-class ModelResource : public Resource::Resource, public Resource::IDirectory {
-public:
-	bool addResource(const QString& name, Resource::Resource* res);
-	QStringList childs() const;
-	Orchid::Resource::Handle child(const QString& name) const;
-public:
-	Orchid::Resource::Keep m_keep;
-	QHash<QString, Orchid::Resource::Handle> m_childs;
-};
-
 class ResourceModelPrivate;
 class ResourceModel : public QAbstractItemModel {
 	Q_OBJECT
