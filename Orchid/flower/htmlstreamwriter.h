@@ -21,8 +21,8 @@ enum HtmlTag {
 	HtmlTagSection,
 	HtmlTagHeading,
 	HtmlTagParagraph,
-	HtmlTagTextCode,
 	HtmlTagTextAbbreviation,
+	HtmlTagTextCode,
 	HtmlTagTextDefinition,
 	HtmlTagTextEmphasis,
 	HtmlTagTextKeyboard,
@@ -32,7 +32,8 @@ enum HtmlTag {
 	HtmlTagTextStrong,
 	HtmlTagTextSubscript,
 	HtmlTagTextSuperscript,
-	HtmlTagTextVariable
+	HtmlTagTextVariable,
+	HtmlTagCount // Only used for dimensioning lookups
 };
 
 enum HtmlAttribute {
@@ -61,9 +62,8 @@ public:
 	static QString defaultRoleName(HtmlRole role);
 public:
 	virtual void nextLinksTo(const QString& url) = 0;
-	virtual void writeSimpleSpecial(HtmlTag special, const QString& text) = 0;
-	virtual void writeBeginSpecial(HtmlTag special) = 0;
-	virtual void writeEndSpecial() = 0;
+	virtual void writeBeginTag(HtmlTag special) = 0;
+	virtual void writeEndTag() = 0;
 	virtual void writeCharacters(const QString& str) = 0;
 	virtual void setAttribute(HtmlAttribute attr, const QVariant& val) = 0;
 protected:
@@ -80,9 +80,8 @@ public:
 	XHtml11StreamWriter(QIODevice* device = 0);
 public:
 	void nextLinksTo(const QString& url);
-	void writeSimpleSpecial(HtmlTag special, const QString& text);
-	void writeBeginSpecial(HtmlTag special);
-	void writeEndSpecial();
+	void writeBeginTag(HtmlTag special);
+	void writeEndTag();
 	void writeCharacters(const QString& str);
 	void setAttribute(HtmlAttribute attr, const QVariant& val);
 private:

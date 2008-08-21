@@ -3,6 +3,8 @@
 #include <QtXml/QXmlStreamWriter>
 #include "fragmentdom.h"
 
+#include <QtCore/QtDebug>
+
 namespace Orchid {
 
 class XmlFragmentWriterPrivate {
@@ -33,8 +35,17 @@ void XmlFragmentWriterPrivate::writeElement(QXmlStreamWriter* xml, DomElement* e
 	}
 	
 	foreach(DomNode* child, element->childs()) {
-		DomElement* childElement = dynamic_cast<DomElement*>(child);
-		if(childElement) writeElement(xml, childElement);
+		switch(child->type()) {
+			case DomUnknownType: break;
+			case DomPCDATAType: {
+				DomCharacters* chars = static_cast<DomCharacters*>(child);
+				xml->writeCharacters(chars->text());
+			} break;
+			default: {
+				DomElement* childElement = dynamic_cast<DomElement*>(child);
+				if(childElement) writeElement(xml, childElement);
+			}
+		}
 	}
 	xml->writeEndElement();
 }
@@ -54,8 +65,17 @@ bool XmlFragmentWriter::write(QXmlStreamWriter* xml, DomFragment* fragment) {
 	xml->writeStartElement("fragment");
 
 	foreach(DomNode* child, fragment->childs()) {
-		DomElement* childElement = dynamic_cast<DomElement*>(child);
-		if(childElement) d->writeElement(xml, childElement);
+		switch(child->type()) {
+			case DomUnknownType: break;
+			case DomPCDATAType: {
+				DomCharacters* chars = static_cast<DomCharacters*>(child);
+				xml->writeCharacters(chars->text());
+			} break;
+			default: {
+				DomElement* childElement = dynamic_cast<DomElement*>(child);
+				if(childElement) d->writeElement(xml, childElement);
+			}
+		}
 	}
 
 	xml->writeEndElement();

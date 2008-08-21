@@ -11,11 +11,49 @@
 
 namespace Orchid {
 
+class CppFragmentWriterHelper {
+private:
+	CppFragmentWriterHelper();
+public:
+	static CppFragmentWriterHelper* inst();
+public:
+	QString enumName(HtmlTag tag);
+private:
+	QVector<QString> m_lookup;
+};
+
+CppFragmentWriterHelper* CppFragmentWriterHelper::inst() {
+	static CppFragmentWriterHelper helper;
+	return &helper;
+}
+
+CppFragmentWriterHelper::CppFragmentWriterHelper() {
+	m_lookup.resize(HtmlTagCount);
+	m_lookup[HtmlTagSection] = "HtmlTagSection";
+	m_lookup[HtmlTagHeading] = "HtmlTagHeading";
+	m_lookup[HtmlTagParagraph] = "HtmlTagParagraph";
+	m_lookup[HtmlTagTextAbbreviation] = "HtmlTagTextAbbreviation";
+	m_lookup[HtmlTagTextCode] = "HtmlTagTextCode";
+	m_lookup[HtmlTagTextDefinition] = "HtmlTagTextDefinition";
+	m_lookup[HtmlTagTextEmphasis] = "HtmlTagTextEmphasis";
+	m_lookup[HtmlTagTextKeyboard] = "HtmlTagTextKeyboard";
+	m_lookup[HtmlTagTextQuote] = "HtmlTagTextQuote";
+	m_lookup[HtmlTagTextSample] = "HtmlTagTextSample";
+	m_lookup[HtmlTagTextSpan] = "HtmlTagTextSpan";
+	m_lookup[HtmlTagTextStrong] = "HtmlTagTextStrong";
+	m_lookup[HtmlTagTextSubscript] = "HtmlTagTextSubscript";
+	m_lookup[HtmlTagTextSuperscript] = "HtmlTagTextSuperscript";
+	m_lookup[HtmlTagTextVariable] = "HtmlTagTextVariable";
+}
+
+QString CppFragmentWriterHelper::enumName(HtmlTag tag) {
+	return m_lookup[tag];
+}
+
 class CppFragmentWriterPrivate {
 public:
 	CppFragmentWriterPrivate(CppFragmentWriter* writer);
 	void writeElement(DomElement* elemnt);
-	static QString enumName(HtmlTag tag);
 protected:
 	CppFragmentWriter* q_ptr;
 private:
@@ -28,42 +66,29 @@ CppFragmentWriterPrivate::CppFragmentWriterPrivate(CppFragmentWriter* writer) {
 }
 
 void CppFragmentWriterPrivate::writeElement(DomElement* element) {
+	CppFragmentWriterHelper* helper = CppFragmentWriterHelper::inst();
 	switch(element->tag()) {
 		default:
-			*stream << "\t\twriter->writeBeginSpecial("<<enumName(element->tag())<<");\n";
+			*stream << "\t\twriter->writeBeginTag("<<helper->enumName(element->tag())<<");\n";
 			break;
 	}
 	foreach(DomNode* child, element->childs()) {
-		DomElement* childElement = dynamic_cast<DomElement*>(child);
-		if(childElement) writeElement(childElement);
+		switch(child->type()) {
+			case DomUnknownType: break;
+			case DomPCDATAType: {
+				DomCharacters* chars = static_cast<DomCharacters*>(child);
+				*stream << "\t\twriter->writeCharacters(\""<< chars->text()<<"\");\n";
+			} break;
+			default: {
+				DomElement* childElement = dynamic_cast<DomElement*>(child);
+				if(childElement) writeElement(childElement);
+			} break;
+		}
 	}
 	switch(element->tag()) {
 		default:
-			*stream << "\t\twriter->writeEndSpecial();\n";
+			*stream << "\t\twriter->writeEndTag();\n";
 			break;
-	}
-}
-
-QString CppFragmentWriterPrivate::enumName(HtmlTag tag) {
-	switch(tag) {
-		case HtmlTagSection: return "HtmlTagSection";
-		case HtmlTagHeading: return "HtmlTagHeading";
-		case HtmlTagParagraph: return "HtmlTagParagraph";
-		case HtmlTagTextCode: return "HtmlTagTextCode";
-		case HtmlTagTextAbbreviation: return "HtmlTagTextAbbreviation";
-		case HtmlTagTextDefinition: return "HtmlTagTextDefinition";
-		case HtmlTagTextEmphasis: return "HtmlTagTextEmphasis";
-		case HtmlTagTextKeyboard: return "HtmlTagTextKeyboard";
-		case HtmlTagTextQuote: return "HtmlTagTextQuote";
-		case HtmlTagTextSample: return "HtmlTagTextSample";
-		case HtmlTagTextSpan: return "HtmlTagTextSpan";
-		case HtmlTagTextStrong: return "HtmlTagTextStrong";
-		case HtmlTagTextSubscript: return "HtmlTagTextSubscript";
-		case HtmlTagTextSuperscript: return "HtmlTagTextSuperscript";
-		case HtmlTagTextVariable: return "HtmlTagTextVariable";
-		default: 
-			qDebug() << "unknown tag" << tag;
-			Q_ASSERT(false && "enumName not doesn't handle this enum");
 	}
 }
 
@@ -87,8 +112,17 @@ void CppFragmentWriter::write(DomFragment* fragment) {
 		<< "public:\n"
 		<< "\tvoid build(HtmlStreamWriter* writer) {\n";
 	foreach(DomNode* child, fragment->childs()) {
-		DomElement* childElement = dynamic_cast<DomElement*>(child);
-		if(childElement) d->writeElement(childElement);
+		switch(child->type()) {
+			case DomUnknownType: break;
+			case DomPCDATAType: {
+				DomCharacters* chars = static_cast<DomCharacters*>(child);
+				*d->stream << "\t\twriter->writeCharacters("<< chars->text()<<");\n";
+			} break;
+			default: {
+				DomElement* childElement = dynamic_cast<DomElement*>(child);
+				if(childElement) d->writeElement(childElement);
+			} break;
+		}
 	}
 	*d->stream
 		<< "\t}\n"
@@ -119,7 +153,7 @@ void CppHeaderWriterPrivate::writeCopyrightHeader() {
 	QString version(ORCHID_VERSION_STR);
 
 	*stream << "/***************************************************************************\n"
-		<< " * This file is generated from " << input.leftJustified(42) << "  *\n"
+		<< " * This file was generated from " << input.leftJustified(41) << "  *\n"
 		<< " *                                                                         *\n"
 		<< " * Generator: Orchid Web Fragment Compiler " << version.leftJustified(30) << "  *\n"
 		<< " * Date:      " << QDateTime::currentDateTime().toString().leftJustified(59) << "  *\n"

@@ -24,6 +24,18 @@ void DomElement::appendNode(DomNode* node) {
 	m_childs.append(node);
 }
 
+DomNodeType DomCharacters::type() const {
+	return DomPCDATAType;
+}
+
+QString DomCharacters::text() const {
+	return m_text;
+}
+
+void DomCharacters::setText(const QString& text) {
+	m_text = text;
+}
+
 HtmlTag DomSection::tag() const {
 	return HtmlTagSection;
 }
@@ -46,6 +58,14 @@ HtmlTag DomHeading::tag() const {
 
 DomNodeType DomHeading::type() const {
 	return DomHeadingType;
+}
+
+bool DomHeading::append(DomNode* node) {
+	if(!DomNodeTypes(DomPCDATAType | DomFlowContent).testFlag(node->type()))
+	return false;
+	
+	appendNode(node);
+	return true;
 }
 
 DomNodeType DomFragment::type() const {

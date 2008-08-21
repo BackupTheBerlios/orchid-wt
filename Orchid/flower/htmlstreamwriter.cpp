@@ -114,26 +114,7 @@ XHtml11StreamWriter::XHtml11StreamWriter(QIODevice* device)
 void XHtml11StreamWriter::nextLinksTo(const QString& url) {
 }
 
-void XHtml11StreamWriter::writeSimpleSpecial(HtmlTag special, const QString& text) {
-	Q_D(XHtml11StreamWriter);
-	switch(special) {
-		case HtmlTagUnknown:
-			break;
-		case HtmlTagBlock:
-			d->xml.writeCharacters(text);
-			break;
-		case HtmlTagSection:
-			d->xml.writeTextElement("p", text);
-			break;
-		default:
-			writeBeginSpecial(special);
-			d->xml.writeCharacters(text);
-			writeEndSpecial();
-			break;
-	}
-}
-
-void XHtml11StreamWriter::writeBeginSpecial(HtmlTag special) {
+void XHtml11StreamWriter::writeBeginTag(HtmlTag special) {
 	Q_D(XHtml11StreamWriter);
 	if(d->attributes.contains(HtmlAttributeRole)) {
 		d->xml.writeComment("role=\""+defaultRoleName(static_cast<HtmlRole>(d->attributes.value(HtmlAttributeRole).toInt()))+"\"");
@@ -156,14 +137,14 @@ void XHtml11StreamWriter::writeBeginSpecial(HtmlTag special) {
 			break;
 		case HtmlTagParagraph:
 			d->xml.writeStartElement("p"); break;
-		case HtmlTagTextCode:
-			d->xml.writeStartElement("code"); break;
 		case HtmlTagTextAbbreviation:
 			d->xml.writeStartElement("abbr");
 			if(d->attributes.contains(HtmlAttributeInlineFullText)) {
 				d->xml.writeAttribute("title", d->attributes.value(HtmlAttributeInlineFullText).toString());
 			}
 			break;
+		case HtmlTagTextCode:
+			d->xml.writeStartElement("code"); break;
 		case HtmlTagTextDefinition:
 			d->xml.writeStartElement("dfn"); break;
 		case HtmlTagTextEmphasis:
@@ -201,7 +182,7 @@ void XHtml11StreamWriter::writeBeginSpecial(HtmlTag special) {
 	d->attributes.clear();
 }
 
-void XHtml11StreamWriter::writeEndSpecial() {
+void XHtml11StreamWriter::writeEndTag() {
 	Q_D(XHtml11StreamWriter);
 	XHtml11StreamWriterPrivate::Entry entry(d->specialStack.pop());
 	switch(entry.special) {

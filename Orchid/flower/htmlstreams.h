@@ -82,7 +82,7 @@ inline InlineStream::InlineStream(InlineStream& other)
 inline InlineStream::InlineStream(BlockStream& block)
 	: m_writer(block.writer()), m_inBlock(true) { }
 inline InlineStream::~InlineStream() 
-{ if(m_inBlock) m_writer->writeEndSpecial(); }
+{ if(m_inBlock) m_writer->writeEndTag(); }
 	
 inline HtmlStreamWriter* InlineStream::writer() const { return m_writer; }
 inline InlineStream& InlineStream::operator<<(QChar c)
@@ -93,9 +93,9 @@ inline InlineStream& InlineStream::operator<<(InlineStream&(*fp)(InlineStream&))
 { return fp(*this); }
 
 inline InlineStream BlockStream::heading()
-{ m_writer->writeBeginSpecial(HtmlTagHeading); return InlineStream(*this); }
+{ m_writer->writeBeginTag(HtmlTagHeading); return InlineStream(*this); }
 inline InlineStream BlockStream::paragraph()
-{ m_writer->writeBeginSpecial(HtmlTagParagraph); return InlineStream(*this); }
+{ m_writer->writeBeginTag(HtmlTagParagraph); return InlineStream(*this); }
 inline InlineStream BlockStream::text()
 { return InlineStream(m_writer); }
 
@@ -189,7 +189,9 @@ class heading {
 public:
 	inline heading(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->writeSimpleSpecial(HtmlTagHeading, text);
+		s.writer()->writeBeginTag(HtmlTagHeading);
+		s.writer()->writeCharacters(text);
+		s.writer()->writeEndTag();
 		return s;
 	}
 private:
@@ -200,7 +202,9 @@ class paragraph {
 public:
 	inline paragraph(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->writeSimpleSpecial(HtmlTagParagraph, text);
+		s.writer()->writeBeginTag(HtmlTagParagraph);
+		s.writer()->writeCharacters(text);
+		s.writer()->writeEndTag();
 		return s;
 	}
 private:
@@ -212,7 +216,7 @@ public:
 	inline abbreviation(const QString& full) { this->full = full; }
 	inline InlineStream& apply(InlineStream& s) const {
 		s.writer()->setAttribute(HtmlAttributeInlineFullText, QVariant(full));
-		s.writer()->writeBeginSpecial(HtmlTagTextAbbreviation);
+		s.writer()->writeBeginTag(HtmlTagTextAbbreviation);
 		return s;
 	}
 private:
@@ -229,7 +233,7 @@ private:
 // 	inline InlineStream& apply(InlineStream& s) const {
 // 		s.writer()->setAttribute(HtmlAttributeQuoteStartMark, mark1);
 // 		s.writer()->setAttribute(HtmlAttributeQuoteEndMark, mark2);
-// 		s.writer()->writeBeginSpecial(HtmlSpecialTestAbbreviation);
+// 		s.writer()->writeBeginTag(HtmlSpecialTestAbbreviation);
 // 		return s;
 // 	}
 // }

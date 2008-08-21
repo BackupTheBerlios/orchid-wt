@@ -3,6 +3,7 @@
 
 #include <QtCore/QtGlobal>
 #include <QtCore/QVector>
+#include <QtCore/QString>
 
 #include <flower/htmlstreamwriter.h>
 
@@ -10,7 +11,7 @@ namespace Orchid {
 
 enum DomNodeType {
 	DomUnknownType      = 0x0000,
-	DomPCDATA           = 0x0001,
+	DomPCDATAType       = 0x0001,
 	DomFragmentType     = 0x0002,
 	DomTextType         = 0x0004,
 	DomStructuralType   = 0x0008,
@@ -37,6 +38,15 @@ private:
 	QVector<DomNode*> m_childs;
 };
 
+class DomCharacters : public DomNode {
+public:
+	DomNodeType type() const;
+	QString text() const;
+	void setText(const QString& text);
+private:
+	QString m_text;
+};
+
 class DomSection : public DomElement {
 public:
 	HtmlTag tag() const;
@@ -48,6 +58,7 @@ class DomHeading : public DomElement {
 public:
 	HtmlTag tag() const;
 	virtual DomNodeType type() const;
+	bool append(DomNode* node);
 };
 
 class DomParagraph : public DomElement {

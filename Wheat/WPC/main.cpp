@@ -18,8 +18,6 @@ void process(const QString& name) {
 
 	Orchid::DomFragment* fragment;
 	
-// 	QXmlStreamReader reader(&file);
-
 	qDebug() << "process" << name;
 	
 	Orchid::XmlFragmentReader reader;
@@ -38,19 +36,19 @@ void process(const QString& name) {
 	QFile cout;
 	cout.open(stdout, QIODevice::WriteOnly);
 	
-// 	Orchid::CppFragmentWriter writer(&cout);
 	QTextStream s(&cout);
-	Orchid::CppHeaderWriter writer(&s);
-	writer.addFragment(fragment);
-// 	writer.writeCopyrightHeader(&s);
-// 	writer.writeHeaderProtectionStart(&s);
-// 	writer.writeHeaderProtectionEnd(&s);
-	writer.write();
+	Orchid::CppHeaderWriter cppWriter(&s);
+	cppWriter.addFragment(fragment);
+	cppWriter.write();
+	s << endl << endl;
+	s.flush();
 
-// 	Orchid::XmlFragmentWriter writer;
-// 	QXmlStreamWriter xml(&cout);
-// 	writer.write(&xml, fragment);
-// 	xml.writeEndDocument();
+	Orchid::XmlFragmentWriter xmlWriter;
+	QXmlStreamWriter xml(&cout);
+	xml.setAutoFormatting(true);
+	xml.writeStartDocument();
+	xmlWriter.write(&xml, fragment);
+	xml.writeEndDocument();
 
 	cout.close();
 }
