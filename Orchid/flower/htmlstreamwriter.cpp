@@ -117,6 +117,8 @@ void XHtml11StreamWriter::nextLinksTo(const QString& url) {
 void XHtml11StreamWriter::writeSimpleSpecial(HtmlSpecial special, const QString& text) {
 	Q_D(XHtml11StreamWriter);
 	switch(special) {
+		case HtmlSpecialUnknown:
+			break;
 		case HtmlSpecialBlock:
 			d->xml.writeCharacters(text);
 			break;
@@ -137,6 +139,7 @@ void XHtml11StreamWriter::writeBeginSpecial(HtmlSpecial special) {
 		d->xml.writeComment("role=\""+defaultRoleName(static_cast<HtmlRole>(d->attributes.value(HtmlAttributeRole).toInt()))+"\"");
 	}
 	switch(special) {
+		case HtmlSpecialUnknown: break;
 		case HtmlSpecialBlock: break;
 		case HtmlSpecialSection:
 			d->section++;
@@ -202,6 +205,7 @@ void XHtml11StreamWriter::writeEndSpecial() {
 	Q_D(XHtml11StreamWriter);
 	XHtml11StreamWriterPrivate::Entry entry(d->specialStack.pop());
 	switch(entry.special) {
+		case HtmlSpecialUnknown: break;
 		case HtmlSpecialBlock: break;
 		case HtmlSpecialSection:
 			d->section--;

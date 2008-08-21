@@ -5,82 +5,109 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>602</width>
-    <height>449</height>
+    <width>601</width>
+    <height>442</height>
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>MainWindow</string>
+   <string>Orchid Browser</string>
   </property>
   <widget class="QWidget" name="centralwidget" >
    <property name="geometry" >
     <rect>
      <x>0</x>
      <y>25</y>
-     <width>602</width>
-     <height>402</height>
+     <width>601</width>
+     <height>395</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout" >
+   <layout class="QVBoxLayout" name="verticalLayout_2" >
     <item>
      <widget class="QSplitter" name="splitter" >
       <property name="orientation" >
        <enum>Qt::Horizontal</enum>
       </property>
       <widget class="QTreeView" name="treeView" />
-      <widget class="QTabWidget" name="tabWidget" >
-       <property name="currentIndex" >
-        <number>0</number>
-       </property>
-       <widget class="QWidget" name="tab" >
-        <property name="geometry" >
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>439</width>
-          <height>362</height>
-         </rect>
-        </property>
-        <attribute name="title" >
-         <string>Web View</string>
-        </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout" >
-         <item>
-          <widget class="QWebView" name="webView" >
-           <property name="url" >
-            <url>
-             <string>about:blank</string>
-            </url>
+      <widget class="QWidget" name="" >
+       <layout class="QVBoxLayout" name="verticalLayout" >
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_3" >
+          <item>
+           <widget class="QLabel" name="label" >
+            <property name="text" >
+             <string>Arguments:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="argumentEdit" />
+          </item>
+          <item>
+           <widget class="QPushButton" name="argumentApply" >
+            <property name="text" >
+             <string>Apply</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTabWidget" name="tabWidget" >
+          <property name="currentIndex" >
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab" >
+           <property name="geometry" >
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>437</width>
+             <height>318</height>
+            </rect>
            </property>
+           <attribute name="title" >
+            <string>Web View</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout" >
+            <item>
+             <widget class="QWebView" name="webView" >
+              <property name="url" >
+               <url>
+                <string>about:blank</string>
+               </url>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="tab_2" >
-        <property name="geometry" >
-         <rect>
-          <x>0</x>
-          <y>0</y>
-          <width>439</width>
-          <height>362</height>
-         </rect>
-        </property>
-        <attribute name="title" >
-         <string>Source View</string>
-        </attribute>
-        <layout class="QHBoxLayout" name="horizontalLayout_2" >
-         <item>
-          <widget class="QPlainTextEdit" name="sourceView" >
-           <property name="lineWrapMode" >
-            <enum>QPlainTextEdit::NoWrap</enum>
+          <widget class="QWidget" name="tab_2" >
+           <property name="geometry" >
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>265</width>
+             <height>372</height>
+            </rect>
            </property>
-           <property name="readOnly" >
-            <bool>true</bool>
-           </property>
+           <attribute name="title" >
+            <string>Source View</string>
+           </attribute>
+           <layout class="QHBoxLayout" name="horizontalLayout_2" >
+            <item>
+             <widget class="QPlainTextEdit" name="sourceView" >
+              <property name="lineWrapMode" >
+               <enum>QPlainTextEdit::NoWrap</enum>
+              </property>
+              <property name="readOnly" >
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
-         </item>
-        </layout>
-       </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -91,7 +118,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>602</width>
+     <width>601</width>
      <height>25</height>
     </rect>
    </property>
@@ -100,8 +127,8 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>427</y>
-     <width>602</width>
+     <y>420</y>
+     <width>601</width>
      <height>22</height>
     </rect>
    </property>

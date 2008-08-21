@@ -16,6 +16,7 @@ class Style;
 class HtmlStreamWriterPrivate;
 
 enum HtmlSpecial {
+	HtmlSpecialUnknown = 0,
 	HtmlSpecialBlock = 1,
 	HtmlSpecialSection,
 	HtmlSpecialHeading,
