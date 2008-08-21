@@ -8,8 +8,8 @@ DomNodeType DomNode::type() const {
 	return DomUnknownType;
 }
 
-HtmlSpecial DomElement::tag() const {
-	return HtmlSpecialUnknown;
+HtmlTag DomElement::tag() const {
+	return HtmlTagUnknown;
 }
 
 bool DomElement::append(DomNode* child) {
@@ -24,8 +24,8 @@ void DomElement::appendNode(DomNode* node) {
 	m_childs.append(node);
 }
 
-HtmlSpecial DomSection::tag() const {
-	return HtmlSpecialSection;
+HtmlTag DomSection::tag() const {
+	return HtmlTagSection;
 }
 
 DomNodeType DomSection::type() const {
@@ -40,8 +40,8 @@ bool DomSection::append(DomNode* node) {
 	return true;
 }
 
-HtmlSpecial DomHeading::tag() const {
-	return HtmlSpecialHeading;
+HtmlTag DomHeading::tag() const {
+	return HtmlTagHeading;
 }
 
 DomNodeType DomHeading::type() const {

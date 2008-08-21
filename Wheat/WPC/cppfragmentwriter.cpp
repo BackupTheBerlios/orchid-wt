@@ -15,7 +15,7 @@ class CppFragmentWriterPrivate {
 public:
 	CppFragmentWriterPrivate(CppFragmentWriter* writer);
 	void writeElement(DomElement* elemnt);
-	static QString enumName(HtmlSpecial tag);
+	static QString enumName(HtmlTag tag);
 protected:
 	CppFragmentWriter* q_ptr;
 private:
@@ -44,23 +44,23 @@ void CppFragmentWriterPrivate::writeElement(DomElement* element) {
 	}
 }
 
-QString CppFragmentWriterPrivate::enumName(HtmlSpecial tag) {
+QString CppFragmentWriterPrivate::enumName(HtmlTag tag) {
 	switch(tag) {
-		case HtmlSpecialSection: return "HtmlSpecialSection";
-		case HtmlSpecialHeading: return "HtmlSpecialHeading";
-		case HtmlSpecialParagraph: return "HtmlSpecialParagraph";
-		case HtmlSpecialTextCode: return "HtmlSpecialTextCode";
-		case HtmlSpecialTextAbbreviation: return "HtmlSpecialTextAbbreviation";
-		case HtmlSpecialTextDefinition: return "HtmlSpecialTextDefinition";
-		case HtmlSpecialTextEmphasis: return "HtmlSpecialTextEmphasis";
-		case HtmlSpecialTextKeyboard: return "HtmlSpecialTextKeyboard";
-		case HtmlSpecialTextQuote: return "HtmlSpecialTextQuote";
-		case HtmlSpecialTextSample: return "HtmlSpecialTextSample";
-		case HtmlSpecialTextSpan: return "HtmlSpecialTextSpan";
-		case HtmlSpecialTextStrong: return "HtmlSpecialTextStrong";
-		case HtmlSpecialTextSubscript: return "HtmlSpecialTextSubscript";
-		case HtmlSpecialTextSuperscript: return "HtmlSpecialTextSuperscript";
-		case HtmlSpecialTextVariable: return "HtmlSpecialTextVariable";
+		case HtmlTagSection: return "HtmlTagSection";
+		case HtmlTagHeading: return "HtmlTagHeading";
+		case HtmlTagParagraph: return "HtmlTagParagraph";
+		case HtmlTagTextCode: return "HtmlTagTextCode";
+		case HtmlTagTextAbbreviation: return "HtmlTagTextAbbreviation";
+		case HtmlTagTextDefinition: return "HtmlTagTextDefinition";
+		case HtmlTagTextEmphasis: return "HtmlTagTextEmphasis";
+		case HtmlTagTextKeyboard: return "HtmlTagTextKeyboard";
+		case HtmlTagTextQuote: return "HtmlTagTextQuote";
+		case HtmlTagTextSample: return "HtmlTagTextSample";
+		case HtmlTagTextSpan: return "HtmlTagTextSpan";
+		case HtmlTagTextStrong: return "HtmlTagTextStrong";
+		case HtmlTagTextSubscript: return "HtmlTagTextSubscript";
+		case HtmlTagTextSuperscript: return "HtmlTagTextSuperscript";
+		case HtmlTagTextVariable: return "HtmlTagTextVariable";
 		default: 
 			qDebug() << "unknown tag" << tag;
 			Q_ASSERT(false && "enumName not doesn't handle this enum");

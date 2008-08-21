@@ -11,7 +11,7 @@ public:
 		: q_ptr(writer)
 	{ }
 public:
-	static QString tagName(HtmlSpecial tag);
+	static QString tagName(HtmlTag tag);
 	void writeElement(QXmlStreamWriter* xml, DomElement* element);
 protected:
 	XmlFragmentWriter* q_ptr;
@@ -19,10 +19,10 @@ private:
 	Q_DECLARE_PUBLIC(XmlFragmentWriter);
 };
 
-QString XmlFragmentWriterPrivate::tagName(HtmlSpecial tag) {
+QString XmlFragmentWriterPrivate::tagName(HtmlTag tag) {
 	switch(tag) {
-		case HtmlSpecialSection: return "section";
-		case HtmlSpecialHeading: return "h";
+		case HtmlTagSection: return "section";
+		case HtmlTagHeading: return "h";
 	}
 }
 

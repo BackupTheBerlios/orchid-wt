@@ -15,24 +15,24 @@ class Style;
 
 class HtmlStreamWriterPrivate;
 
-enum HtmlSpecial {
-	HtmlSpecialUnknown = 0,
-	HtmlSpecialBlock = 1,
-	HtmlSpecialSection,
-	HtmlSpecialHeading,
-	HtmlSpecialParagraph,
-	HtmlSpecialTextCode,
-	HtmlSpecialTextAbbreviation,
-	HtmlSpecialTextDefinition,
-	HtmlSpecialTextEmphasis,
-	HtmlSpecialTextKeyboard,
-	HtmlSpecialTextQuote,
-	HtmlSpecialTextSample,
-	HtmlSpecialTextSpan,
-	HtmlSpecialTextStrong,
-	HtmlSpecialTextSubscript,
-	HtmlSpecialTextSuperscript,
-	HtmlSpecialTextVariable
+enum HtmlTag {
+	HtmlTagUnknown = 0,
+	HtmlTagBlock = 1,
+	HtmlTagSection,
+	HtmlTagHeading,
+	HtmlTagParagraph,
+	HtmlTagTextCode,
+	HtmlTagTextAbbreviation,
+	HtmlTagTextDefinition,
+	HtmlTagTextEmphasis,
+	HtmlTagTextKeyboard,
+	HtmlTagTextQuote,
+	HtmlTagTextSample,
+	HtmlTagTextSpan,
+	HtmlTagTextStrong,
+	HtmlTagTextSubscript,
+	HtmlTagTextSuperscript,
+	HtmlTagTextVariable
 };
 
 enum HtmlAttribute {
@@ -61,8 +61,8 @@ public:
 	static QString defaultRoleName(HtmlRole role);
 public:
 	virtual void nextLinksTo(const QString& url) = 0;
-	virtual void writeSimpleSpecial(HtmlSpecial special, const QString& text) = 0;
-	virtual void writeBeginSpecial(HtmlSpecial special) = 0;
+	virtual void writeSimpleSpecial(HtmlTag special, const QString& text) = 0;
+	virtual void writeBeginSpecial(HtmlTag special) = 0;
 	virtual void writeEndSpecial() = 0;
 	virtual void writeCharacters(const QString& str) = 0;
 	virtual void setAttribute(HtmlAttribute attr, const QVariant& val) = 0;
@@ -80,8 +80,8 @@ public:
 	XHtml11StreamWriter(QIODevice* device = 0);
 public:
 	void nextLinksTo(const QString& url);
-	void writeSimpleSpecial(HtmlSpecial special, const QString& text);
-	void writeBeginSpecial(HtmlSpecial special);
+	void writeSimpleSpecial(HtmlTag special, const QString& text);
+	void writeBeginSpecial(HtmlTag special);
 	void writeEndSpecial();
 	void writeCharacters(const QString& str);
 	void setAttribute(HtmlAttribute attr, const QVariant& val);

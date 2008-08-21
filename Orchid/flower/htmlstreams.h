@@ -93,9 +93,9 @@ inline InlineStream& InlineStream::operator<<(InlineStream&(*fp)(InlineStream&))
 { return fp(*this); }
 
 inline InlineStream BlockStream::heading()
-{ m_writer->writeBeginSpecial(HtmlSpecialHeading); return InlineStream(*this); }
+{ m_writer->writeBeginSpecial(HtmlTagHeading); return InlineStream(*this); }
 inline InlineStream BlockStream::paragraph()
-{ m_writer->writeBeginSpecial(HtmlSpecialParagraph); return InlineStream(*this); }
+{ m_writer->writeBeginSpecial(HtmlTagParagraph); return InlineStream(*this); }
 inline InlineStream BlockStream::text()
 { return InlineStream(m_writer); }
 
@@ -189,7 +189,7 @@ class heading {
 public:
 	inline heading(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->writeSimpleSpecial(HtmlSpecialHeading, text);
+		s.writer()->writeSimpleSpecial(HtmlTagHeading, text);
 		return s;
 	}
 private:
@@ -200,7 +200,7 @@ class paragraph {
 public:
 	inline paragraph(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->writeSimpleSpecial(HtmlSpecialParagraph, text);
+		s.writer()->writeSimpleSpecial(HtmlTagParagraph, text);
 		return s;
 	}
 private:
@@ -212,7 +212,7 @@ public:
 	inline abbreviation(const QString& full) { this->full = full; }
 	inline InlineStream& apply(InlineStream& s) const {
 		s.writer()->setAttribute(HtmlAttributeInlineFullText, QVariant(full));
-		s.writer()->writeBeginSpecial(HtmlSpecialTextAbbreviation);
+		s.writer()->writeBeginSpecial(HtmlTagTextAbbreviation);
 		return s;
 	}
 private:

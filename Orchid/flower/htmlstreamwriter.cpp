@@ -87,7 +87,7 @@ class XHtml11StreamWriterPrivate : public HtmlStreamWriterPrivate {
 	Q_DECLARE_PUBLIC(XHtml11StreamWriter)
 public:
 	struct Entry {
-		HtmlSpecial special;
+		HtmlTag special;
 		bool hasElement : 1;
 		bool hasAnchor : 1;
 	};
@@ -114,15 +114,15 @@ XHtml11StreamWriter::XHtml11StreamWriter(QIODevice* device)
 void XHtml11StreamWriter::nextLinksTo(const QString& url) {
 }
 
-void XHtml11StreamWriter::writeSimpleSpecial(HtmlSpecial special, const QString& text) {
+void XHtml11StreamWriter::writeSimpleSpecial(HtmlTag special, const QString& text) {
 	Q_D(XHtml11StreamWriter);
 	switch(special) {
-		case HtmlSpecialUnknown:
+		case HtmlTagUnknown:
 			break;
-		case HtmlSpecialBlock:
+		case HtmlTagBlock:
 			d->xml.writeCharacters(text);
 			break;
-		case HtmlSpecialSection:
+		case HtmlTagSection:
 			d->xml.writeTextElement("p", text);
 			break;
 		default:
@@ -133,18 +133,18 @@ void XHtml11StreamWriter::writeSimpleSpecial(HtmlSpecial special, const QString&
 	}
 }
 
-void XHtml11StreamWriter::writeBeginSpecial(HtmlSpecial special) {
+void XHtml11StreamWriter::writeBeginSpecial(HtmlTag special) {
 	Q_D(XHtml11StreamWriter);
 	if(d->attributes.contains(HtmlAttributeRole)) {
 		d->xml.writeComment("role=\""+defaultRoleName(static_cast<HtmlRole>(d->attributes.value(HtmlAttributeRole).toInt()))+"\"");
 	}
 	switch(special) {
-		case HtmlSpecialUnknown: break;
-		case HtmlSpecialBlock: break;
-		case HtmlSpecialSection:
+		case HtmlTagUnknown: break;
+		case HtmlTagBlock: break;
+		case HtmlTagSection:
 			d->section++;
 			break;
-		case HtmlSpecialHeading:
+		case HtmlTagHeading:
 			switch(d->section) {
 				case 0: d->xml.writeStartElement("h1"); break;
 				case 1: d->xml.writeStartElement("h2"); break;
@@ -154,35 +154,35 @@ void XHtml11StreamWriter::writeBeginSpecial(HtmlSpecial special) {
 				default: d->xml.writeStartElement("h6"); break;
 			}
 			break;
-		case HtmlSpecialParagraph:
+		case HtmlTagParagraph:
 			d->xml.writeStartElement("p"); break;
-		case HtmlSpecialTextCode:
+		case HtmlTagTextCode:
 			d->xml.writeStartElement("code"); break;
-		case HtmlSpecialTextAbbreviation:
+		case HtmlTagTextAbbreviation:
 			d->xml.writeStartElement("abbr");
 			if(d->attributes.contains(HtmlAttributeInlineFullText)) {
 				d->xml.writeAttribute("title", d->attributes.value(HtmlAttributeInlineFullText).toString());
 			}
 			break;
-		case HtmlSpecialTextDefinition:
+		case HtmlTagTextDefinition:
 			d->xml.writeStartElement("dfn"); break;
-		case HtmlSpecialTextEmphasis:
+		case HtmlTagTextEmphasis:
 			d->xml.writeStartElement("em"); break;
-		case HtmlSpecialTextKeyboard:
+		case HtmlTagTextKeyboard:
 			d->xml.writeStartElement("kbd"); break;
-		case HtmlSpecialTextQuote:
+		case HtmlTagTextQuote:
 			d->xml.writeStartElement("q"); break;
-		case HtmlSpecialTextSample:
+		case HtmlTagTextSample:
 			d->xml.writeStartElement("samp"); break;
-		case HtmlSpecialTextSpan:
+		case HtmlTagTextSpan:
 			d->xml.writeStartElement("span"); break;
-		case HtmlSpecialTextStrong:
+		case HtmlTagTextStrong:
 			d->xml.writeStartElement("strong"); break;
-		case HtmlSpecialTextSubscript:
+		case HtmlTagTextSubscript:
 			d->xml.writeStartElement("sub"); break;
-		case HtmlSpecialTextSuperscript:
+		case HtmlTagTextSuperscript:
 			d->xml.writeStartElement("sup"); break;
-		case HtmlSpecialTextVariable:
+		case HtmlTagTextVariable:
 			d->xml.writeStartElement("var"); break;
 		default: d->xml.writeStartElement("span"); break;
 	}
@@ -205,9 +205,9 @@ void XHtml11StreamWriter::writeEndSpecial() {
 	Q_D(XHtml11StreamWriter);
 	XHtml11StreamWriterPrivate::Entry entry(d->specialStack.pop());
 	switch(entry.special) {
-		case HtmlSpecialUnknown: break;
-		case HtmlSpecialBlock: break;
-		case HtmlSpecialSection:
+		case HtmlTagUnknown: break;
+		case HtmlTagBlock: break;
+		case HtmlTagSection:
 			d->section--;
 			break;
 		default:

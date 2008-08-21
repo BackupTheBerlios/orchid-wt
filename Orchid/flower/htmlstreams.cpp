@@ -5,7 +5,7 @@ namespace Orchid {
 namespace HTML {
 
 BlockStream& section(BlockStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialSection);
+	s.writer()->writeBeginSpecial(HtmlTagSection);
 	return s;
 }
 
@@ -15,57 +15,57 @@ BlockStream& end(BlockStream& s) {
 }
 
 InlineStream& code(InlineStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialTextCode);
+	s.writer()->writeBeginSpecial(HtmlTagTextCode);
 	return s;
 }
 
 InlineStream& definition(InlineStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialTextDefinition);
+	s.writer()->writeBeginSpecial(HtmlTagTextDefinition);
 	return s;
 }
 
 InlineStream& emphasis(InlineStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialTextEmphasis);
+	s.writer()->writeBeginSpecial(HtmlTagTextEmphasis);
 	return s;
 }
 
 InlineStream& keyboard(InlineStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialTextKeyboard);
+	s.writer()->writeBeginSpecial(HtmlTagTextKeyboard);
 	return s;
 }
 
 InlineStream& quote(InlineStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialTextQuote);
+	s.writer()->writeBeginSpecial(HtmlTagTextQuote);
 	return s;
 }
 
 InlineStream& sample(InlineStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialTextSample);
+	s.writer()->writeBeginSpecial(HtmlTagTextSample);
 	return s;
 }
 
 InlineStream& span(InlineStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialTextSpan);
+	s.writer()->writeBeginSpecial(HtmlTagTextSpan);
 	return s;
 }
 
 InlineStream& strong(InlineStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialTextStrong);
+	s.writer()->writeBeginSpecial(HtmlTagTextStrong);
 	return s;
 }
 
 InlineStream& subscript(InlineStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialTextSubscript);
+	s.writer()->writeBeginSpecial(HtmlTagTextSubscript);
 	return s;
 }
 
 InlineStream& superscript(InlineStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialTextSuperscript);
+	s.writer()->writeBeginSpecial(HtmlTagTextSuperscript);
 	return s;
 }
 
 InlineStream& variable(InlineStream& s) {
-	s.writer()->writeBeginSpecial(HtmlSpecialTextVariable);
+	s.writer()->writeBeginSpecial(HtmlTagTextVariable);
 	return s;
 }
 

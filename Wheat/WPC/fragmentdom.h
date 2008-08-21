@@ -28,7 +28,7 @@ public:
 
 class DomElement : public DomNode {
 public:
-	virtual HtmlSpecial tag() const;
+	virtual HtmlTag tag() const;
 	virtual bool append(DomNode* node);
 	QVector<DomNode*> childs() const;
 protected:
@@ -39,21 +39,21 @@ private:
 
 class DomSection : public DomElement {
 public:
-	HtmlSpecial tag() const;
+	HtmlTag tag() const;
 	DomNodeType type() const;
 	bool append(DomNode* node);
 };
 
 class DomHeading : public DomElement {
 public:
-	HtmlSpecial tag() const;
+	HtmlTag tag() const;
 	virtual DomNodeType type() const;
 };
 
 class DomParagraph : public DomElement {
 public:
-	HtmlSpecial tag() const;
-}
+	HtmlTag tag() const;
+};
 
 class DomFragment : public DomElement {
 public:
