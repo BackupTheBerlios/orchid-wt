@@ -20,13 +20,13 @@ void process(const QString& name) {
 	
 	qDebug() << "process" << name;
 	
-	Orchid::XmlFragmentReader reader;
 	QXmlStreamReader xmlIn(&input);
-	fragment = reader.read(&xmlIn);
+	Orchid::XmlFragmentReader reader(&xmlIn);
+	fragment = reader.read();
 	
 	if(!fragment) {
 		qWarning() << "could not read dom";
-		qDebug() << reader.errorCode() << reader.errorString();
+		qDebug() << reader.errorLine() << reader.errorColumn() << reader.errorCode() << reader.errorString();
 		return;
 	}
 	

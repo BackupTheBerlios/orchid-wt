@@ -17,12 +17,14 @@ public:
 		UnallowedElement,
 	};
 public:
-	XmlFragmentReader();
+	XmlFragmentReader(QXmlStreamReader* xml);
 	~XmlFragmentReader();
 public:
-	DomFragment* read(QXmlStreamReader* xml);
+	DomFragment* read();
 	ErrorCode errorCode() const;
 	QString errorString() const;
+	int errorLine() const;
+	int errorColumn() const;
 private:
 	XmlFragmentReaderPrivate* d_ptr;
 	Q_DECLARE_PRIVATE(XmlFragmentReader);

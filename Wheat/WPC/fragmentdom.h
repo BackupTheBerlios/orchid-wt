@@ -17,8 +17,10 @@ enum DomNodeType {
 	DomStructuralType   = 0x0008,
 	DomHeadingType      = 0x0010,
 	DomListType         = 0x0020,
-	DomFlowContent      = DomTextType | DomStructuralType | DomHeadingType,
+	DomFlowContent      = DomPCDATAType | DomTextType | DomStructuralType | DomHeadingType,
 	DomBodyContent      = DomHeadingType | DomStructuralType | DomListType,
+	DomParagraphContent = DomPCDATAType | DomTextType | DomListType /* | insert others */,
+	DomTextContent      = DomPCDATAType | DomTextType,
 };
 Q_DECLARE_FLAGS(DomNodeTypes, DomNodeType);
 
@@ -64,6 +66,8 @@ public:
 class DomParagraph : public DomElement {
 public:
 	HtmlTag tag() const;
+	virtual DomNodeType type() const;
+	bool append(DomNode* node);
 };
 
 class DomFragment : public DomElement {
@@ -72,6 +76,16 @@ public:
 	bool append(DomNode* node);
 };
 
+class DomTextElement : public DomElement {
+public:
+	DomTextElement(HtmlTag tag);
+public:
+	HtmlTag tag() const;
+	DomNodeType type() const;
+	bool append(DomNode* node);
+private:
+	HtmlTag m_tag;
+};
 
 }
 

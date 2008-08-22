@@ -62,7 +62,7 @@ void MyFragment::build(Orchid::HtmlStreamWriter* writer) {
 
 	blocks << heading("Top") << section << heading("Sub");
 
-	blocks.paragraph() << "The Pascal statement " <<code<<"i := 1;"<<end<< " assigns the literal value one to the variable <var>i</var>.";
+	blocks.paragraph() << "The Pascal statement " <<code<<"i := 1;"<<end<< " assigns the literal value one to the variable "<<variable<<'i'<<end<<'.';
 
 	(blocks << role(Orchid::HtmlRoleDefinition)).paragraph() << "An " <<id("def-acronym")<< definition<<"acronym"<<end<< " is a word formed from the initial letters or groups of letters of words in a set phrase or series of words.";
 

@@ -7,13 +7,52 @@
 
 namespace Orchid {
 
+class XmlFragmentWriterHelper {
+private:
+	XmlFragmentWriterHelper();
+public:
+	static XmlFragmentWriterHelper* inst();
+public:
+	QString tagName(HtmlTag tag);
+private:
+	QVector<QString> m_lookup;
+};
+
+XmlFragmentWriterHelper* XmlFragmentWriterHelper::inst() {
+	static XmlFragmentWriterHelper helper;
+	return &helper;
+}
+
+XmlFragmentWriterHelper::XmlFragmentWriterHelper() {
+	m_lookup.resize(HtmlTagCount);
+	m_lookup[HtmlTagSection] = "section";
+	m_lookup[HtmlTagHeading] = "h";
+	m_lookup[HtmlTagParagraph] = "p";
+	m_lookup[HtmlTagTextAbbreviation] = "abbr";
+	m_lookup[HtmlTagTextCode] = "code";
+	m_lookup[HtmlTagTextDefinition] = "dfn";
+	m_lookup[HtmlTagTextEmphasis] = "em";
+	m_lookup[HtmlTagTextKeyboard] = "kbd";
+	m_lookup[HtmlTagTextQuote] = "q";
+	m_lookup[HtmlTagTextSample] = "samp";
+	m_lookup[HtmlTagTextSpan] = "span";
+	m_lookup[HtmlTagTextStrong] = "strong";
+	m_lookup[HtmlTagTextSubscript] = "sub";
+	m_lookup[HtmlTagTextSuperscript] = "sup";
+	m_lookup[HtmlTagTextVariable] = "var";
+}
+
+QString XmlFragmentWriterHelper::tagName(HtmlTag tag) {
+	return m_lookup[tag];
+}
+
+
 class XmlFragmentWriterPrivate {
 public:
 	XmlFragmentWriterPrivate(XmlFragmentWriter* writer)
 		: q_ptr(writer)
 	{ }
 public:
-	static QString tagName(HtmlTag tag);
 	void writeElement(QXmlStreamWriter* xml, DomElement* element);
 protected:
 	XmlFragmentWriter* q_ptr;
@@ -21,17 +60,11 @@ private:
 	Q_DECLARE_PUBLIC(XmlFragmentWriter);
 };
 
-QString XmlFragmentWriterPrivate::tagName(HtmlTag tag) {
-	switch(tag) {
-		case HtmlTagSection: return "section";
-		case HtmlTagHeading: return "h";
-	}
-}
-
 void XmlFragmentWriterPrivate::writeElement(QXmlStreamWriter* xml, DomElement* element) {
+	XmlFragmentWriterHelper* helper = XmlFragmentWriterHelper::inst();
 	switch(element->tag()) {
 		default:
-			xml->writeStartElement(tagName(element->tag()));
+			xml->writeStartElement(helper->tagName(element->tag()));
 	}
 	
 	foreach(DomNode* child, element->childs()) {

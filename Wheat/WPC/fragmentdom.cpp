@@ -61,8 +61,24 @@ DomNodeType DomHeading::type() const {
 }
 
 bool DomHeading::append(DomNode* node) {
-	if(!DomNodeTypes(DomPCDATAType | DomFlowContent).testFlag(node->type()))
+	if(!DomNodeTypes(DomFlowContent).testFlag(node->type()))
 	return false;
+	
+	appendNode(node);
+	return true;
+}
+
+HtmlTag DomParagraph::tag() const {
+	return HtmlTagParagraph;
+}
+
+DomNodeType DomParagraph::type() const {
+	return DomStructuralType;
+}
+
+bool DomParagraph::append(DomNode* node) {
+	if(!DomNodeTypes(DomParagraphContent).testFlag(node->type()))
+		return false;
 	
 	appendNode(node);
 	return true;
@@ -75,6 +91,28 @@ DomNodeType DomFragment::type() const {
 bool DomFragment::append(DomNode* node) {
 	if(!DomNodeTypes(DomBodyContent).testFlag(node->type()))
 		return false;
+	
+	appendNode(node);
+	return true;
+}
+
+DomTextElement::DomTextElement(HtmlTag tag) {
+	m_tag = tag;
+}
+
+HtmlTag DomTextElement::tag() const {
+	return m_tag;
+}
+
+DomNodeType DomTextElement::type() const {
+	return DomTextType;
+}
+
+bool DomTextElement::append(DomNode* node) {
+	if(!DomNodeTypes(DomTextContent).testFlag(node->type()))
+		return false;
+
+	// TODO add check for nested HtmlTagTextLine-elements
 	
 	appendNode(node);
 	return true;
