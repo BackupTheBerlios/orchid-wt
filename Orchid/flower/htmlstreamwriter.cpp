@@ -87,7 +87,8 @@ class XHtml11StreamWriterPrivate : public HtmlStreamWriterPrivate {
 	Q_DECLARE_PUBLIC(XHtml11StreamWriter)
 public:
 	struct Entry {
-		HtmlTag special;
+		HtmlTag tag;
+		bool autoFormat : 1;
 		bool hasElement : 1;
 		bool hasAnchor : 1;
 	};
@@ -114,12 +115,13 @@ XHtml11StreamWriter::XHtml11StreamWriter(QIODevice* device)
 void XHtml11StreamWriter::nextLinksTo(const QString& url) {
 }
 
-void XHtml11StreamWriter::writeBeginTag(HtmlTag special) {
+void XHtml11StreamWriter::writeBeginTag(HtmlTag tag) {
 	Q_D(XHtml11StreamWriter);
+	XHtml11StreamWriterPrivate::Entry entry;
 	if(d->attributes.contains(HtmlAttributeRole)) {
 		d->xml.writeComment("role=\""+defaultRoleName(static_cast<HtmlRole>(d->attributes.value(HtmlAttributeRole).toInt()))+"\"");
 	}
-	switch(special) {
+	switch(tag) {
 		case HtmlTagUnknown: break;
 		case HtmlTagBlock: break;
 		case HtmlTagSection:
@@ -136,7 +138,10 @@ void XHtml11StreamWriter::writeBeginTag(HtmlTag special) {
 			}
 			break;
 		case HtmlTagParagraph:
-			d->xml.writeStartElement("p"); break;
+			entry.autoFormat = d->xml.autoFormatting();
+			d->xml.writeStartElement("p");
+			d->xml.setAutoFormatting(false);
+			break;
 		case HtmlTagTextAbbreviation:
 			d->xml.writeStartElement("abbr");
 			if(d->attributes.contains(HtmlAttributeInlineFullText)) {
@@ -176,8 +181,7 @@ void XHtml11StreamWriter::writeBeginTag(HtmlTag special) {
 	if(d->attributes.contains(HtmlAttributeLanguage)) {
 		d->xml.writeAttribute("xml", "lang", d->attributes.value(HtmlAttributeLanguage).toString());
 	}
-	XHtml11StreamWriterPrivate::Entry entry;
-	entry.special = special;
+	entry.tag = tag;
 	d->specialStack.push(entry);
 	d->attributes.clear();
 }
@@ -185,11 +189,15 @@ void XHtml11StreamWriter::writeBeginTag(HtmlTag special) {
 void XHtml11StreamWriter::writeEndTag() {
 	Q_D(XHtml11StreamWriter);
 	XHtml11StreamWriterPrivate::Entry entry(d->specialStack.pop());
-	switch(entry.special) {
+	switch(entry.tag) {
 		case HtmlTagUnknown: break;
 		case HtmlTagBlock: break;
 		case HtmlTagSection:
 			d->section--;
+			break;
+		case HtmlTagParagraph:
+			d->xml.writeEndElement();
+			d->xml.setAutoFormatting(entry.autoFormat);
 			break;
 		default:
 			d->xml.writeEndElement();

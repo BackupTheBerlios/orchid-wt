@@ -3,9 +3,12 @@
 #include <QtCore/QFile>
 #include <QtXml/QXmlStreamReader>
 
+#include <flower/htmlstreamwriter.h>
+
 #include "cppfragmentwriter.h"
 #include "xmlfragmentreader.h"
 #include "xmlfragmentwriter.h"
+#include "htmlfragmentwriter.h"
 
 #include <stdio.h>
 #include <QtCore/QDateTime>
@@ -49,6 +52,12 @@ void process(const QString& name) {
 	xml.writeStartDocument();
 	xmlWriter.write(&xml, fragment);
 	xml.writeEndDocument();
+
+	Orchid::XHtml11StreamWriter html(&cout);
+	html.xmlWriter()->setAutoFormatting(true);
+	Orchid::HtmlFragmentWriter htmlWriter(&html);
+	htmlWriter.write(fragment);
+	html.xmlWriter()->writeEndDocument();
 
 	cout.close();
 }

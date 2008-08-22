@@ -13,8 +13,6 @@ namespace Orchid {
 class StyleAttributes;
 class Style;
 
-class HtmlStreamWriterPrivate;
-
 enum HtmlTag {
 	HtmlTagUnknown = 0,
 	HtmlTagBlock = 1,
@@ -49,6 +47,7 @@ enum HtmlRole {
 	HtmlRoleDefinition = 1,
 };
 
+class HtmlStreamWriterPrivate;
 class HtmlStreamWriter {
 public:
 	HtmlStreamWriter();
@@ -62,7 +61,7 @@ public:
 	static QString defaultRoleName(HtmlRole role);
 public:
 	virtual void nextLinksTo(const QString& url) = 0;
-	virtual void writeBeginTag(HtmlTag special) = 0;
+	virtual void writeBeginTag(HtmlTag tag) = 0;
 	virtual void writeEndTag() = 0;
 	virtual void writeCharacters(const QString& str) = 0;
 	virtual void setAttribute(HtmlAttribute attr, const QVariant& val) = 0;

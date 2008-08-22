@@ -6,6 +6,7 @@ include_directories(
 set(orchid_wpc_SRC
 	cppfragmentwriter.cpp
 	fragmentdom.cpp
+	htmlfragmentwriter.cpp
 	main.cpp
 	xmlfragmentreader.cpp
 	xmlfragmentwriter.cpp
@@ -17,7 +18,7 @@ add_executable(orchid-wpc ${orchid_wpc_SRC})
 
 target_link_libraries(orchid-wpc
 	${QT_LIBRARIES}
-# 	orchid-flower
+	orchid-flower
 # 	orchid-root
 # 	orchid-stem
 # 	orchid-leaf
