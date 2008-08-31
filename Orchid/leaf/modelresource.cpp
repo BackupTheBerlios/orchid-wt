@@ -9,7 +9,7 @@
 
 namespace Orchid {
 
-class ModelItemResource : public Resource::Resource, public Resource::IDirectory, public Resource::IQueryable  {
+class ModelItemResource : public Resource::IResource, public Resource::IDirectory, public Resource::IQueryable  {
 	friend class ModelResource;
 public:
 	ModelItemResource(ModelResource* root, const QModelIndex& index);

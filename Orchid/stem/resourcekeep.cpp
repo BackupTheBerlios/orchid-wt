@@ -16,7 +16,7 @@ struct KeepItem {
 	
 	Keep* keep;
 	QString name;
-	Resource* resource;
+	IResource* resource;
 	QMutex mutex;
 	QAtomicInt handleRefs;
 	int keepRefs;
@@ -35,7 +35,7 @@ public:
 public:
 	// methods to be used by the handles
 	void releaseItem(KeepItem* item);
-	bool initItem(KeepItem* item, Resource* resource, KeepingFlags flags);
+	bool initItem(KeepItem* item, IResource* resource, KeepingFlags flags);
 public:
 	QHash<QString, KeepItem*> items;
 	QMutex mutex;
@@ -68,7 +68,7 @@ void KeepPrivate::releaseItem(KeepItem* item) {
 	}
 }
 
-bool KeepPrivate::initItem(KeepItem* item, Resource* resource, KeepingFlags flags) {
+bool KeepPrivate::initItem(KeepItem* item, IResource* resource, KeepingFlags flags) {
 	// only 1 thread can init an item
 	if(item->resource) return false;
 	item->resource = resource;
@@ -181,12 +181,12 @@ bool Handle::isEmpty() const {
 	return !m_item->resource;
 }
 
-Resource* Handle::resource() const {
+IResource* Handle::resource() const {
 	if(!m_item) return 0;
 	return m_item->resource;
 }
 
-bool Handle::init(Resource* resource, KeepingFlags flags) {
+bool Handle::init(IResource* resource, KeepingFlags flags) {
 	if(!m_item) {
 		// is not keeped => no flags allowed
 		if(flags != KeepingFlags())

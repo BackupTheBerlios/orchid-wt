@@ -12,11 +12,9 @@ class Request;
 namespace Resource {
 
 class Handle;
-class Resource {
+class IResource {
 public:
-	virtual ~Resource() {}
-public:
-	static Handle locateUrl(const Handle& handle, const QUrl& url);
+	virtual ~IResource() {}
 };
 
 class IDirectory {
@@ -38,12 +36,12 @@ public:
 }
 
 class ContainerResourcePrivate;
-class ContainerResource : public Resource::Resource, public Resource::IDirectory {
+class ContainerResource : public Resource::IResource, public Resource::IDirectory {
 public:
 	ContainerResource();
 	~ContainerResource();
 public:
-	bool addResource(const QString& name, Resource::Resource* res);
+	bool addResource(const QString& name, Resource::IResource* res);
 	QStringList childs() const;
 	Orchid::Resource::Handle child(const QString& name);
 protected:
@@ -52,7 +50,7 @@ private:
 	Q_DECLARE_PRIVATE(ContainerResource)
 };
 
-class SimpleTextResource : public ::Orchid::Resource::Resource, public ::Orchid::Resource::IQueryable {
+class SimpleTextResource : public ::Orchid::Resource::IResource, public ::Orchid::Resource::IQueryable {
 public:
 	SimpleTextResource(const QString& text);
 public:

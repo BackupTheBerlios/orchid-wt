@@ -6,7 +6,7 @@
 namespace Orchid {
 namespace Resource {
 
-class Resource;
+class IResource;
 
 enum KeepingFlag {
 	KeepPersistant = 1,
@@ -40,8 +40,8 @@ public:
 public:
 	bool isNull() const;
 	bool isEmpty() const;
-	Resource* resource() const;
-	bool init(Resource* resource, KeepingFlags flags = KeepingFlags());
+	IResource* resource() const;
+	bool init(IResource* resource, KeepingFlags flags = KeepingFlags());
 	QString name() const;
 	Handle& operator=(const Handle& other);
 private:

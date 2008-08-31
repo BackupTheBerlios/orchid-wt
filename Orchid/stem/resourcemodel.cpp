@@ -68,7 +68,7 @@ void ResourceModelPrivate::populate(Node* node) const {
 }
 
 
-ResourceModel::ResourceModel(Resource::Resource* resource, QObject* parent) : QAbstractItemModel(parent) {
+ResourceModel::ResourceModel(Resource::IResource* resource, QObject* parent) : QAbstractItemModel(parent) {
 	Resource::Handle handle;
 	handle.init(resource);
 	d_ptr = new ResourceModelPrivate(this, handle);
@@ -138,7 +138,7 @@ QVariant ResourceModel::data(const QModelIndex &index, int role) const {
 			if(index.column() == 0) {
 				return node->handle.name();
 			} else if(index.column() == 1) {
-				Resource::Resource* resource = node->handle.resource();
+				Resource::IResource* resource = node->handle.resource();
 				if(dynamic_cast<Resource::IDirectory*>(resource))
 					return "Directory";
 				if(dynamic_cast<Resource::IQueryable*>(resource))

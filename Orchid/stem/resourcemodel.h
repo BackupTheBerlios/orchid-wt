@@ -13,7 +13,7 @@ class ResourceModelPrivate;
 class ResourceModel : public QAbstractItemModel {
 	Q_OBJECT
 public:
-	ResourceModel(Resource::Resource* resource, QObject* parent = 0);
+	ResourceModel(Resource::IResource* resource, QObject* parent = 0);
 	~ResourceModel();
 public:
 	QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;

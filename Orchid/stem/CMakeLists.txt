@@ -4,6 +4,7 @@ include_directories(
 )
 
 set(orchid_stem_SRC
+	location.cpp
 	request.cpp
 	resource.cpp
 	resourcekeep.cpp
@@ -17,4 +18,3 @@ add_library(orchid-stem SHARED ${orchid_stem_SRC})
 target_link_libraries(orchid-stem
 	${QT_LIBRARIES}
 )
- 

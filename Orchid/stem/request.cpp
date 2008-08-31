@@ -39,6 +39,9 @@ void Request::setUrl(const QString& url) {
 
 RequestMethod Request::method() const { return UnknownMethod; }
 
+void Request::setMimeType(const QString& type) {
+}
+
 
 SimpleRequest::SimpleRequest()
 	: Request(new SimpleRequestPrivate(this))

@@ -41,6 +41,7 @@ public:
 // 	RequestStatus status() const;
 // 	virtual bool setStatus(RequestStatus reason, QVariant arg);
 	virtual RequestMethod method() const;
+	virtual void setMimeType(const QString &type);
 protected:
 	Request(RequestPrivate* dd);
 private:

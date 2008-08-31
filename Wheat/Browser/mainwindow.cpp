@@ -21,7 +21,7 @@
 #include <leaf/xmlmodelresource.h>
 
 
-class OrchidResource : public Orchid::Resource::Resource, public Orchid::Resource::IQueryable {
+class OrchidResource : public Orchid::Resource::IResource, public Orchid::Resource::IQueryable {
 public:
 	void addStyle(Orchid::Style* style);
 	void setMainFragment(Orchid::Fragment* fragment);
@@ -127,16 +127,12 @@ MainWindow::MainWindow() : m_service(8000) {
 	Orchid::SimpleTextResource *text = new Orchid::SimpleTextResource("Hello World");
 
 	// Create sample resources
-	Orchid::Resource::Resource *t1 = new Orchid::Resource::Resource();
-	Orchid::Resource::Resource *t2 = new Orchid::Resource::Resource();
 	Orchid::ContainerResource *dir = new Orchid::ContainerResource();
 	Orchid::ContainerResource *res = new Orchid::ContainerResource();
 
 	res->addResource("sample.html", sample);
 	dir->addResource("text.txt", text);
 	res->addResource("dir", dir);
-	res->addResource("test1", t1);
-	res->addResource("test2", t2),
 
 	m_root.init(res);
 	

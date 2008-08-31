@@ -9,7 +9,7 @@ class QModelIndex;
 namespace Orchid {
 
 class ModelResourcePrivate;
-class ModelResource : public QObject, public Orchid::Resource::Resource, public Orchid::Resource::IDirectory {
+class ModelResource : public QObject, public Resource::IResource, public Resource::IDirectory {
 	Q_OBJECT
 public:
 	ModelResource();

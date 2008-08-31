@@ -8,39 +8,6 @@
 
 namespace Orchid {
 
-namespace Resource {
-
-Handle Resource::locateUrl(const Handle& handle, const QUrl& url) {
-	Resource* res = handle.resource();
-	if(url.isRelative()) {
-		QStringList path = url.path().split('/');
-		if(path.isEmpty()) return Handle();
-		
-		Handle handle;
-		
-		while(res) {
-			IRedirecting* redir = dynamic_cast<IRedirecting*>(res);
-			if(redir) {
-				return redir->locate(url);
-			}
-
-			IDirectory* dir = dynamic_cast<IDirectory*>(res);
-			if(dir) {
-				handle = dir->child(path.takeFirst());
-			}
-			
-			if(path.isEmpty())
-				return handle;
-			
-			res = handle.resource();
-		}
-		
-	}
-	return Handle();
-}
-
-}
-
 class ContainerResourcePrivate {
 public:
 	ContainerResourcePrivate(ContainerResource* resource);
@@ -65,7 +32,7 @@ ContainerResource::~ContainerResource() {
 }
 
 
-bool ContainerResource::addResource(const QString& name, Resource::Resource* res) {
+bool ContainerResource::addResource(const QString& name, Resource::IResource* res) {
 	Q_D(ContainerResource);
 	Orchid::Resource::Handle handle = d->m_keep.getHandle(name);
 	handle.init(res, Orchid::Resource::KeepPersistant);

@@ -12,6 +12,7 @@
 #include <stem/request.h>
 #include <stem/resource.h>
 #include <stem/resourcekeep.h>
+#include <stem/location.h>
 
 #include "httpservice.moc"
 #include "httpservice_p.moc"
@@ -22,21 +23,29 @@ class HttpServiceRequest : public SimpleRequest {
 public:
 	HttpServiceRequest(const QHttpRequestHeader& header);
 	RequestMethod method() const;
+	void setMimeType(const QString &type);
 	bool open(QIODevice::OpenMode mode);
 private:
-	QHttpRequestHeader m_header;
+	QHttpRequestHeader m_requestHeader;
+	QHttpResponseHeader m_responseHeader;
 };
 
-HttpServiceRequest::HttpServiceRequest(const QHttpRequestHeader& header) : m_header(header) {
+HttpServiceRequest::HttpServiceRequest(const QHttpRequestHeader& header) : m_requestHeader(header) {
+	m_responseHeader.setValue("content-type", "text/html");
 	setUrl(header.path());
 }
 
 RequestMethod HttpServiceRequest::method() const {
-	if(m_header.method() == "GET") return HttpGetMethod;
-	if(m_header.method() == "POST") return HttpPostMethod;
-	if(m_header.method() == "PUT") return HttpPutMethod;
-	if(m_header.method() == "DELETE") return HttpDeleteMethod;
+	if(m_requestHeader.method() == "GET") return HttpGetMethod;
+	if(m_requestHeader.method() == "POST") return HttpPostMethod;
+	if(m_requestHeader.method() == "PUT") return HttpPutMethod;
+	if(m_requestHeader.method() == "DELETE") return HttpDeleteMethod;
 	return UnknownMethod;
+}
+
+void HttpServiceRequest::setMimeType(const QString& type) {
+	qDebug() << "setMimeType";
+	m_responseHeader.setValue("content-type", type);
 }
 
 bool HttpServiceRequest::open(QIODevice::OpenMode mode) {
@@ -56,13 +65,12 @@ bool HttpServiceRequest::open(QIODevice::OpenMode mode) {
 	if(!SimpleRequest::open(mode)) return false;
 	
 	
-	QHttpResponseHeader header(200, "OK");
+	m_responseHeader.setStatusLine(200, "OK");
 
 	// TODO change this to local independant
-	header.setValue("date", QDateTime::currentDateTime().toString("ddd, dd MMM yyyy hh:mm:ss") + " GMT");
-	header.setValue("content-type", "text/html");
-	output->write(header.toString().toAscii());
-	
+	m_responseHeader.setValue("date", QDateTime::currentDateTime().toString("ddd, dd MMM yyyy hh:mm:ss") + " GMT");
+	output->write(m_responseHeader.toString().toAscii());
+
 // 	return QIODevice::open(mode);
 	return true;
 }
@@ -94,7 +102,9 @@ void HttpServiceProcess::read() {
 			HttpServiceRequest request(requestHeader);
 			request.setDevice(m_socket);
 			
-			Resource::IQueryable* res = dynamic_cast<Resource::IQueryable*>(Resource::Resource::locateUrl(m_service->root(), path).resource());
+// 			Resource::IQueryable* res = dynamic_cast<Resource::IQueryable*>(Resource::Resource::locateUrl(m_service->root(), path).resource());
+			Resource::Location location(m_service->root(), path);
+			Resource::IQueryable* res = dynamic_cast<Resource::IQueryable*>(location.resource().resource());
 			if(res) {
 				res->query(&request);
 			} else {
