@@ -9,6 +9,11 @@ class QUrl;
 
 namespace Orchid {
 
+namespace Resource {
+	class Location;
+	class Handle;
+}
+
 class RequestPrivate;
 
 enum RequestStatus {
@@ -33,21 +38,25 @@ class Request : public QIODevice {
 public:
 	Request();
 	virtual ~Request();
-
-	// makes a global url from an local url
-	QUrl resolve(const QUrl& url);
-	QString url() const;
+public:
+	Resource::Handle addLocation(const Resource::Location& location);
+	Resource::Location resolve(const Resource::Location& location) const;
+	Resource::Location location() const;
+	Resource::Handle resource() const;
+	bool query();
 public:
 // 	RequestStatus status() const;
 // 	virtual bool setStatus(RequestStatus reason, QVariant arg);
 	virtual RequestMethod method() const;
 	virtual void setMimeType(const QString &type);
+	virtual QString url(const Resource::Location& location) const;
 protected:
 	Request(RequestPrivate* dd);
 private:
 	Q_DECLARE_PRIVATE(Request)
 protected:
-	void setUrl(const QString& url);
+	void setRoot(const Resource::Handle& root);
+	void setLocation(const Resource::Location& location);
 protected:
 	RequestPrivate* d_ptr;
 };

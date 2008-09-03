@@ -3,6 +3,9 @@
 
 #include <QString>
 
+#include "location.h"
+#include "resourcekeep.h"
+
 namespace Orchid {
 
 class RequestPrivate {
@@ -14,7 +17,9 @@ public:
 protected:
     Request* q_ptr;
 private:
-	QString url;
+	Resource::Handle resource;
+	Resource::Location location;
+	Resource::LocationLookup locations;
 };
 
 class SimpleRequestPrivate : public RequestPrivate {

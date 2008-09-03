@@ -15,10 +15,12 @@
 
 #include <stem/request.h>
 #include <stem/resourcemodel.h>
+#include <stem/location.h>
 
 #include <flower/htmlstreams.h>
 
 #include <leaf/xmlmodelresource.h>
+
 
 
 class OrchidResource : public Orchid::Resource::IResource, public Orchid::Resource::IQueryable {
