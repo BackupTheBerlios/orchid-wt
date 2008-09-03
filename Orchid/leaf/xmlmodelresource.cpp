@@ -6,6 +6,7 @@
 
 #include <QtXml/QXmlStreamWriter>
 #include <stem/request.h>
+#include <stem/location.h>
 #include <QtCore/QAbstractItemModel>
 
 namespace Orchid {
@@ -51,8 +52,7 @@ void XmlModelResource::query(Orchid::Request* request, const QModelIndex& index)
 		xml.writeAttribute("pos", QString::number(i));
 		for(int j = 0; j < cols; ++j) {
 			QModelIndex child = model()->index(i,j, index);
-			QString url = request->url();
-			url = (url.endsWith('/') ? url : (url+'/')) + name(child);
+			QString url = request->url(request->location().relative(name(child)));
 			xml.writeStartElement(qt, "cell");
 			xml.writeAttribute("pos", QString::number(j));
 			xml.writeAttribute("href", url);

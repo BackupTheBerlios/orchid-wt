@@ -225,5 +225,18 @@ Handle& Handle::operator=(const Handle& other) {
 	m_item = other.m_item;
 }
 
+bool Handle::operator==(const Handle &other) const {
+	if(!m_item) {
+		if(!other.m_item) return true;
+		return false;
+	}
+	if(!other.m_item) return false;
+	return m_item->resource == other.m_item->resource;
 }
+
+}
+}
+
+uint qHash(const Orchid::Resource::Handle &handle) {
+	return ::qHash(handle.resource());
 }

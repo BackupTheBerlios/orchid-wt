@@ -3,6 +3,10 @@
 #include "resourcekeep.h"
 #include "resource.h"
 
+#include <QtCore/QHash>
+
+#include <QtCore/QtDebug> // TODO to rem
+
 namespace Orchid {
 
 namespace Resource {
@@ -47,6 +51,14 @@ Location::~Location() {
  */
 bool Location::isNull() const {
 	return d->root.isEmpty();
+}
+
+Handle Location::root() const {
+	return d->root;
+}
+
+QString Location::path() const {
+	return d->path;
 }
 
 Handle Location::resource() const {
@@ -96,6 +108,77 @@ Location Location::relative(const QString &rel) const {
 	}
 	if(p1Length < 0) return Location();
 	return Location(d->root, d->path.left(p1Length) + '/' + rel.mid(p2Skip));
+}
+
+Location& Location::operator=(const Location &other) {
+	d = other.d;
+	return *this;
+}
+
+
+class LocationLookupPrivate {
+	Q_DECLARE_PUBLIC(LocationLookup)
+public:
+	LocationLookupPrivate(LocationLookup* lookup);
+protected:
+	LocationLookup* q_ptr;
+private:
+	Handle root;
+	QHash<Handle,Location> locations;
+};
+
+LocationLookupPrivate::LocationLookupPrivate(LocationLookup* lookup) {
+	q_ptr = lookup;
+}
+
+LocationLookup::LocationLookup() {
+	d_ptr = new LocationLookupPrivate(this);
+}
+
+LocationLookup::LocationLookup(const Handle& root) {
+	d_ptr = new LocationLookupPrivate(this);
+	d_ptr->root = root;
+}
+
+LocationLookup::~LocationLookup() {
+	delete d_ptr;
+}
+
+Handle LocationLookup::root() const {
+	Q_D(const LocationLookup);
+	return d->root;
+}
+
+void LocationLookup::setRoot(const Handle &root) {
+	Q_D(LocationLookup);
+	d->root = root;
+	d->locations.clear();
+}
+
+Handle LocationLookup::addLocation(const Location& location) {
+	Q_D(LocationLookup);
+	Location loc(location);
+	if(loc.root() != d->root) {
+		loc = resolve(location);
+	}
+
+	if(loc.isNull())
+		return Handle();
+	
+	Handle handle = loc.resource();
+	d->locations.insert(handle, loc);
+	return handle;
+};
+
+Location LocationLookup::resolve(const Location& location) const {
+	Q_D(const LocationLookup);
+	if(location.root() == d->root)
+		return location;
+	
+	if(!d->locations.contains(location.root()))
+		return Location();
+	
+	return d->locations.value(location.root()).relative(location.path());
 }
 
 }

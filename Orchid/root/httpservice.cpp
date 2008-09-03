@@ -21,18 +21,22 @@ namespace Orchid {
 
 class HttpServiceRequest : public SimpleRequest {
 public:
-	HttpServiceRequest(const QHttpRequestHeader& header);
+	HttpServiceRequest(const QHttpRequestHeader& header, const Resource::Location& location);
 	RequestMethod method() const;
 	void setMimeType(const QString &type);
 	bool open(QIODevice::OpenMode mode);
+	void setRootUrl(const QString &url);
+	QString url(const Resource::Location &location) const;
 private:
+	QString m_rootUrl;
 	QHttpRequestHeader m_requestHeader;
 	QHttpResponseHeader m_responseHeader;
 };
 
-HttpServiceRequest::HttpServiceRequest(const QHttpRequestHeader& header) : m_requestHeader(header) {
+HttpServiceRequest::HttpServiceRequest(const QHttpRequestHeader& header, const Resource::Location &location) : m_requestHeader(header) {
 	m_responseHeader.setValue("content-type", "text/html");
-	setUrl(header.path());
+	setRoot(location.root());
+	setLocation(location);
 }
 
 RequestMethod HttpServiceRequest::method() const {
@@ -75,6 +79,18 @@ bool HttpServiceRequest::open(QIODevice::OpenMode mode) {
 	return true;
 }
 
+void HttpServiceRequest::setRootUrl(const QString &url) {
+	if(url.endsWith('/')) {
+		m_rootUrl = url;
+	} else {
+		m_rootUrl = url + '/';
+	}
+}
+
+QString HttpServiceRequest::url(const Resource::Location &location) const {
+	return m_rootUrl + resolve(location).path();
+}
+
 
 
 
@@ -95,21 +111,14 @@ void HttpServiceProcess::read() {
 			QHttpRequestHeader requestHeader = QHttpRequestHeader(m_requestStr);
 
 			QString path = requestHeader.path();
-			qDebug() << path;
 			path.remove(0, 1);
-			qDebug() << path;
 
-			HttpServiceRequest request(requestHeader);
-			request.setDevice(m_socket);
-			
-// 			Resource::IQueryable* res = dynamic_cast<Resource::IQueryable*>(Resource::Resource::locateUrl(m_service->root(), path).resource());
 			Resource::Location location(m_service->root(), path);
-			Resource::IQueryable* res = dynamic_cast<Resource::IQueryable*>(location.resource().resource());
-			if(res) {
-				res->query(&request);
-			} else {
-// 				request.setStatus(RequestNotFound);
-			}
+			HttpServiceRequest request(requestHeader, location);
+			request.setDevice(m_socket);
+			request.setRootUrl(QString("http://localhost:%1/").arg(m_service->port()));
+			
+			request.query();
 			
 			m_socket->disconnectFromHost();
 			return;
@@ -126,6 +135,11 @@ HttpService::HttpService(int port) : Service(new HttpServicePrivate(this)) {
 	if(!d->server.listen(QHostAddress::Any, port)) {
 		qWarning() << QString("Server failed to bind to port %1").arg(port);
 	}
+}
+
+int HttpService::port() const {
+	Q_D(const HttpService);
+	return d->port;
 }
 
 void HttpService::acceptConnection() {

@@ -21,8 +21,11 @@ public:
 	~Location();
 public:
 	bool isNull() const;
+	Handle root() const;
+	QString path() const;
 	Handle resource() const;
 	Location relative(const QString& rel) const;
+	Location& operator=(const Location &other);
 private:
 	QSharedDataPointer<LocationPrivate> d;
 };
@@ -30,10 +33,18 @@ private:
 class LocationLookupPrivate;
 class LocationLookup {
 public:
-	LocationLookup(Handle root);
+	LocationLookup();
+	LocationLookup(const Handle& root);
+	~LocationLookup();
 public:
-	Handle addLocation(const Location& loc);
-	Location locate(const Location& loc);
+	Handle root() const;
+	void setRoot(const Handle& root);
+	Handle addLocation(const Location& location);
+	Location resolve(const Location& location) const;
+protected:
+	LocationLookupPrivate* d_ptr;
+private:
+	Q_DECLARE_PRIVATE(LocationLookup)
 };
 
 }

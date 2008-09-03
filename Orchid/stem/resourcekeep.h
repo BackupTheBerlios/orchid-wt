@@ -44,13 +44,21 @@ public:
 	bool init(IResource* resource, KeepingFlags flags = KeepingFlags());
 	QString name() const;
 	Handle& operator=(const Handle& other);
+	bool operator==(const Handle& other) const;
+	inline bool operator!=(const Handle& other) const;
 private:
-	Handle(KeepItem* item);
+	explicit Handle(KeepItem* item);
 private:
 	KeepItem* m_item;
 };
 
+inline bool Handle::operator!=(const Handle& other) const {
+	return !operator==(other);
+}
+
 }
 }
+
+uint qHash(const Orchid::Resource::Handle& handle);
 
 #endif

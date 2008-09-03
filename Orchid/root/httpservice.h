@@ -10,6 +10,8 @@ class HttpService : public Service {
 	Q_OBJECT
 public:
 	HttpService(int port = 80);
+public:
+	int port() const;
 private slots:
 	void acceptConnection();
 private:

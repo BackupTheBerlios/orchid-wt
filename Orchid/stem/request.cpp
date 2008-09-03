@@ -1,18 +1,12 @@
 #include "request.h"
 #include "request_p.h" 
 
+#include "resource.h"
+#include "resourcekeep.h"
+
 #include <QtCore/QUrl>
 
 namespace Orchid {
-
-class UrlResolver {
-public:
-	QUrl resolve(const QUrl& local);
-};
-
-QUrl UrlResolver::resolve(const QUrl& local) {
-	return local;
-}
 
 Request::Request() {
     d_ptr = new RequestPrivate(this);
@@ -26,14 +20,48 @@ Request::~Request() {
 	delete d_ptr;
 }
 
-QString Request::url() const {
-	Q_D(const Request);
-	return d->url;
+void Request::setRoot(const Resource::Handle& root) {
+	Q_D(Request);
+	d->locations.setRoot(root);
 }
 
-void Request::setUrl(const QString& url) {
+Resource::Handle Request::addLocation(const Resource::Location& location) {
 	Q_D(Request);
-	d->url = url;
+	return d->locations.addLocation(location);
+}
+
+Resource::Location Request::resolve(const Resource::Location& location) const {
+	Q_D(const Request);
+	return d->locations.resolve(location);
+}
+
+Resource::Location Request::location() const {
+	Q_D(const Request);
+	return d->location;
+}
+
+Resource::Handle Request::resource() const {
+	Q_D(const Request);
+	return d->resource;
+}
+
+void Request::setLocation(const Resource::Location& location) {
+	Q_D(Request);
+	d->resource = addLocation(location);
+	d->location = location;
+}
+
+bool Request::query() {
+	Q_D(Request);
+	Resource::IResource* resource = d->resource.resource();
+	Resource::IQueryable* res = dynamic_cast<Resource::IQueryable*>(resource);
+	if(!res) {
+// 		setStatus(RequestNotFound);
+		return false;
+	}
+
+	res->query(this);
+	return true;
 }
 
 
@@ -41,6 +69,11 @@ RequestMethod Request::method() const { return UnknownMethod; }
 
 void Request::setMimeType(const QString& type) {
 }
+
+QString Request::url(const Resource::Location& location) const {
+	return QString();
+}
+
 
 
 SimpleRequest::SimpleRequest()
