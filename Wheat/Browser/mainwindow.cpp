@@ -19,7 +19,7 @@
 #include <flower/htmlstreams.h>
 
 #include <leaf/xmlmodelresource.h>
-
+#include <leaf/imageresource.h>
 
 class OrchidResource : public Orchid::Resource::IResource, public Orchid::Resource::IQueryable {
 public:
@@ -141,6 +141,8 @@ MainWindow::MainWindow() : m_service(8000) {
 	m_model = new Orchid::ResourceModel(res, this);
 
 	res->addResource("resource.model", new Orchid::XmlModelResource(m_model));
+
+	res->addResource("image.jpg", new Orchid::ImageResource("test.jpg"));
 
 	treeView->setModel(m_model);
 	connect(treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activateResource(const QModelIndex&)));
