@@ -2,6 +2,7 @@
 #define _BAMBOO_HTMLSTREAMWRITER_H_
 
 #include <QtGlobal>
+#include "htmlhead.h"
 
 class QXmlStreamWriter;
 class QIODevice;
@@ -61,7 +62,7 @@ public:
 	static QString defaultRoleName(HtmlRole role);
 public:
 	virtual void nextLinksTo(const QString& url) = 0;
-	virtual void writeStartDocument() = 0;
+	virtual void writeStartDocument(const HtmlHead &head = HtmlHead()) = 0;
 	virtual void writeEndDocument() = 0;
 	virtual void writeStartElement(HtmlTag tag) = 0;
 	virtual void writeEndElement() = 0;
@@ -81,7 +82,7 @@ public:
 	XHtml11StreamWriter(QIODevice* device = 0);
 public:
 	void nextLinksTo(const QString& url);
-	void writeStartDocument();
+	void writeStartDocument(const HtmlHead &head = HtmlHead());
 	void writeEndDocument();
 	void writeStartElement(HtmlTag special);
 	void writeEndElement();

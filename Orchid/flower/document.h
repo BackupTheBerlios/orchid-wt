@@ -17,6 +17,7 @@ public:
 	void build(HtmlStreamWriter* writer);
 	void setMainFragment(Fragment* fragment);
 public:
+	void setTitle(const QString &title);
 	void addGlobalStyle(Style*);
 	void addGlobalStyle(Style*, const QString& url);
 protected:

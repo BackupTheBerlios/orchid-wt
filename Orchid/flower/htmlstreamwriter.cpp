@@ -7,6 +7,7 @@
 
 #include <QtDebug> // TODO rm
 
+#include "style.h"
 #include "styleattributes.h"
 
 namespace Orchid {
@@ -115,7 +116,7 @@ XHtml11StreamWriter::XHtml11StreamWriter(QIODevice* device)
 void XHtml11StreamWriter::nextLinksTo(const QString& url) {
 }
 
-void XHtml11StreamWriter::writeStartDocument() {
+void XHtml11StreamWriter::writeStartDocument(const HtmlHead& head) {
 	Q_D(XHtml11StreamWriter);
 	
 	QString htmlNs = "http://www.w3.org/1999/xhtml";
@@ -126,26 +127,26 @@ void XHtml11StreamWriter::writeStartDocument() {
 	d->xml.writeDefaultNamespace(htmlNs);
 	d->xml.writeStartElement(htmlNs, "html");
 	d->xml.writeStartElement(htmlNs, "head");
-	d->xml.writeTextElement(htmlNs, "title", "testTitle");
+	d->xml.writeTextElement(htmlNs, "title", head.title());
 	
-	// TODO write content of head
-	// code from document.cpp
-// 	QHash<Style*, QString>::const_iterator i;
-// 	for(i = d->styleUrls.constBegin(); i != d->styleUrls.constEnd(); ++i) {
-// 		if(i.value().isEmpty()) {
-// 			xml->writeStartElement("style");
-// 			xml->writeAttribute("type", "text/css");
-// 			xml->writeCharacters(i.key()->content());
-// 			xml->writeEndElement();
+	typedef QVector<QPair<QString,Style*> > StyleList;
+	StyleList styleUrls = head.styleUrls();
+	StyleList::const_iterator i;
+	for(i = styleUrls.constBegin(); i != styleUrls.constEnd(); ++i) {
+		if(i->first.isEmpty()) {
+			d->xml.writeStartElement("style");
+			d->xml.writeAttribute("type", "text/css");
+			d->xml.writeCharacters(i->second->content());
+			d->xml.writeEndElement();
 			
-// 		} else {
-// 			xml->writeEmptyElement("link");
-// 			xml->writeAttribute("rel", "stylesheet");
-// 			xml->writeAttribute("type", "text/css");
-// 			xml->writeAttribute("href", i.value());
-// 		}
-// 		writer->regStyle(i.key(), "");
-// 	}
+		} else {
+			d->xml.writeEmptyElement("link");
+			d->xml.writeAttribute("rel", "stylesheet");
+			d->xml.writeAttribute("type", "text/css");
+			d->xml.writeAttribute("href", i->first);
+		}
+		regStyle(i->second, "");
+	}
 	
 	d->xml.writeEndElement();
 	d->xml.writeStartElement(htmlNs, "body");

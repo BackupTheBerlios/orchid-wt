@@ -18,7 +18,7 @@ public:
 	Q_DECLARE_PUBLIC(Document);
 public:
 	Fragment* mainFragment;
-	QHash<Style*,QString> styleUrls;
+	HtmlHead head;
 };
 
 Document::Document() : Fragment(*new DocumentPrivate) {
@@ -32,7 +32,7 @@ void Document::build(HtmlStreamWriter* writer) {
 	QXmlStreamWriter* xml = writer->xmlWriter();
 	xml->setAutoFormatting(true);
 
-	writer->writeStartDocument();
+	writer->writeStartDocument(d->head);
 
 	if(d->mainFragment) d->mainFragment->build(writer);
 
@@ -44,14 +44,19 @@ void Document::setMainFragment(Fragment* fragment) {
 	d->mainFragment = fragment;
 }
 
+void Document::setTitle(const QString &title) {
+	Q_D(Document);
+	d->head.setTitle(title);
+}
+
 void Document::addGlobalStyle(Style* style) {
 	Q_D(Document);
-	d->styleUrls.insert(style, QString());
+	d->head.addStyle(style);
 }
 
 void Document::addGlobalStyle(Style* style, const QString& url) {
 	Q_D(Document);
-	d->styleUrls.insert(style, url);
+	d->head.addStyle(style, url);
 }
 
 }
