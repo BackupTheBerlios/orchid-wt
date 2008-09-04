@@ -115,7 +115,48 @@ XHtml11StreamWriter::XHtml11StreamWriter(QIODevice* device)
 void XHtml11StreamWriter::nextLinksTo(const QString& url) {
 }
 
-void XHtml11StreamWriter::writeBeginTag(HtmlTag tag) {
+void XHtml11StreamWriter::writeStartDocument() {
+	Q_D(XHtml11StreamWriter);
+	
+	QString htmlNs = "http://www.w3.org/1999/xhtml";
+
+	d->xml.writeStartDocument();
+	d->xml.writeDTD("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\""
+			" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
+	d->xml.writeDefaultNamespace(htmlNs);
+	d->xml.writeStartElement(htmlNs, "html");
+	d->xml.writeStartElement(htmlNs, "head");
+	d->xml.writeTextElement(htmlNs, "title", "testTitle");
+	
+	// TODO write content of head
+	// code from document.cpp
+// 	QHash<Style*, QString>::const_iterator i;
+// 	for(i = d->styleUrls.constBegin(); i != d->styleUrls.constEnd(); ++i) {
+// 		if(i.value().isEmpty()) {
+// 			xml->writeStartElement("style");
+// 			xml->writeAttribute("type", "text/css");
+// 			xml->writeCharacters(i.key()->content());
+// 			xml->writeEndElement();
+			
+// 		} else {
+// 			xml->writeEmptyElement("link");
+// 			xml->writeAttribute("rel", "stylesheet");
+// 			xml->writeAttribute("type", "text/css");
+// 			xml->writeAttribute("href", i.value());
+// 		}
+// 		writer->regStyle(i.key(), "");
+// 	}
+	
+	d->xml.writeEndElement();
+	d->xml.writeStartElement(htmlNs, "body");
+}
+
+void XHtml11StreamWriter::writeEndDocument() {
+	Q_D(XHtml11StreamWriter);
+	d->xml.writeEndDocument();
+}
+
+void XHtml11StreamWriter::writeStartElement(HtmlTag tag) {
 	Q_D(XHtml11StreamWriter);
 	XHtml11StreamWriterPrivate::Entry entry;
 	if(d->attributes.contains(HtmlAttributeRole)) {
@@ -186,7 +227,7 @@ void XHtml11StreamWriter::writeBeginTag(HtmlTag tag) {
 	d->attributes.clear();
 }
 
-void XHtml11StreamWriter::writeEndTag() {
+void XHtml11StreamWriter::writeEndElement() {
 	Q_D(XHtml11StreamWriter);
 	XHtml11StreamWriterPrivate::Entry entry(d->specialStack.pop());
 	switch(entry.tag) {

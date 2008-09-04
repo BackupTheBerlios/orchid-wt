@@ -69,7 +69,7 @@ void CppFragmentWriterPrivate::writeElement(DomElement* element) {
 	CppFragmentWriterHelper* helper = CppFragmentWriterHelper::inst();
 	switch(element->tag()) {
 		default:
-			*stream << "\t\twriter->writeBeginTag("<<helper->enumName(element->tag())<<");\n";
+			*stream << "\t\twriter->writeStartElement("<<helper->enumName(element->tag())<<");\n";
 			break;
 	}
 	foreach(DomNode* child, element->childs()) {
@@ -87,7 +87,7 @@ void CppFragmentWriterPrivate::writeElement(DomElement* element) {
 	}
 	switch(element->tag()) {
 		default:
-			*stream << "\t\twriter->writeEndTag();\n";
+			*stream << "\t\twriter->writeEndElement();\n";
 			break;
 	}
 }

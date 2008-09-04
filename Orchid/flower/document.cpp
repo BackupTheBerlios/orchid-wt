@@ -29,43 +29,14 @@ Document::Document() : Fragment(*new DocumentPrivate) {
 void Document::build(HtmlStreamWriter* writer) {
 	Q_D(Document);
 
-	QString htmlNs = "http://www.w3.org/1999/xhtml";
-
 	QXmlStreamWriter* xml = writer->xmlWriter();
 	xml->setAutoFormatting(true);
-	xml->writeStartDocument();
-	xml->writeDTD("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-			"\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">");
-	xml->writeDefaultNamespace(htmlNs);
-	xml->writeStartElement(htmlNs, "html");
-	xml->writeStartElement(htmlNs, "head");
-	xml->writeTextElement(htmlNs, "title", "testTitle");
-	
-	QHash<Style*, QString>::const_iterator i;
-	for(i = d->styleUrls.constBegin(); i != d->styleUrls.constEnd(); ++i) {
-		if(i.value().isEmpty()) {
-			xml->writeStartElement("style");
-			xml->writeAttribute("type", "text/css");
-			xml->writeCharacters(i.key()->content());
-			xml->writeEndElement();
-			
-		} else {
-			xml->writeEmptyElement("link");
-			xml->writeAttribute("rel", "stylesheet");
-			xml->writeAttribute("type", "text/css");
-			xml->writeAttribute("href", i.value());
-		}
-		writer->regStyle(i.key(), "");
-	}
 
-	xml->writeEndElement();
-	xml->writeStartElement(htmlNs, "body");
+	writer->writeStartDocument();
 
 	if(d->mainFragment) d->mainFragment->build(writer);
 
-	xml->writeEndElement();
-	xml->writeEndElement();
-	xml->writeEndDocument();
+	writer->writeEndDocument();
 }
 
 void Document::setMainFragment(Fragment* fragment) {
