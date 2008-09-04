@@ -4,8 +4,8 @@ include_directories(
 )
 
 set(orchid_flower_SRC
-	document.cpp
 	fragment.cpp
+	htmlhead.cpp
 	htmlstreams.cpp
 	htmlstreamwriter.cpp
 	styleattributes.cpp
