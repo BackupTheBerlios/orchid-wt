@@ -8,8 +8,6 @@
 
 #include <flower/htmlstreamwriter.h>
 
-#include <flower/document.h>
-
 #include <flower/style.h>
 #include <flower/styleattributes.h>
 
@@ -29,7 +27,8 @@ public:
 	void setMainFragment(Orchid::Fragment* fragment);
 	void query(Orchid::Request* request);
 private:
-	Orchid::Document m_doc;
+	Orchid::HtmlHead m_head;
+	Orchid::Fragment* m_body;
 };
 
 
@@ -96,11 +95,11 @@ void MyFragment::build(Orchid::HtmlStreamWriter* writer) {
 }
 
 void OrchidResource::addStyle(Orchid::Style* style) {
-	m_doc.addGlobalStyle(style);
+	m_head.addStyle(style);
 }
 
 void OrchidResource::setMainFragment(Orchid::Fragment* fragment) {
-	m_doc.setMainFragment(fragment);
+	m_body = fragment;
 }
 
 void OrchidResource::query(Orchid::Request* request) {
@@ -112,8 +111,11 @@ void OrchidResource::query(Orchid::Request* request) {
 	
 	Orchid::XHtml11StreamWriter writer;
 	writer.setDevice(request);
-	m_doc.build(&writer);
-	
+	writer.xmlWriter()->setAutoFormatting(true);
+	m_head.setTitle("Sample.html");
+	writer.writeStartDocument(m_head);
+	m_body->build(&writer);
+	writer.writeEndDocument();
 }
 
 MainWindow::MainWindow() : m_service(8000) {
