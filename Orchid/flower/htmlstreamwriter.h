@@ -61,8 +61,10 @@ public:
 	static QString defaultRoleName(HtmlRole role);
 public:
 	virtual void nextLinksTo(const QString& url) = 0;
-	virtual void writeBeginTag(HtmlTag tag) = 0;
-	virtual void writeEndTag() = 0;
+	virtual void writeStartDocument() = 0;
+	virtual void writeEndDocument() = 0;
+	virtual void writeStartElement(HtmlTag tag) = 0;
+	virtual void writeEndElement() = 0;
 	virtual void writeCharacters(const QString& str) = 0;
 	virtual void setAttribute(HtmlAttribute attr, const QVariant& val) = 0;
 protected:
@@ -79,8 +81,10 @@ public:
 	XHtml11StreamWriter(QIODevice* device = 0);
 public:
 	void nextLinksTo(const QString& url);
-	void writeBeginTag(HtmlTag special);
-	void writeEndTag();
+	void writeStartDocument();
+	void writeEndDocument();
+	void writeStartElement(HtmlTag special);
+	void writeEndElement();
 	void writeCharacters(const QString& str);
 	void setAttribute(HtmlAttribute attr, const QVariant& val);
 private:

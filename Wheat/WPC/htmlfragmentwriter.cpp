@@ -23,7 +23,7 @@ HtmlFragmentWriterPrivate::HtmlFragmentWriterPrivate(HtmlFragmentWriter* writer)
 void HtmlFragmentWriterPrivate::writeElement(DomElement* element) {
 	switch(element->tag()) {
 		default:
-			writer->writeBeginTag(element->tag());
+			writer->writeStartElement(element->tag());
 			break;
 	}
 	foreach(DomNode* child, element->childs()) {
@@ -39,7 +39,7 @@ void HtmlFragmentWriterPrivate::writeElement(DomElement* element) {
 			} break;
 		}
 	}
-	writer->writeEndTag();
+	writer->writeEndElement();
 }
 
 HtmlFragmentWriter::HtmlFragmentWriter(HtmlStreamWriter* writer) {
