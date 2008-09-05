@@ -4,6 +4,7 @@ include_directories(
 )
 
 set(orchid_leaf_SRC
+	imagecollection.cpp
 	imageresource.cpp
 	modelresource.cpp
 	xmlmodelresource.cpp

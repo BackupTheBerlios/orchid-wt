@@ -17,6 +17,7 @@ public:
 	ImageResource(const QImage& image);
 public:
 	void query(Orchid::Request*);
+	void setScaling(int sizeX, int sizeY);
 protected:
 	ImageResourcePrivate* d_ptr;
 private:

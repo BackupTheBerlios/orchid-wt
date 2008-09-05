@@ -13,6 +13,8 @@ protected:
 private:
 	QImage image;
 	QString path;
+	int sizeX, sizeY;
+	bool useScaling : 1;
 private:
 	Q_DECLARE_PUBLIC(ImageResource)
 };
@@ -20,6 +22,7 @@ private:
 
 ImageResourcePrivate::ImageResourcePrivate(ImageResource* res) {
 	q_ptr = res;
+	useScaling = false;
 }
 
 ImageResource::ImageResource() {
@@ -48,7 +51,19 @@ void ImageResource::query(Orchid::Request* request) {
 	request->setMimeType("image/jpeg");
 	if(!request->open(QIODevice::ReadWrite)) return;
 
-	d->image.save(request, "jpg");
+	QImage image(d->image);
+	
+	if(d->useScaling)
+		image = image.scaled(QSize(d->sizeX, d->sizeY), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	
+	image.save(request, "jpg");
+}
+
+void ImageResource::setScaling(int sizeX, int sizeY) {
+	Q_D(ImageResource);
+	d->useScaling = true;
+	d->sizeX = sizeX;
+	d->sizeY = sizeY;
 }
 
 }

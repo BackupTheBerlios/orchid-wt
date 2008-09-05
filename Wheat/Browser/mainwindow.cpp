@@ -20,55 +20,7 @@
 #include <leaf/xmlmodelresource.h>
 #include <leaf/imageresource.h>
 
-class Gallery : public Orchid::Resource::IResource, public Orchid::Resource::IQueryable, public Orchid::Resource::IDirectory {
-public:
-	Gallery(const QString& file);
-public:
-	void query(Orchid::Request*);
-	QStringList childs() const;
-	Orchid::Resource::Handle child(const QString&);
-private:
-	QString m_file;
-	Orchid::Resource::Keep m_keep;
-};
-
-Gallery::Gallery(const QString& file) {
-	m_file = file;
-}
-
-void Gallery::query(Orchid::Request *request) {
-	// TODO generate simple gallery html
-	if(!(request->method() & Orchid::GetMethod)) {
-// 		request.setStatus(RequestMethodNotAllowed);
-		return;
-	}
-	if(!request->open(QIODevice::ReadWrite)) return;
-	
-	Orchid::XHtml11StreamWriter writer;
-	writer.setDevice(request);
-	writer.xmlWriter()->setAutoFormatting(true);
-	
-	writer.writeStartDocument();
-	writer.writeStartElement(Orchid::HtmlTagHeading);
-	writer.writeCharacters("Gallery");
-	writer.writeEndElement();
-	writer.xmlWriter()->writeEmptyElement("img");
-	writer.xmlWriter()->writeAttribute("src", request->url(request->location().relative(m_file)));
-	writer.writeEndDocument();
-}
-
-QStringList Gallery::childs() const {
-	return QStringList() << m_file;
-}
-
-Orchid::Resource::Handle Gallery::child(const QString &name) {
-	if(name != m_file) return Orchid::Resource::Handle();
-	Orchid::Resource::Handle handle = m_keep.getHandle(name);
-	if(handle.isEmpty()) {
-		handle.init(new Orchid::ImageResource(m_file));
-	}
-	return handle;
-}
+#include "gallery.h"
 
 
 
@@ -198,7 +150,11 @@ MainWindow::MainWindow() : m_service(8000) {
 	res->addResource("resource.model", new Orchid::XmlModelResource(m_model));
 
 	res->addResource("image.jpg", new Orchid::ImageResource("test.jpg"));
-	res->addResource("gallery", new Gallery("test.jpg"));
+	
+	Gallery* gal = new Gallery();
+	gal->insertFile("image.jpg", "test.jpg");
+	gal->insertFile("test.jpg", "test.jpg");
+	res->addResource("gallery", gal);
 
 	treeView->setModel(m_model);
 	connect(treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activateResource(const QModelIndex&)));
