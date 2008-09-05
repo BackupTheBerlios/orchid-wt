@@ -2,6 +2,7 @@
 #define _ORCHID_IMAGECOLLECTION_P_H_
 
 #include <QtCore/QHash>
+#include <QtCore/QSet>
 
 namespace Orchid {
 
@@ -18,8 +19,7 @@ protected:
 private:
 	QStringList namelist;
 	QHash<QString,QString> files;
-	// TODO replace handle by a location for better resource-keeping
-	QHash<QString,Resource::Handle> mods;
+	QSet<QString> mods;
 	Orchid::Resource::Keep keep;
 };
 

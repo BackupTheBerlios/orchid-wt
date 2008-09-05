@@ -63,15 +63,15 @@ bool ImageCollection::insertModification(const QString &name, ImageCollectionMod
 	}
 	
 	Resource::Handle handle = d->keep.getHandle(name);
-	handle.init(mod);
+	handle.init(mod, Resource::KeepPersistant);
 	mod->setCollection(this);
-	d->mods.insert(name, handle);
+	d->mods.insert(name);
 	return true;
 }
 
 QStringList ImageCollection::childs() const {
 	Q_D(const ImageCollection);
-	QStringList list(d->mods.keys());
+	QStringList list(d->mods.toList());
 	list << d->files.keys();
 	return list;
 }
