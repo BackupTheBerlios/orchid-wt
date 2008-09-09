@@ -7,10 +7,24 @@
 
 namespace Orchid {
 
-class Request;
-
 typedef int InterfaceId;
 int regInterface(const char *name);
+
+}
+
+template<class T>
+struct OrchidInterfaceIdDecl {
+	enum { Defined = 0 };
+};
+
+namespace Orchid {
+
+template<class T>
+inline InterfaceId interfaceId() {
+	return OrchidInterfaceIdDecl<T>::id();
+}
+
+class Request;
 
 namespace Resource {
 
@@ -68,11 +82,6 @@ private:
 };
 
 }
-
-template <class T>
-struct OrchidInterfaceIdDecl {
-	enum { Defined = 0 };
-};
 
 #define ORCHID_DECLARE_INTERFACE(type) \
 template <> \
