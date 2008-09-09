@@ -3,10 +3,29 @@
 #include "resourcekeep.h"
 
 #include <QTextStream>
+#include <QMutex>
 
 #include <QtDebug>
 
+
 namespace Orchid {
+
+static QMutex interfaceRegMutex;
+static QHash<QByteArray,int> interfaceList;
+
+int regInterface(const char *name) {
+	QByteArray key(name);
+	QMutexLocker locker(&interfaceRegMutex);
+	static int nextId = 1;
+
+	int id = interfaceList.value(key);
+	if(!id) {
+		id = nextId++;
+		interfaceList.insert(key, id);
+	}
+
+	return id;
+}
 
 class ContainerResourcePrivate {
 public:
