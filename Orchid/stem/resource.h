@@ -7,6 +7,23 @@
 
 namespace Orchid {
 
+typedef int InterfaceId;
+int regInterface(const char *name);
+
+}
+
+template<class T>
+struct OrchidInterfaceIdDecl {
+	enum { Defined = 0 };
+};
+
+namespace Orchid {
+
+template<class T>
+inline InterfaceId interfaceId() {
+	return OrchidInterfaceIdDecl<T>::id();
+}
+
 class Request;
 
 namespace Resource {
@@ -31,6 +48,11 @@ public:
 class IQueryable {
 public:
 	virtual void query(Request* request) = 0;
+};
+
+class IDynamic {
+public:
+	virtual bool provides(InterfaceId id) = 0;
 };
 
 }
@@ -59,6 +81,23 @@ private:
 	QString m_text;
 };
 
+}
+
+#define ORCHID_DECLARE_INTERFACE(type) \
+template <> \
+struct OrchidInterfaceIdDecl<type> { \
+	enum { Defined = 1 }; \
+	static ::Orchid::InterfaceId id() { \
+		static QAtomicInt id(0); \
+		if(!id) \
+			id = ::Orchid::regInterface(#type); \
+		return id; \
+	} \
 };
+
+ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IDirectory);
+ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IRedirecting);
+ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IQueryable);
+ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IDynamic);
 
 #endif
