@@ -55,6 +55,14 @@ public:
 	virtual bool provides(InterfaceId id) = 0;
 };
 
+template <class T>
+inline T cast(IResource* res) {
+	IDynamic* dyn = dynamic_cast<IDynamic*>(res);
+	if(dyn && !dyn->provides(interfaceId<T>()))
+		return 0;
+	return dynamic_cast<T>(res);
+}
+
 }
 
 class ContainerResourcePrivate;
@@ -85,7 +93,7 @@ private:
 
 #define ORCHID_DECLARE_INTERFACE(type) \
 template <> \
-struct OrchidInterfaceIdDecl<type> { \
+struct OrchidInterfaceIdDecl<type*> { \
 	enum { Defined = 1 }; \
 	static ::Orchid::InterfaceId id() { \
 		static QAtomicInt id(0); \

@@ -54,7 +54,7 @@ void Request::setLocation(const Resource::Location& location) {
 bool Request::query() {
 	Q_D(Request);
 	Resource::IResource* resource = d->resource.resource();
-	Resource::IQueryable* res = dynamic_cast<Resource::IQueryable*>(resource);
+	Resource::IQueryable* res = Resource::cast<Resource::IQueryable*>(resource);
 	if(!res) {
 // 		setStatus(RequestNotFound);
 		return false;
