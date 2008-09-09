@@ -21,6 +21,11 @@ namespace Orchid {
 
 template<class T>
 inline InterfaceId interfaceId() {
+	return OrchidInterfaceIdDecl<T*>::id();
+}
+
+template<class T>
+inline InterfaceId interfacePtrId() {
 	return OrchidInterfaceIdDecl<T>::id();
 }
 
@@ -58,7 +63,7 @@ public:
 template <class T>
 inline T cast(IResource* res) {
 	IDynamic* dyn = dynamic_cast<IDynamic*>(res);
-	if(dyn && !dyn->provides(interfaceId<T>()))
+	if(dyn && !dyn->provides(interfacePtrId<T>()))
 		return 0;
 	return dynamic_cast<T>(res);
 }
