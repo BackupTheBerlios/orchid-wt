@@ -52,10 +52,6 @@ class HtmlStreamWriterPrivate;
 class HtmlStreamWriter {
 public:
 	HtmlStreamWriter();
-	HtmlStreamWriter(QIODevice* device);
-public:
-	QXmlStreamWriter* xmlWriter();
-	void setDevice(QIODevice* device);
 public:
 	StyleAttributes attributes(const Style* style);
 	void regStyle(const Style* style, const QString& prefix);
@@ -80,6 +76,9 @@ class XHtml11StreamWriterPrivate;
 class XHtml11StreamWriter : public HtmlStreamWriter {
 public:
 	XHtml11StreamWriter(QIODevice* device = 0);
+public:
+	QXmlStreamWriter* xmlWriter();
+	void setDevice(QIODevice* device);
 public:
 	void nextLinksTo(const QString& url);
 	void writeStartDocument(const HtmlHead &head = HtmlHead());

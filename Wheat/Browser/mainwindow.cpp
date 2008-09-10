@@ -33,18 +33,18 @@ private:
 
 
 void MyStyle::writeHeading(Orchid::HtmlStreamWriter* writer, const QString& text) const {
-	Orchid::StyleAttributes attrs = writer->attributes(this);
-	QXmlStreamWriter* xml = writer->xmlWriter();
-
-	xml->writeStartElement("h1");
-	QString classname = attrs.classname("heading1");
-	if(!classname.isNull()) {
-		xml->writeAttribute("class", classname);
-	} else if(!m_headingStyle.isEmpty()) {
-		xml->writeAttribute("style", m_headingStyle);
-	}
-	xml->writeCharacters(text);
-	xml->writeEndElement();
+// 	Orchid::StyleAttributes attrs = writer->attributes(this);
+// 	QXmlStreamWriter* xml = writer->xmlWriter();
+// 
+// 	xml->writeStartElement("h1");
+// 	QString classname = attrs.classname("heading1");
+// 	if(!classname.isNull()) {
+// 		xml->writeAttribute("class", classname);
+// 	} else if(!m_headingStyle.isEmpty()) {
+// 		xml->writeAttribute("style", m_headingStyle);
+// 	}
+// 	xml->writeCharacters(text);
+// 	xml->writeEndElement();
 }
 
 void MyStyle::setHeading(const QString& heading) {

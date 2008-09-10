@@ -12,19 +12,11 @@
 
 namespace Orchid {
 	
-// TODO check whether we use the correct replacement for not supported tags:
-// * Section
-// * Block
-
 class HtmlStreamWriterPrivate {
 	Q_DECLARE_PUBLIC(HtmlStreamWriter)
 public:
-    HtmlStreamWriterPrivate(HtmlStreamWriter *writer) : q_ptr(writer) {
-		device = 0;
-	}
+    HtmlStreamWriterPrivate(HtmlStreamWriter *writer) : q_ptr(writer) { }
 public:
-	QIODevice* device;
-	QXmlStreamWriter xml;
 	QHash<const Style*, StyleAttributes> styles;
 protected:
 	HtmlStreamWriter* q_ptr;
@@ -35,29 +27,9 @@ HtmlStreamWriter::HtmlStreamWriter()
 {
 }
 
-HtmlStreamWriter::HtmlStreamWriter(QIODevice* device)
-	: d_ptr(new HtmlStreamWriterPrivate(this))
-{
-	Q_D(HtmlStreamWriter);
-	
-	d->device = device;
-	d->xml.setDevice(device);
-}
-
 HtmlStreamWriter::HtmlStreamWriter(HtmlStreamWriterPrivate* dd)
 	: d_ptr(dd)
 {
-}
-
-QXmlStreamWriter* HtmlStreamWriter::xmlWriter() {
-	Q_D(HtmlStreamWriter);
-	return &d->xml;
-}
-
-void HtmlStreamWriter::setDevice(QIODevice* device) {
-	Q_D(HtmlStreamWriter);
-	d->device = device;
-	d->xml.setDevice(device);
 }
 
 StyleAttributes HtmlStreamWriter::attributes(const Style* style) {
@@ -100,6 +72,8 @@ public:
 		section = 0;
 	}
 public:
+	QIODevice* device;
+	QXmlStreamWriter xml;
 	int section;
 	QStack<Entry> specialStack;
 	QHash<HtmlAttribute, QVariant> attributes;
@@ -111,6 +85,17 @@ XHtml11StreamWriter::XHtml11StreamWriter(QIODevice* device)
 	Q_D(XHtml11StreamWriter);
 	d->device = device;
 	d->xml.setDevice(device);
+}
+
+void XHtml11StreamWriter::setDevice(QIODevice* device) {
+	Q_D(XHtml11StreamWriter);
+	d->device = device;
+	d->xml.setDevice(device);
+}
+
+QXmlStreamWriter* XHtml11StreamWriter::xmlWriter() {
+	Q_D(XHtml11StreamWriter);
+	return &d->xml;
 }
 
 void XHtml11StreamWriter::nextLinksTo(const QString& url) {
