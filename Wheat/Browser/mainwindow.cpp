@@ -183,11 +183,12 @@ void MainWindow::activateResource(const QModelIndex& index) {
 }
 
 void MainWindow::requestFinished(int id, bool error) {
+	QHttpResponseHeader header = reader.lastResponse();
 	if(!error) {
 		result.close();
 		QByteArray content = result.data();
 		sourceView->setPlainText(content);
-		webView->setContent(content, "text/html", QUrl("http://localhost:8000/"));
+		webView->setContent(content, header.contentType(), QUrl("http://localhost:8000/"));
 		result.setData(QByteArray());
 	} else {
 		sourceView->setPlainText("\n\n\t\tError reading resource!\n\n"+reader.errorString());
