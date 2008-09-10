@@ -21,6 +21,8 @@
 #include <leaf/imageresource.h>
 #include <leaf/scriptedresource.h>
 
+#include <QFile>
+
 #include "gallery.h"
 
 
@@ -157,21 +159,11 @@ MainWindow::MainWindow() : m_service(8000) {
 	gal->insertFile("test.jpg", "test.jpg");
 	res->addResource("gallery", gal);
 	
-	QString program("function MyResource() {\n\
-	this.query = function(request) {\n\
-		write(request, \"test\");\n\
-	};\n\
-// 	this.childList = function() { \n\
-// 		var list = new Array(); \n\
-// 		return list; \n\
-// 	}; \n\
-	this.getChild = function(handle, name) { \n\
-		// ass we don't initialize it, the handle will \n\
-		// be used like a null-handle \n\
-		return handle; \n\
-	}; \n\
-	return this;\n\
-}");
+	QFile scriptFile(":/test.js");
+	scriptFile.open(QIODevice::ReadOnly);
+	QString program(scriptFile.readAll());
+	scriptFile.close();
+	
 	res->addResource("scripted", new Orchid::ScriptedResource(program, "MyResource"));
 
 	treeView->setModel(m_model);

@@ -9,76 +9,28 @@
 #include <QtScript>
 
 namespace Orchid {
-
-class ScriptedResourceHandle;
-class ScriptedResourceHandleData : public QSharedData {
-	friend class ScriptedResourceHandle;
-	Resource::Handle handle;
-};
-
-/**
- * A wrapper class which makes it possible to ensure no 
- * uninitialized handles are left in the script.
- */
-class ScriptedResourceHandle {
+	
+class ScriptResource :
+	public Resource::IResource,
+	public Resource::IQueryable,
+	public Resource::IDirectory,
+	public Resource::IDynamic
+{
 public:
-	ScriptedResourceHandle();
-	ScriptedResourceHandle(const Resource::Handle& handle);
-	static ScriptedResourceHandle fromValue(const QScriptValue& value);
+	void query(Orchid::Request*);
+	bool provides(InterfaceId id);
+	QStringList childs() const;
+	Resource::Handle child(const QString& name);
 public:
-	void setHandle(const Resource::Handle& handle);
-	QScriptValue createValue(QScriptEngine* engine);
-	Resource::Handle handle() const;
-	Resource::Handle takeHandle();
+	void setObject(const QScriptValue& object);
 private:
-	QExplicitlySharedDataPointer<ScriptedResourceHandleData> d;
+	Resource::Keep m_keep;
+	QScriptValue m_object;
 };
-
-}
-
-Q_DECLARE_METATYPE(Orchid::ScriptedResourceHandle)
-
-namespace Orchid {
-
-ScriptedResourceHandle::ScriptedResourceHandle() {
-	d = new ScriptedResourceHandleData;
-}
-
-ScriptedResourceHandle::ScriptedResourceHandle(const Resource::Handle& handle) {
-	d = new ScriptedResourceHandleData;
-	d->handle = handle;
-}
-
-ScriptedResourceHandle ScriptedResourceHandle::fromValue(const QScriptValue& value) {
-	return value.toVariant().value<ScriptedResourceHandle>();
-}
-
-void ScriptedResourceHandle::setHandle(const Resource::Handle& handle) {
-	d->handle = handle;
-}
-
-QScriptValue ScriptedResourceHandle::createValue(QScriptEngine* engine) {
-	QVariant variant;
-	variant.setValue(*this);
-	QScriptValue val = engine->newVariant(variant);
-	return val;
-};
-
-Resource::Handle ScriptedResourceHandle::handle() const {
-	return d->handle;
-}
-
-Resource::Handle ScriptedResourceHandle::takeHandle() {
-	Resource::Handle handle = d->handle;
-	d->handle = Resource::Handle();
-	return handle;
-}
-
-
-// class ScriptedResource
 
 class ScriptedResourcePrivate {
 	Q_DECLARE_PUBLIC(ScriptedResource)
+	friend class ScriptResource;
 public:
 	ScriptedResourcePrivate(ScriptedResource* res);
 protected:
@@ -87,13 +39,84 @@ private:
 	static QScriptValue write(QScriptContext *context, QScriptEngine *engine);
 private:
 	QScriptEngine engine;
-	QScriptValue object;
-	Resource::Keep keep;
+	ScriptResource self;
 };
+
+
+void ScriptResource::query(Orchid::Request* request) {
+	if(!m_object.isValid()) return;
+	
+	QScriptValue f(m_object.property("query"));
+	if(f.isFunction()) {
+		QScriptValue r(m_object.engine()->newQObject(request));
+		f.call(m_object, QScriptValueList() << r);
+	} else {
+		qWarning() << "call to disabled resource.query in object" << m_object.toString();
+	}
+}
+
+bool ScriptResource::provides(InterfaceId id) {
+	if(!m_object.isValid()) return false;
+	
+	if(id == interfaceId<Resource::IQueryable>()) {
+		return m_object.property("query").isFunction();
+	} else if(id == interfaceId<Resource::IDirectory>()) {
+		return m_object.property("childList").isFunction() &&
+			m_object.property("getChild").isFunction();
+	}
+	return false;
+}
+
+QStringList ScriptResource::childs() const {
+	if(!m_object.isValid()) return QStringList();
+	
+	QScriptValue f(m_object.property("childList"));
+	if(f.isFunction()) {
+		QScriptValue res = f.call(m_object, QScriptValueList());
+		if(!res.isArray()) return QStringList();
+		
+		QStringList list;
+		int length = res.property("length").toInt32();
+		for(int i = 0; i < length; ++i) {
+			list << res.property(i).toString();
+		}
+		return list;
+	}
+	return QStringList();
+}
+
+Resource::Handle ScriptResource::child(const QString& name) {
+	if(!m_object.isValid()) return Resource::Handle();
+	
+	QScriptValue f(m_object.property("getChild"));
+	if(f.isFunction() && !name.contains('/')) {
+		QScriptValue nameValue(m_object.engine(), name);
+
+		QScriptValue result = f.call(m_object, QScriptValueList() << nameValue);
+		
+		if(result.isObject()) {
+			Resource::Handle handle(m_keep.getHandle(name));
+			ScriptResource* resource = new ScriptResource();
+			resource->setObject(result);
+			handle.init(resource);
+			return handle;
+		}
+	}
+	return Resource::Handle();
+}
+
+void ScriptResource::setObject(const QScriptValue &object) {
+	m_object = object;
+}
+
 
 QScriptValue ScriptedResourcePrivate::write(QScriptContext *context, QScriptEngine *engine) {
 	QIODevice* device = dynamic_cast<QIODevice*>(context->argument(0).toQObject());
 	if(device) {
+		if(!(device->isOpen() || device->open(QIODevice::ReadWrite))) {
+			qWarning() << "could not open device";
+			return QScriptValue();
+		}
 		QString str(context->argument(1).toString());
 		if(!str.isNull()) {
 			QTextStream stream(device);
@@ -115,8 +138,7 @@ ScriptedResource::ScriptedResource(const QString &script, const QString &type) {
 	
 	d->engine.evaluate(script);
 	QScriptValue ctor = d->engine.evaluate(type);
-	d->object = ctor.construct();
-	qDebug() << "res.isObject() = " << d->object.isObject();
+	d->self.setObject(ctor.construct());
 }
 
 ScriptedResource::~ScriptedResource() {
@@ -125,69 +147,22 @@ ScriptedResource::~ScriptedResource() {
 
 void ScriptedResource::query(Orchid::Request *request) {
 	Q_D(ScriptedResource);
-	if(!(request->method() & Orchid::GetMethod)) {
-// 		request.setStatus(RequestMethodNotAllowed);
-		return;
-	}
-	if(!request->open(QIODevice::ReadWrite)) return;
-
-	QScriptValue f(d->object.property("query"));
-	if(f.isFunction()) {
-		f.call(d->object, QScriptValueList() << d->engine.newQObject(request));
-	} else {
-		qDebug() << "res.query is not a function";
-		qDebug() << d->object.toString();
-	}
+	d->self.query(request);
 }
 
 bool ScriptedResource::provides(InterfaceId id) {
 	Q_D(ScriptedResource);
-	if(id == interfaceId<Resource::IQueryable>()) {
-		return d->object.property("query").isFunction();
-	} else if(id == interfaceId<Resource::IDirectory>()) {
-		return d->object.property("childList").isFunction() &&
-			d->object.property("getChild").isFunction();
-	}
-	return false;
+	return d->self.provides(id);
 }
 
 QStringList ScriptedResource::childs() const {
 	Q_D(const ScriptedResource);
-	QScriptValue f(d->object.property("childList"));
-	if(f.isFunction()) {
-		QScriptValue res = f.call(d->object, QScriptValueList());
-		if(!res.isArray()) return QStringList();
-		
-		QStringList list;
-		int length = res.property("length").toInt32();
-		for(int i = 0; i < length; ++i) {
-			list << res.property(i).toString();
-		}
-		return list;
-	}
-	return QStringList();
+	return d->self.childs();
 }
 
 Resource::Handle ScriptedResource::child(const QString& name) {
 	Q_D(ScriptedResource);
-	QScriptValue f(d->object.property("getChild"));
-	if(f.isFunction()) {
-		Resource::Handle handle(d->keep.getHandle(name));
-		ScriptedResourceHandle scriptedHandle(handle);
-		QScriptValue handleValue(scriptedHandle.createValue(&d->engine));
-		QScriptValue nameValue(&d->engine, name);
-
-		QScriptValue res = f.call(d->object, QScriptValueList() << handleValue << nameValue);
-
-		handle = ScriptedResourceHandle::fromValue(res).handle();
-
-		// ensure that there is no copy of the handle left in the script
-		scriptedHandle.takeHandle();
-		
-		if(!handle.isEmpty())
-			return handle;
-	}
-	return Resource::Handle();
+	return d->self.child(name);
 }
 
 
