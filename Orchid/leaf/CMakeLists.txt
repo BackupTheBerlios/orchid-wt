@@ -7,6 +7,7 @@ set(orchid_leaf_SRC
 	imagecollection.cpp
 	imageresource.cpp
 	modelresource.cpp
+	scriptedresource.cpp
 	xmlmodelresource.cpp
 )
 
