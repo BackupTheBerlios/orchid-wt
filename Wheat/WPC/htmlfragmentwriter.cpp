@@ -12,7 +12,7 @@ public:
 protected:
 	HtmlFragmentWriter* q_ptr;
 private:
-	HtmlStreamWriter* writer;
+	DocumentProcessor* writer;
 	Q_DECLARE_PUBLIC(HtmlFragmentWriter)
 };
 
@@ -42,7 +42,7 @@ void HtmlFragmentWriterPrivate::writeElement(DomElement* element) {
 	writer->writeEndElement();
 }
 
-HtmlFragmentWriter::HtmlFragmentWriter(HtmlStreamWriter* writer) {
+HtmlFragmentWriter::HtmlFragmentWriter(DocumentProcessor* writer) {
 	d_ptr = new HtmlFragmentWriterPrivate(this);
 	Q_D(HtmlFragmentWriter);
 	d->writer = writer;

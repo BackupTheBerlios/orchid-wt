@@ -5,13 +5,13 @@
 
 namespace Orchid {
 
-class HtmlStreamWriter;
+class DocumentProcessor;
 class DomFragment;
 
 class HtmlFragmentWriterPrivate;
 class HtmlFragmentWriter {
 public:
-	HtmlFragmentWriter(HtmlStreamWriter* writer);
+	HtmlFragmentWriter(DocumentProcessor* writer);
 	~HtmlFragmentWriter();
 public:
 	void write(DomFragment* fragment);

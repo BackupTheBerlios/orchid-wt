@@ -12,39 +12,39 @@
 
 namespace Orchid {
 	
-class HtmlStreamWriterPrivate {
-	Q_DECLARE_PUBLIC(HtmlStreamWriter)
+class DocumentProcessorPrivate {
+	Q_DECLARE_PUBLIC(DocumentProcessor)
 public:
-    HtmlStreamWriterPrivate(HtmlStreamWriter *writer) : q_ptr(writer) { }
+    DocumentProcessorPrivate(DocumentProcessor *writer) : q_ptr(writer) { }
 public:
 	QHash<const Style*, StyleAttributes> styles;
 protected:
-	HtmlStreamWriter* q_ptr;
+	DocumentProcessor* q_ptr;
 };
 
-HtmlStreamWriter::HtmlStreamWriter()
-	: d_ptr(new HtmlStreamWriterPrivate(this))
+DocumentProcessor::DocumentProcessor()
+	: d_ptr(new DocumentProcessorPrivate(this))
 {
 }
 
-HtmlStreamWriter::HtmlStreamWriter(HtmlStreamWriterPrivate* dd)
+DocumentProcessor::DocumentProcessor(DocumentProcessorPrivate* dd)
 	: d_ptr(dd)
 {
 }
 
-StyleAttributes HtmlStreamWriter::attributes(const Style* style) {
-	Q_D(HtmlStreamWriter);
+StyleAttributes DocumentProcessor::attributes(const Style* style) {
+	Q_D(DocumentProcessor);
 	return d->styles.value(style);
 }
 
-void HtmlStreamWriter::regStyle(const Style* style, const QString& prefix) {
-	Q_D(HtmlStreamWriter);
+void DocumentProcessor::regStyle(const Style* style, const QString& prefix) {
+	Q_D(DocumentProcessor);
 	d->styles.insert(style, StyleAttributes(prefix));
 }
 
-QString HtmlStreamWriter::defaultRoleName(HtmlRole role) {
+QString DocumentProcessor::defaultRoleName(Document::Role role) {
 	switch(role) {
-		case HtmlRoleDefinition:
+		case Document::RoleDefinition:
 			return "definition";
 	}
 	Q_ASSERT(false);
@@ -56,18 +56,18 @@ QString HtmlStreamWriter::defaultRoleName(HtmlRole role) {
 // 
 
 
-class XHtml11StreamWriterPrivate : public HtmlStreamWriterPrivate {
+class XHtml11StreamWriterPrivate : public DocumentProcessorPrivate {
 	Q_DECLARE_PUBLIC(XHtml11StreamWriter)
 public:
 	struct Entry {
-		HtmlTag tag;
+		Document::Tag tag;
 		bool autoFormat : 1;
 		bool hasElement : 1;
 		bool hasAnchor : 1;
 	};
 public:
 	XHtml11StreamWriterPrivate(XHtml11StreamWriter* writer)
-		: HtmlStreamWriterPrivate(writer)
+		: DocumentProcessorPrivate(writer)
 	{
 		section = 0;
 	}
@@ -76,11 +76,11 @@ public:
 	QXmlStreamWriter xml;
 	int section;
 	QStack<Entry> specialStack;
-	QHash<HtmlAttribute, QVariant> attributes;
+	QHash<Document::Attribute, QVariant> attributes;
 };
 
 XHtml11StreamWriter::XHtml11StreamWriter(QIODevice* device)
-	: HtmlStreamWriter(new XHtml11StreamWriterPrivate(this))
+	: DocumentProcessor(new XHtml11StreamWriterPrivate(this))
 {
 	Q_D(XHtml11StreamWriter);
 	d->device = device;
@@ -101,7 +101,7 @@ QXmlStreamWriter* XHtml11StreamWriter::xmlWriter() {
 void XHtml11StreamWriter::nextLinksTo(const QString& url) {
 }
 
-void XHtml11StreamWriter::writeStartDocument(const HtmlHead& head) {
+void XHtml11StreamWriter::writeStartDocument(const DocumentHead& head) {
 	Q_D(XHtml11StreamWriter);
 	
 	QString htmlNs = "http://www.w3.org/1999/xhtml";
@@ -142,19 +142,19 @@ void XHtml11StreamWriter::writeEndDocument() {
 	d->xml.writeEndDocument();
 }
 
-void XHtml11StreamWriter::writeStartElement(HtmlTag tag) {
+void XHtml11StreamWriter::writeStartElement(Document::Tag tag) {
 	Q_D(XHtml11StreamWriter);
 	XHtml11StreamWriterPrivate::Entry entry;
-	if(d->attributes.contains(HtmlAttributeRole)) {
-		d->xml.writeComment("role=\""+defaultRoleName(static_cast<HtmlRole>(d->attributes.value(HtmlAttributeRole).toInt()))+"\"");
+	if(d->attributes.contains(Document::AttributeRole)) {
+		d->xml.writeComment("role=\""+defaultRoleName(static_cast<Document::Role>(d->attributes.value(Document::AttributeRole).toInt()))+"\"");
 	}
 	switch(tag) {
-		case HtmlTagUnknown: break;
-		case HtmlTagBlock: break;
-		case HtmlTagSection:
+		case Document::TagUnknown: break;
+		case Document::TagBlock: break;
+		case Document::TagSection:
 			d->section++;
 			break;
-		case HtmlTagHeading:
+		case Document::TagHeading:
 			switch(d->section) {
 				case 0: d->xml.writeStartElement("h1"); break;
 				case 1: d->xml.writeStartElement("h2"); break;
@@ -164,49 +164,49 @@ void XHtml11StreamWriter::writeStartElement(HtmlTag tag) {
 				default: d->xml.writeStartElement("h6"); break;
 			}
 			break;
-		case HtmlTagParagraph:
+		case Document::TagParagraph:
 			entry.autoFormat = d->xml.autoFormatting();
 			d->xml.writeStartElement("p");
 			d->xml.setAutoFormatting(false);
 			break;
-		case HtmlTagTextAbbreviation:
+		case Document::TagTextAbbreviation:
 			d->xml.writeStartElement("abbr");
-			if(d->attributes.contains(HtmlAttributeInlineFullText)) {
-				d->xml.writeAttribute("title", d->attributes.value(HtmlAttributeInlineFullText).toString());
+			if(d->attributes.contains(Document::AttributeInlineFullText)) {
+				d->xml.writeAttribute("title", d->attributes.value(Document::AttributeInlineFullText).toString());
 			}
 			break;
-		case HtmlTagTextCode:
+		case Document::TagTextCode:
 			d->xml.writeStartElement("code"); break;
-		case HtmlTagTextDefinition:
+		case Document::TagTextDefinition:
 			d->xml.writeStartElement("dfn"); break;
-		case HtmlTagTextEmphasis:
+		case Document::TagTextEmphasis:
 			d->xml.writeStartElement("em"); break;
-		case HtmlTagTextKeyboard:
+		case Document::TagTextKeyboard:
 			d->xml.writeStartElement("kbd"); break;
-		case HtmlTagTextQuote:
+		case Document::TagTextQuote:
 			d->xml.writeStartElement("q"); break;
-		case HtmlTagTextSample:
+		case Document::TagTextSample:
 			d->xml.writeStartElement("samp"); break;
-		case HtmlTagTextSpan:
+		case Document::TagTextSpan:
 			d->xml.writeStartElement("span"); break;
-		case HtmlTagTextStrong:
+		case Document::TagTextStrong:
 			d->xml.writeStartElement("strong"); break;
-		case HtmlTagTextSubscript:
+		case Document::TagTextSubscript:
 			d->xml.writeStartElement("sub"); break;
-		case HtmlTagTextSuperscript:
+		case Document::TagTextSuperscript:
 			d->xml.writeStartElement("sup"); break;
-		case HtmlTagTextVariable:
+		case Document::TagTextVariable:
 			d->xml.writeStartElement("var"); break;
 		default: d->xml.writeStartElement("span"); break;
 	}
-	if(d->attributes.contains(HtmlAttributeId)) {
-		d->xml.writeAttribute("id", d->attributes.value(HtmlAttributeId).toString());
+	if(d->attributes.contains(Document::AttributeId)) {
+		d->xml.writeAttribute("id", d->attributes.value(Document::AttributeId).toString());
 	}
-	if(d->attributes.contains(HtmlAttributeClassname)) {
-		d->xml.writeAttribute("class", d->attributes.value(HtmlAttributeClassname).toString());
+	if(d->attributes.contains(Document::AttributeClassname)) {
+		d->xml.writeAttribute("class", d->attributes.value(Document::AttributeClassname).toString());
 	}
-	if(d->attributes.contains(HtmlAttributeLanguage)) {
-		d->xml.writeAttribute("xml", "lang", d->attributes.value(HtmlAttributeLanguage).toString());
+	if(d->attributes.contains(Document::AttributeLanguage)) {
+		d->xml.writeAttribute("xml", "lang", d->attributes.value(Document::AttributeLanguage).toString());
 	}
 	entry.tag = tag;
 	d->specialStack.push(entry);
@@ -217,12 +217,12 @@ void XHtml11StreamWriter::writeEndElement() {
 	Q_D(XHtml11StreamWriter);
 	XHtml11StreamWriterPrivate::Entry entry(d->specialStack.pop());
 	switch(entry.tag) {
-		case HtmlTagUnknown: break;
-		case HtmlTagBlock: break;
-		case HtmlTagSection:
+		case Document::TagUnknown: break;
+		case Document::TagBlock: break;
+		case Document::TagSection:
 			d->section--;
 			break;
-		case HtmlTagParagraph:
+		case Document::TagParagraph:
 			d->xml.writeEndElement();
 			d->xml.setAutoFormatting(entry.autoFormat);
 			break;
@@ -237,7 +237,7 @@ void XHtml11StreamWriter::writeCharacters(const QString& str) {
 	d->xml.writeCharacters(str);
 }
 
-void XHtml11StreamWriter::setAttribute(HtmlAttribute attr, const QVariant& val) {
+void XHtml11StreamWriter::setAttribute(Document::Attribute attr, const QVariant& val) {
 	Q_D(XHtml11StreamWriter);
 	d->attributes.insert(attr, val);
 }

@@ -5,40 +5,40 @@
 
 namespace Orchid {
 
-class HtmlHeadPrivate : public QSharedData {
+class DocumentHeadPrivate : public QSharedData {
 public:
 	QString title;
 	QVector<QPair<QString,Style*> > styleUrls;
 };
 
-HtmlHead::HtmlHead() {
-	d = new HtmlHeadPrivate;
+DocumentHead::DocumentHead() {
+	d = new DocumentHeadPrivate;
 }
 
-HtmlHead::HtmlHead(const HtmlHead &head) {
+DocumentHead::DocumentHead(const DocumentHead &head) {
 	d = head.d;
 }
 
-HtmlHead::~HtmlHead() {
+DocumentHead::~DocumentHead() {
 }
 
-HtmlHead& HtmlHead::operator=(const HtmlHead &other) {
+DocumentHead& DocumentHead::operator=(const DocumentHead &other) {
 	d = other.d;
 }
 
-QString HtmlHead::title() const {
+QString DocumentHead::title() const {
 	return d->title;
 }
 
-void HtmlHead::setTitle(const QString &title) {
+void DocumentHead::setTitle(const QString &title) {
 	d->title = title;
 }
 
-void HtmlHead::addStyle(Style *style, const QString &url) {
+void DocumentHead::addStyle(Style *style, const QString &url) {
 	d->styleUrls.append(QPair<QString,Style*>(url, style));
 }
 
-QVector<QPair<QString,Style*> > HtmlHead::styleUrls() const {
+QVector<QPair<QString,Style*> > DocumentHead::styleUrls() const {
 	return d->styleUrls;
 }
 

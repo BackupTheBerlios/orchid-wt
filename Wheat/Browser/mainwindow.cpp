@@ -27,12 +27,12 @@ public:
 	void setMainFragment(Orchid::Fragment* fragment);
 	void query(Orchid::Request* request);
 private:
-	Orchid::HtmlHead m_head;
+	Orchid::DocumentHead m_head;
 	Orchid::Fragment* m_body;
 };
 
 
-void MyStyle::writeHeading(Orchid::HtmlStreamWriter* writer, const QString& text) const {
+void MyStyle::writeHeading(Orchid::DocumentProcessor* writer, const QString& text) const {
 // 	Orchid::StyleAttributes attrs = writer->attributes(this);
 // 	QXmlStreamWriter* xml = writer->xmlWriter();
 // 
@@ -56,8 +56,8 @@ QString MyStyle::content() const {
 }
 
 
-void MyFragment::build(Orchid::HtmlStreamWriter* writer) {
-	using namespace Orchid::HTML;
+void MyFragment::build(Orchid::DocumentProcessor* writer) {
+	using namespace Orchid::Document;
 
 	BlockStream blocks(writer);
 
@@ -65,7 +65,7 @@ void MyFragment::build(Orchid::HtmlStreamWriter* writer) {
 
 	blocks.paragraph() << "The Pascal statement " <<code<<"i := 1;"<<end<< " assigns the literal value one to the variable "<<variable<<'i'<<end<<'.';
 
-	(blocks << role(Orchid::HtmlRoleDefinition)).paragraph() << "An " <<id("def-acronym")<< definition<<"acronym"<<end<< " is a word formed from the initial letters or groups of letters of words in a set phrase or series of words.";
+	(blocks << role(RoleDefinition)).paragraph() << "An " <<id("def-acronym")<< definition<<"acronym"<<end<< " is a word formed from the initial letters or groups of letters of words in a set phrase or series of words.";
 
 	blocks.paragraph() << "Do " <<emphasis<<"not"<<end<< " phone before 9 a.m.";
 

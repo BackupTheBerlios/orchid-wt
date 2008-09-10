@@ -14,13 +14,13 @@
 #include <QtCore/QBuffer>
 
 namespace Orchid {
-class HtmlStreamWriter;
+class DocumentProcessor;
 class ResourceModel;
 }
 
 class MyStyle : public Orchid::Style {
 	public:
-		void writeHeading(Orchid::HtmlStreamWriter* writer, const QString& text) const;
+		void writeHeading(Orchid::DocumentProcessor* writer, const QString& text) const;
 		void setHeading(const QString& heading);
 		QString content() const;
 	private:
@@ -29,7 +29,7 @@ class MyStyle : public Orchid::Style {
 
 class MyFragment : public Orchid::Fragment {
 	public:
-		void build(Orchid::HtmlStreamWriter* writer);
+		void build(Orchid::DocumentProcessor* writer);
 	public:
 		MyStyle* style;
 };

@@ -2,10 +2,10 @@
 
 namespace Orchid {
 
-namespace HTML {
+namespace Document {
 
 BlockStream& section(BlockStream& s) {
-	s.writer()->writeStartElement(HtmlTagSection);
+	s.writer()->writeStartElement(TagSection);
 	return s;
 }
 
@@ -15,57 +15,57 @@ BlockStream& end(BlockStream& s) {
 }
 
 InlineStream& code(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextCode);
+	s.writer()->writeStartElement(TagTextCode);
 	return s;
 }
 
 InlineStream& definition(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextDefinition);
+	s.writer()->writeStartElement(TagTextDefinition);
 	return s;
 }
 
 InlineStream& emphasis(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextEmphasis);
+	s.writer()->writeStartElement(TagTextEmphasis);
 	return s;
 }
 
 InlineStream& keyboard(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextKeyboard);
+	s.writer()->writeStartElement(TagTextKeyboard);
 	return s;
 }
 
 InlineStream& quote(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextQuote);
+	s.writer()->writeStartElement(TagTextQuote);
 	return s;
 }
 
 InlineStream& sample(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextSample);
+	s.writer()->writeStartElement(TagTextSample);
 	return s;
 }
 
 InlineStream& span(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextSpan);
+	s.writer()->writeStartElement(TagTextSpan);
 	return s;
 }
 
 InlineStream& strong(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextStrong);
+	s.writer()->writeStartElement(TagTextStrong);
 	return s;
 }
 
 InlineStream& subscript(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextSubscript);
+	s.writer()->writeStartElement(TagTextSubscript);
 	return s;
 }
 
 InlineStream& superscript(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextSuperscript);
+	s.writer()->writeStartElement(TagTextSuperscript);
 	return s;
 }
 
 InlineStream& variable(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextVariable);
+	s.writer()->writeStartElement(TagTextVariable);
 	return s;
 }
 
