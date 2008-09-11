@@ -1,8 +1,8 @@
-#ifndef _BAMBOO_HTMLSTREAMWRITER_H_
-#define _BAMBOO_HTMLSTREAMWRITER_H_
+#ifndef _ORCHID_DOCUMENTPROCESSOR_H_
+#define _ORCHID_DOCUMENTPROCESSOR_H_
 
 #include <QtGlobal>
-#include "htmlhead.h"
+#include "documenthead.h"
 
 class QXmlStreamWriter;
 class QIODevice;

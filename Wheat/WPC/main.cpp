@@ -3,7 +3,7 @@
 #include <QtCore/QFile>
 #include <QtXml/QXmlStreamReader>
 
-#include <flower/htmlstreamwriter.h>
+#include <flower/documentprocessor.h>
 
 #include "cppfragmentwriter.h"
 #include "xmlfragmentreader.h"

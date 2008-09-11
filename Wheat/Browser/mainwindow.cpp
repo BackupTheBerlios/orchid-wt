@@ -6,7 +6,7 @@
 #include <QtDebug>
 #include <QXmlStreamWriter>
 
-#include <flower/htmlstreamwriter.h>
+#include <flower/documentprocessor.h>
 
 #include <flower/style.h>
 #include <flower/styleattributes.h>
@@ -15,7 +15,7 @@
 #include <stem/resourcemodel.h>
 #include <stem/location.h>
 
-#include <flower/htmlstreams.h>
+#include <flower/documentstreams.h>
 
 #include <leaf/xmlmodelresource.h>
 

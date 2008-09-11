@@ -1,8 +1,8 @@
-#ifndef _BAMBOO_HTMLSTREAMS_H_
-#define _BAMBOO_HTMLSTREAMS_H_
+#ifndef _ORCHID_DOCUMENTSTREAMS_H_
+#define _ORCHID_DOCUMENTSTREAMS_H_
 
 #include <QtCore/QString>
-#include "htmlstreamwriter.h"
+#include "documentprocessor.h"
 #include <QtCore/QVariant>
 
 namespace Orchid {

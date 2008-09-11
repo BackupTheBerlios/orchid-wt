@@ -5,7 +5,7 @@
 #include <QtCore/QVector>
 #include <QtCore/QString>
 
-#include <flower/htmlstreamwriter.h>
+#include <flower/documentprocessor.h>
 
 namespace Orchid {
 

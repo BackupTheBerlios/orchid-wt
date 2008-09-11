@@ -1,5 +1,5 @@
-#ifndef _ORCHID_HTMLHEAD_H_
-#define _ORCHID_HTMLHEAD_H_
+#ifndef _ORCHID_DOCUMENTHEAD_H_
+#define _ORCHID_DOCUMENTHEAD_H_
 
 #include <QtCore/QSharedData>
 #include <QtCore/QString>

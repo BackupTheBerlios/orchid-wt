@@ -1,4 +1,4 @@
-#include "htmlstreamwriter.h" 
+#include "documentprocessor.h" 
 
 #include <QtXml/QXmlStreamWriter>
 #include <QHash>

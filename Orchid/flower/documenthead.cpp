@@ -1,4 +1,4 @@
-#include "htmlhead.h"
+#include "documenthead.h"
 
 #include <QtCore/QVector>
 #include <QtCore/QPair>

@@ -1,4 +1,4 @@
-#include "htmlstreams.h"
+#include "documentstreams.h"
 
 namespace Orchid {
 
