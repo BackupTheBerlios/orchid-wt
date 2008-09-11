@@ -39,7 +39,7 @@ public:
 	ImageCollectionScalingPrivate(ImageCollectionScaling* scaling);
 private:
 	Q_DECLARE_PUBLIC(ImageCollectionScaling)
-	int maxX, maxY;
+	int width, height;
 };
 
 }

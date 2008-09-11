@@ -50,7 +50,12 @@ private:
 class ImageCollectionScalingPrivate;
 class ImageCollectionScaling : public ImageCollectionMod {
 public:
-	ImageCollectionScaling(int maxX, int maxY);
+	ImageCollectionScaling(int width, int height);
+public:
+	int width() const;
+	int height() const;
+	void setWidth(int width);
+	void setHeight(int height);
 protected:
 	ImageResource* createResource(const QString& path);
 private:

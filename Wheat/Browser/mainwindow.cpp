@@ -21,6 +21,7 @@
 #include <leaf/imageresource.h>
 
 #include "gallery.h"
+#include "resourceconfig.h"
 
 
 
@@ -159,6 +160,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	treeView->setModel(m_model);
 	connect(treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activateResource(const QModelIndex&)));
 
+	connect(configButton, SIGNAL(clicked(bool)), this, SLOT(configResource()));
 	
 	connect(&reader, SIGNAL(requestFinished(int,bool)), this, SLOT(requestFinished(int,bool)));
 	reader.setHost("localhost", 8000);
@@ -170,6 +172,20 @@ void MainWindow::activateResource(const QModelIndex& index) {
 
 	QString path = m_model->path(index);
 	reader.get(path, &result);
+}
+
+void MainWindow::configResource() {
+	using namespace Orchid::Resource;
+	QModelIndex index = treeView->currentIndex();
+	Handle handle(m_model->resource(index));
+	
+	if(!cast<IConfigurable*>(handle.resource())) return;
+	
+	ResourceConfig config(handle.resource(), this);
+	if(config.exec() == QDialog::Accepted) {
+		QString path = m_model->path(index);
+		reader.get(path, &result);
+	}
 }
 
 void MainWindow::requestFinished(int id, bool error) {

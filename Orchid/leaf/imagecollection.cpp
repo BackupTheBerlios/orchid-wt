@@ -144,22 +144,42 @@ ImageCollectionScalingPrivate::ImageCollectionScalingPrivate(
 	ImageCollectionScaling* scaling)
 	: ImageCollectionModPrivate(scaling)
 {
-	maxX = 100;
-	maxY = 100;
+	width = 100;
+	height = 100;
 }
 
-ImageCollectionScaling::ImageCollectionScaling(int maxX, int maxY)
+ImageCollectionScaling::ImageCollectionScaling(int width, int height)
 	: ImageCollectionMod(new ImageCollectionScalingPrivate(this))
 {
 	Q_D(ImageCollectionScaling);
-	d->maxX = maxX;
-	d->maxY = maxY;
+	d->width = width;
+	d->height = height;
+}
+
+int ImageCollectionScaling::width() const {
+	Q_D(const ImageCollectionScaling);
+	return d->width;
+}
+
+int ImageCollectionScaling::height() const {
+	Q_D(const ImageCollectionScaling);
+	return d->height;
+}
+
+void ImageCollectionScaling::setWidth(int width) {
+	Q_D(ImageCollectionScaling);
+	d->width = width;
+}
+
+void ImageCollectionScaling::setHeight(int height) {
+	Q_D(ImageCollectionScaling);
+	d->height = height;
 }
 
 ImageResource* ImageCollectionScaling::createResource(const QString &path) {
 	Q_D(ImageCollectionScaling);
 	ImageResource* res = new ImageResource(path);
-	res->setScaling(d->maxX, d->maxY);
+	res->setScaling(d->width, d->height);
 	return res;
 }
 

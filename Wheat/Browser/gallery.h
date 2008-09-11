@@ -4,19 +4,20 @@
 #include <leaf/imagecollection.h>
 
 class GalleryPrivate;
-class Gallery : public Orchid::Resource::IQueryable, public Orchid::ImageCollection {
+class Gallery :
+	public Orchid::Resource::IQueryable,
+	public Orchid::ImageCollection,
+	public Orchid::Resource::IConfigurable
+{
 public:
 	Gallery();
 public:
 	void query(Orchid::Request*);
-// 	QStringList childs() const;
-// 	Orchid::Resource::Handle child(const QString&);
-protected:
-	GalleryPrivate *d_ptr;
+	QList<Option> optionList() const;
+	QVariant option(const QString& name) const;
+	bool setOption(const QString& name, const QVariant& value);
 private:
 	Q_DECLARE_PRIVATE(Gallery)
-// 	QString m_file;
-// 	Orchid::Resource::Keep m_keep;
 };
 
 

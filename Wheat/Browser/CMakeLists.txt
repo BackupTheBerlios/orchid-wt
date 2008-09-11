@@ -7,11 +7,12 @@ set(orchid_browser_SRC
 	gallery.cpp
 	main.cpp
 	mainwindow.cpp
+	resourceconfig.cpp
 )
 
 qt4_automoc(${orchid_browser_SRC})
 
-qt4_wrap_ui(orchid_browser_SRC mainwindow.ui)
+qt4_wrap_ui(orchid_browser_SRC mainwindow.ui resourceconfig.ui)
 
 add_executable(orchid-browser ${orchid_browser_SRC})
 

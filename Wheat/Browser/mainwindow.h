@@ -3,10 +3,9 @@
 
 #include <QMainWindow>
 
-#include <stem/resourcekeep.h>
-
 #include "ui_mainwindow.h"
 
+#include <stem/resourcekeep.h>
 #include <flower/style.h>
 #include <flower/fragment.h>
 #include <root/httpservice.h>
@@ -41,6 +40,7 @@ public:
 	MainWindow();
 public slots:
 	void activateResource(const QModelIndex& index);
+	void configResource();
 private slots:
 	void requestFinished(int id, bool error);
 private:
