@@ -17,14 +17,14 @@ struct KeepItem {
 	Keep* keep;
 	QString name;
 	IResource* resource;
-	QMutex mutex;
+	QMutex mutex; 
 	QAtomicInt handleRefs;
-	int keepRefs;
+	int keepRefs; // threads waiting for using this resource
 	KeepingFlags flags;
 };
 
 KeepItem::KeepItem(Keep* keep, const QString& name)
-	: keep(keep), name(name), resource(0), handleRefs(0), keepRefs(1), flags()
+	: keep(keep), name(name), resource(0), handleRefs(0), keepRefs(0), flags()
 {
 }
 
@@ -69,7 +69,8 @@ void KeepPrivate::releaseItem(KeepItem* item) {
 }
 
 bool KeepPrivate::initItem(KeepItem* item, IResource* resource, KeepingFlags flags) {
-	// only 1 thread can init an item
+	// only 1 thread is able to have an uninitialised item
+	// so no locking required
 	if(item->resource) return false;
 	item->resource = resource;
 	item->flags = flags;
