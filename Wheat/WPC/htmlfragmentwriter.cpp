@@ -1,5 +1,7 @@
 #include "htmlfragmentwriter.h"
 
+#include <flower/documentprocessor.h>
+
 #include "fragmentdom.h"
 
 namespace Orchid {

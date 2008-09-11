@@ -10,6 +10,7 @@ set(orchid_flower_SRC
 	fragment.cpp
 	styleattributes.cpp
 	style.cpp
+	xhtmlstreamwriter.cpp
 )
 
 qt4_automoc(${orchid_flower_SRC})
