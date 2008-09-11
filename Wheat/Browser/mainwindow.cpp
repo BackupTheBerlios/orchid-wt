@@ -122,31 +122,33 @@ void OrchidResource::query(Orchid::Request* request) {
 	writer.writeEndDocument();
 }
 
+Q_DECLARE_METATYPE(Orchid::ContainerResource)
+Q_DECLARE_METATYPE(OrchidResource);
+
+Orchid::Resource::IResource* createResource(const char* name) {
+	int type = QMetaType::type(name);
+	return static_cast<Orchid::Resource::IResource*>(QMetaType::construct(type));
+}
+
 MainWindow::MainWindow() : m_service(8000) {
 	setupUi(this);
+	
+	qRegisterMetaType<Orchid::ContainerResource>();
+	qRegisterMetaType<OrchidResource>();
 
 	m_style.setHeading("background-color: red");
 	m_fragment.style = &m_style;
 	
-	OrchidResource *sample = new OrchidResource();
+	Orchid::ContainerResource *res = new Orchid::ContainerResource();
+	
+	m_root.init(res);
+	m_service.setRoot(m_root);
+	m_model = new Orchid::ResourceModel(res, this);
+	
+	OrchidResource *sample = static_cast<OrchidResource*>(createResource("OrchidResource"));
 	sample->addStyle(&m_style);
 	sample->setMainFragment(&m_fragment);
-
-	Orchid::SimpleTextResource *text = new Orchid::SimpleTextResource("Hello World");
-
-	// Create sample resources
-	Orchid::ContainerResource *dir = new Orchid::ContainerResource();
-	Orchid::ContainerResource *res = new Orchid::ContainerResource();
-
 	res->addResource("sample.html", sample);
-	dir->addResource("text.txt", text);
-	res->addResource("dir", dir);
-
-	m_root.init(res);
-	
-	m_service.setRoot(m_root);
-
-	m_model = new Orchid::ResourceModel(res, this);
 
 	res->addResource("resource.model", new Orchid::XmlModelResource(m_model));
 
