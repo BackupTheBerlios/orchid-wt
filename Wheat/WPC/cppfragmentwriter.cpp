@@ -69,7 +69,7 @@ void CppFragmentWriterPrivate::writeElement(DomElement* element) {
 	CppFragmentWriterHelper* helper = CppFragmentWriterHelper::inst();
 	switch(element->tag()) {
 		default:
-			*stream << "\t\twriter->writeStartElement("<<helper->enumName(element->tag())<<");\n";
+			*stream << "\t\twriter->startElement("<<helper->enumName(element->tag())<<");\n";
 			break;
 	}
 	foreach(DomNode* child, element->childs()) {
@@ -77,7 +77,7 @@ void CppFragmentWriterPrivate::writeElement(DomElement* element) {
 			case DomUnknownType: break;
 			case DomPCDATAType: {
 				DomCharacters* chars = static_cast<DomCharacters*>(child);
-				*stream << "\t\twriter->writeCharacters(\""<< chars->text()<<"\");\n";
+				*stream << "\t\twriter->insertCharacters(\""<< chars->text()<<"\");\n";
 			} break;
 			default: {
 				DomElement* childElement = dynamic_cast<DomElement*>(child);
@@ -87,7 +87,7 @@ void CppFragmentWriterPrivate::writeElement(DomElement* element) {
 	}
 	switch(element->tag()) {
 		default:
-			*stream << "\t\twriter->writeEndElement();\n";
+			*stream << "\t\twriter->endElement();\n";
 			break;
 	}
 }
@@ -117,7 +117,7 @@ void CppFragmentWriter::write(DomFragment* fragment) {
 			case DomUnknownType: break;
 			case DomPCDATAType: {
 				DomCharacters* chars = static_cast<DomCharacters*>(child);
-				*d->stream << "\t\twriter->writeCharacters("<< chars->text()<<");\n";
+				*d->stream << "\t\twriter->insertCharacters("<< chars->text()<<");\n";
 			} break;
 			default: {
 				DomElement* childElement = dynamic_cast<DomElement*>(child);

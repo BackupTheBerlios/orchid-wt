@@ -6,7 +6,7 @@
 #include <QtDebug>
 #include <QXmlStreamWriter>
 
-#include <flower/documentprocessor.h>
+#include <flower/xhtmlstreamwriter.h>
 
 #include <flower/style.h>
 #include <flower/styleattributes.h>
@@ -113,9 +113,9 @@ void OrchidResource::query(Orchid::Request* request) {
 	writer.setDevice(request);
 	writer.xmlWriter()->setAutoFormatting(true);
 	m_head.setTitle("Sample.html");
-	writer.writeStartDocument(m_head);
+	writer.startDocument(m_head);
 	m_body->build(&writer);
-	writer.writeEndDocument();
+	writer.endDocument();
 }
 
 MainWindow::MainWindow() : m_service(8000) {

@@ -25,7 +25,7 @@ HtmlFragmentWriterPrivate::HtmlFragmentWriterPrivate(HtmlFragmentWriter* writer)
 void HtmlFragmentWriterPrivate::writeElement(DomElement* element) {
 	switch(element->tag()) {
 		default:
-			writer->writeStartElement(element->tag());
+			writer->startElement(element->tag());
 			break;
 	}
 	foreach(DomNode* child, element->childs()) {
@@ -33,7 +33,7 @@ void HtmlFragmentWriterPrivate::writeElement(DomElement* element) {
 			case DomUnknownType: break;
 			case DomPCDATAType: {
 				DomCharacters* chars = static_cast<DomCharacters*>(child);
-				writer->writeCharacters(chars->text());
+				writer->insertCharacters(chars->text());
 			} break;
 			default: {
 				DomElement* element = dynamic_cast<DomElement*>(child);
@@ -41,7 +41,7 @@ void HtmlFragmentWriterPrivate::writeElement(DomElement* element) {
 			} break;
 		}
 	}
-	writer->writeEndElement();
+	writer->endElement();
 }
 
 HtmlFragmentWriter::HtmlFragmentWriter(DocumentProcessor* writer) {
@@ -62,7 +62,7 @@ void HtmlFragmentWriter::write(DomFragment* fragment) {
 			case DomUnknownType: break;
 			case DomPCDATAType: {
 				DomCharacters* chars = static_cast<DomCharacters*>(child);
-				d->writer->writeCharacters(chars->text());
+				d->writer->insertCharacters(chars->text());
 			} break;
 			default: {
 				DomElement* element = dynamic_cast<DomElement*>(child);

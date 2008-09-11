@@ -59,10 +59,7 @@ QXmlStreamWriter* XHtml11StreamWriter::xmlWriter() {
 	return &d->xml;
 }
 
-void XHtml11StreamWriter::nextLinksTo(const QString& url) {
-}
-
-void XHtml11StreamWriter::writeStartDocument(const DocumentHead& head) {
+void XHtml11StreamWriter::startDocument(const DocumentHead& head) {
 	Q_D(XHtml11StreamWriter);
 	
 	QString htmlNs = "http://www.w3.org/1999/xhtml";
@@ -98,12 +95,12 @@ void XHtml11StreamWriter::writeStartDocument(const DocumentHead& head) {
 	d->xml.writeStartElement(htmlNs, "body");
 }
 
-void XHtml11StreamWriter::writeEndDocument() {
+void XHtml11StreamWriter::endDocument() {
 	Q_D(XHtml11StreamWriter);
 	d->xml.writeEndDocument();
 }
 
-void XHtml11StreamWriter::writeStartElement(Document::Tag tag) {
+void XHtml11StreamWriter::startElement(Document::Tag tag) {
 	Q_D(XHtml11StreamWriter);
 	XHtml11StreamWriterPrivate::Entry entry;
 	if(d->attributes.contains(Document::AttributeRole)) {
@@ -174,7 +171,7 @@ void XHtml11StreamWriter::writeStartElement(Document::Tag tag) {
 	d->attributes.clear();
 }
 
-void XHtml11StreamWriter::writeEndElement() {
+void XHtml11StreamWriter::endElement() {
 	Q_D(XHtml11StreamWriter);
 	XHtml11StreamWriterPrivate::Entry entry(d->specialStack.pop());
 	switch(entry.tag) {
@@ -193,7 +190,7 @@ void XHtml11StreamWriter::writeEndElement() {
 	}
 }
 
-void XHtml11StreamWriter::writeCharacters(const QString& str) {
+void XHtml11StreamWriter::insertCharacters(const QString& str) {
 	Q_D(XHtml11StreamWriter);
 	d->xml.writeCharacters(str);
 }

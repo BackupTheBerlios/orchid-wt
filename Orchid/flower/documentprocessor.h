@@ -22,12 +22,11 @@ public:
 	void regStyle(const Style* style, const QString& prefix);
 	static QString defaultRoleName(Document::Role role);
 public:
-	virtual void nextLinksTo(const QString& url) = 0;
-	virtual void writeStartDocument(const DocumentHead &head = DocumentHead()) = 0;
-	virtual void writeEndDocument() = 0;
-	virtual void writeStartElement(Document::Tag tag) = 0;
-	virtual void writeEndElement() = 0;
-	virtual void writeCharacters(const QString& str) = 0;
+	virtual void startDocument(const DocumentHead &head = DocumentHead()) = 0;
+	virtual void endDocument() = 0;
+	virtual void startElement(Document::Tag tag) = 0;
+	virtual void endElement() = 0;
+	virtual void insertCharacters(const QString& str) = 0;
 	virtual void setAttribute(Document::Attribute attr, const QVariant& val) = 0;
 protected:
 	DocumentProcessor(DocumentProcessorPrivate* dd);

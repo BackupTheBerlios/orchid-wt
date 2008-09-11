@@ -16,12 +16,11 @@ public:
 	QXmlStreamWriter* xmlWriter();
 	void setDevice(QIODevice* device);
 public:
-	void nextLinksTo(const QString& url);
-	void writeStartDocument(const DocumentHead &head = DocumentHead());
-	void writeEndDocument();
-	void writeStartElement(Document::Tag special);
-	void writeEndElement();
-	void writeCharacters(const QString& str);
+	void startDocument(const DocumentHead &head = DocumentHead());
+	void endDocument();
+	void startElement(Document::Tag special);
+	void endElement();
+	void insertCharacters(const QString& str);
 	void setAttribute(Document::Attribute attr, const QVariant& val);
 private:
 	Q_DECLARE_PRIVATE(XHtml11StreamWriter)

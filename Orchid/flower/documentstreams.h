@@ -82,20 +82,20 @@ inline InlineStream::InlineStream(InlineStream& other)
 inline InlineStream::InlineStream(BlockStream& block)
 	: m_writer(block.writer()), m_inBlock(true) { }
 inline InlineStream::~InlineStream() 
-{ if(m_inBlock) m_writer->writeEndElement(); }
+{ if(m_inBlock) m_writer->endElement(); }
 	
 inline DocumentProcessor* InlineStream::writer() const { return m_writer; }
 inline InlineStream& InlineStream::operator<<(QChar c)
-{ m_writer->writeCharacters(c); return *this; }
+{ m_writer->insertCharacters(c); return *this; }
 inline InlineStream& InlineStream::operator<<(const QString& str)
-{ m_writer->writeCharacters(str); return *this; }
+{ m_writer->insertCharacters(str); return *this; }
 inline InlineStream& InlineStream::operator<<(InlineStream&(*fp)(InlineStream&))
 { return fp(*this); }
 
 inline InlineStream BlockStream::heading()
-{ m_writer->writeStartElement(TagHeading); return InlineStream(*this); }
+{ m_writer->startElement(TagHeading); return InlineStream(*this); }
 inline InlineStream BlockStream::paragraph()
-{ m_writer->writeStartElement(TagParagraph); return InlineStream(*this); }
+{ m_writer->startElement(TagParagraph); return InlineStream(*this); }
 inline InlineStream BlockStream::text()
 { return InlineStream(m_writer); }
 
@@ -189,9 +189,9 @@ class heading {
 public:
 	inline heading(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->writeStartElement(TagHeading);
-		s.writer()->writeCharacters(text);
-		s.writer()->writeEndElement();
+		s.writer()->startElement(TagHeading);
+		s.writer()->insertCharacters(text);
+		s.writer()->endElement();
 		return s;
 	}
 private:
@@ -202,9 +202,9 @@ class paragraph {
 public:
 	inline paragraph(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->writeStartElement(TagParagraph);
-		s.writer()->writeCharacters(text);
-		s.writer()->writeEndElement();
+		s.writer()->startElement(TagParagraph);
+		s.writer()->insertCharacters(text);
+		s.writer()->endElement();
 		return s;
 	}
 private:
@@ -216,7 +216,7 @@ public:
 	inline abbreviation(const QString& full) { this->full = full; }
 	inline InlineStream& apply(InlineStream& s) const {
 		s.writer()->setAttribute(AttributeInlineFullText, QVariant(full));
-		s.writer()->writeStartElement(TagTextAbbreviation);
+		s.writer()->startElement(TagTextAbbreviation);
 		return s;
 	}
 private:
