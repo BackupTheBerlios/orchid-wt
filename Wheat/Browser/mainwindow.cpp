@@ -150,7 +150,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	sample->setMainFragment(&m_fragment);
 	res->addResource("sample.html", sample);
 
-	res->addResource("resource.model", new Orchid::XmlModelResource(m_model));
+	res->addResource("resource.model", new Orchid::XmlModelResource(/*m_model*/));
 
 	res->addResource("image.jpg", new Orchid::ImageResource("test.jpg"));
 	

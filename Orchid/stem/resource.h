@@ -99,15 +99,6 @@ private:
 	Q_DECLARE_PRIVATE(ContainerResource)
 };
 
-class SimpleTextResource : public ::Orchid::Resource::IResource, public ::Orchid::Resource::IQueryable {
-public:
-	SimpleTextResource(const QString& text);
-public:
-	void query(Request* request);
-private:
-	QString m_text;
-};
-
 }
 
 #define ORCHID_DECLARE_INTERFACE(type) \
