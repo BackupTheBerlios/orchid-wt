@@ -124,24 +124,10 @@ void OrchidResource::query(Orchid::Request* request) {
 	writer.writeEndDocument();
 }
 
-Q_DECLARE_METATYPE(Orchid::ContainerResource)
-Q_DECLARE_METATYPE(OrchidResource);
-
-Orchid::Resource::IResource* createResource(const char* name) {
-	int type = QMetaType::type(name);
-	return static_cast<Orchid::Resource::IResource*>(QMetaType::construct(type));
-}
-
 MainWindow::MainWindow() : m_service(8000) {
 	using namespace Orchid;
 	
 	setupUi(this);
-	
-	qRegisterMetaType<Orchid::ContainerResource>();
-	qRegisterMetaType<OrchidResource>();
-
-	m_style.setHeading("background-color: red");
-	m_fragment.style = &m_style;
 	
 	ContainerResource *res = static_cast<ContainerResource*>(ResourceFactory::create("Container"));
 	
@@ -149,7 +135,9 @@ MainWindow::MainWindow() : m_service(8000) {
 	m_service.setRoot(m_root);
 	m_model = new Orchid::ResourceModel(res, this);
 	
-	OrchidResource *sample = static_cast<OrchidResource*>(createResource("OrchidResource"));
+	OrchidResource *sample = new OrchidResource();
+	m_style.setHeading("background-color: red");
+	m_fragment.style = &m_style;
 	sample->addStyle(&m_style);
 	sample->setMainFragment(&m_fragment);
 	res->addResource("sample.html", sample);
