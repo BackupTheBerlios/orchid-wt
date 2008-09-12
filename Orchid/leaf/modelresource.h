@@ -12,12 +12,10 @@ class ModelResourcePrivate;
 class ModelResource : public QObject, public Resource::IResource, public Resource::IDirectory {
 	Q_OBJECT
 public:
-	ModelResource();
-	ModelResource(QAbstractItemModel* model);
+	ModelResource(QAbstractItemModel* model = 0);
 	~ModelResource();
 public:
 	QAbstractItemModel* model() const;
-	// TODO add reseting to keeps
 	void setModel(QAbstractItemModel* model);
 	QStringList childs() const;
 	Orchid::Resource::Handle child(const QString&);

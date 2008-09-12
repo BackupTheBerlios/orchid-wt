@@ -46,11 +46,6 @@ void ModelItemResource::query(Orchid::Request* request) {
 }
 
 	
-ModelResource::ModelResource() {
-	d_ptr = new ModelResourcePrivate(this);
-	Q_ASSERT(false && "Don't use this method");
-}
-
 ModelResource::ModelResource(QAbstractItemModel* model) {
 	d_ptr = new ModelResourcePrivate(this);
 	Q_D(ModelResource);
@@ -62,7 +57,6 @@ ModelResource::ModelResource(ModelResourcePrivate* ptr, QAbstractItemModel* mode
 	Q_D(ModelResource);
 	d->model = model;
 }
-	
 
 ModelResource::~ModelResource() {
 	delete d_ptr;
@@ -72,6 +66,14 @@ QAbstractItemModel* ModelResource::model() const {
 	Q_D(const ModelResource);
 	return d->model;
 }
+
+void ModelResource::setModel(QAbstractItemModel* model) {
+	Q_D(ModelResource);
+	// TODO add reseting to keeps to allow changing from one model to another
+	Q_ASSERT(!d->model);
+	d->model = model;
+}
+
 
 QStringList ModelResource::childs() const {
 	return listChilds(QModelIndex());
@@ -89,6 +91,7 @@ Resource::Handle ModelResource::child(const QString& name) {
 }
 
 void ModelResource::query(Orchid::Request* request, const QModelIndex& index) {
+	if(!index.isValid()) return;
 	if(!request->open(QIODevice::ReadWrite)) return;
 	QTextStream stream(request);
 	stream << "<h1>" << index.data().toString() << "</h1>\n"
@@ -102,6 +105,8 @@ QString ModelResource::name(const QModelIndex& index) const {
 
 QModelIndex ModelResource::index(const QString& name, const QModelIndex& parent) const {
 	Q_D(const ModelResource);
+	if(!d->model) return QModelIndex();
+
 	QStringList parts = name.split('-');
 	int row = parts[0].toInt();
 // 	int col = parts[1].toInt();
@@ -110,6 +115,8 @@ QModelIndex ModelResource::index(const QString& name, const QModelIndex& parent)
 
 QStringList ModelResource::listChilds(const QModelIndex& parent) const {
 	Q_D(const ModelResource);
+	if(!d->model) return QStringList();
+
 	QStringList list;
 	int rows = d->model->rowCount(parent);
 	int cols = d->model->columnCount(parent);
