@@ -7,6 +7,7 @@ set(orchid_stem_SRC
 	location.cpp
 	request.cpp
 	resource.cpp
+	resourcefactory.cpp
 	resourcekeep.cpp
 	resourcemodel.cpp
 )

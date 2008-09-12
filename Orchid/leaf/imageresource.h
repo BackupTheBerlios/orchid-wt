@@ -16,6 +16,8 @@ public:
 	ImageResource(const QString& path);
 	ImageResource(const QImage& image);
 public:
+	void setPath(const QString& path);
+	void setImage(const QImage& image);
 	void query(Orchid::Request*);
 	void setScaling(int sizeX, int sizeY);
 protected:

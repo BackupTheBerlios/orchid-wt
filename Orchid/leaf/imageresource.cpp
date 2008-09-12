@@ -39,6 +39,16 @@ ImageResource::ImageResource(const QImage& image) {
 	d_ptr->image = image;
 }
 
+void ImageResource::setPath(const QString &path) {
+	Q_D(ImageResource);
+	d_ptr->path = path;
+}
+
+void ImageResource::setImage(const QImage &image) {
+	Q_D(ImageResource);
+	d_ptr->image = image;
+}
+
 void ImageResource::query(Orchid::Request* request) {
 	Q_D(ImageResource);
 	if(!(GetMethod & request->method())) return;

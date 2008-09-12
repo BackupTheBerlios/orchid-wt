@@ -15,6 +15,8 @@
 #include <stem/resourcemodel.h>
 #include <stem/location.h>
 
+#include <stem/resourcefactory.h>
+
 #include <flower/htmlstreams.h>
 
 #include <leaf/xmlmodelresource.h>
@@ -131,6 +133,8 @@ Orchid::Resource::IResource* createResource(const char* name) {
 }
 
 MainWindow::MainWindow() : m_service(8000) {
+	using namespace Orchid;
+	
 	setupUi(this);
 	
 	qRegisterMetaType<Orchid::ContainerResource>();
@@ -139,7 +143,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	m_style.setHeading("background-color: red");
 	m_fragment.style = &m_style;
 	
-	Orchid::ContainerResource *res = new Orchid::ContainerResource();
+	ContainerResource *res = static_cast<ContainerResource*>(ResourceFactory::create("Container"));
 	
 	m_root.init(res);
 	m_service.setRoot(m_root);
@@ -150,9 +154,13 @@ MainWindow::MainWindow() : m_service(8000) {
 	sample->setMainFragment(&m_fragment);
 	res->addResource("sample.html", sample);
 
-	res->addResource("resource.model", new Orchid::XmlModelResource(/*m_model*/));
+	XmlModelResource* xmlres = static_cast<XmlModelResource*>(ResourceFactory::create("XmlModel"));
+	xmlres->setModel(m_model);
+	res->addResource("resource.model", xmlres);
 
-	res->addResource("image.jpg", new Orchid::ImageResource("test.jpg"));
+	ImageResource* imgres = static_cast<ImageResource*>(ResourceFactory::create("Image"));
+	imgres->setPath("test.jpg");
+	res->addResource("image.jpg", imgres);
 	
 	Gallery* gal = new Gallery();
 	gal->insertFile("image.jpg", "test.jpg");
