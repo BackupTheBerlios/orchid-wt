@@ -2,53 +2,13 @@
 
 #include <QtCore/QStringList>
 #include <QtCore/QMap>
+#include <QtCore/QPluginLoader>
+#include <QtCore/QtDebug>
 
-// TODO remove this cross-library includes
-#include <leaf/xmlmodelresource.h>
-#include <leaf/imageresource.h>
-#include <leaf/imagecollection.h>
 #include "resourcefactory.h"
+#include "extensionplugin.h"
 
 namespace Orchid {
-
-// TODO move the plugin-classes out into plugins
-class ImageResourceFactory : public ResourceFactoryHelper {
-	QStringList keys() const {
-		QStringList list;
-		list << "Image";
-		list << "ImageCollection";
-		return list;
-	}
-	Resource::IResource *create(const QString &key) {
-		Resource::IResource *res = 0;
-		if(key == "Image") {
-			res = new ImageResource();
-		} else if(key == "ImageCollection") {
-			res = new ImageCollection();
-		}
-		return res;
-	}
-};
-	
-class ModelResourceFactory : public ResourceFactoryHelper {
-	QStringList keys() const {
-		QStringList list;
-		list << "Model";
-		list << "XmlModel";
-		return list;
-	}
-	Resource::IResource *create(const QString &key) {
-		Resource::IResource *res = 0;
-		if(key == "Model") {
-			res = new ModelResource();
-		} else if(key == "XmlModel") {
-			res = new XmlModelResource();
-		}
-		return res;
-	}
-};
-
-
 
 class ExtensionManagerPrivate {
 public:
@@ -58,27 +18,38 @@ public:
 };
 
 ExtensionManagerPrivate::ExtensionManagerPrivate() {
-	// TODO load helpers from plugins
-	
-	FactoryHelper* helper = new ImageResourceFactory();
-	{
-		QStringList keys = helper->keys();
-		QStringList::iterator it;
-		for(it = keys.begin(); it != keys.end(); ++it) {
-			lookup.insert(*it, helper);
-		}
-	}
-	helper = new ModelResourceFactory();
-	{
-		QStringList keys = helper->keys();
-		QStringList::iterator it;
-		for(it = keys.begin(); it != keys.end(); ++it) {
-			lookup.insert(*it, helper);
-		}
-	}
 }
 
 Q_GLOBAL_STATIC(ExtensionManagerPrivate, extensionManager);
+
+bool ExtensionManager::loadExtension(const QString &path) {
+	ExtensionManagerPrivate *d = extensionManager();
+	
+	QPluginLoader loader(path);
+	if(loader.load()) {
+		QObject *plugin = loader.instance();
+		ExtensionPluginInterface *iface = qobject_cast<ExtensionPluginInterface*>(plugin);
+	
+		if(iface) {
+			QList<FactoryHelper*> helpers = iface->helpers();
+			QList<FactoryHelper*>::const_iterator i;
+			for(i = helpers.begin(); i != helpers.end(); ++i) {
+				// TODO read category from helper
+				QStringList keys = (*i)->keys();
+				QStringList::iterator j;
+				for(j = keys.begin(); j != keys.end(); ++j) {
+					d->lookup.insert(*j, *i);
+				}
+			}
+			return true;
+		} else {
+			qWarning() << "Plugin is not an Orchid-extension" << path;
+		}
+	} else {
+		qWarning() << "Could not load plugin:" << loader.errorString();
+	}
+	return false;
+}
 
 QStringList ExtensionManager::keys(const QString &category) {
 	// TODO use category for lookups

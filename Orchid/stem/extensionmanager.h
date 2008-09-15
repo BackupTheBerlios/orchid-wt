@@ -17,6 +17,7 @@ public:
 
 class ExtensionManager {
 public:
+	static bool loadExtension(const QString &path);
 	static QStringList keys(const QString &category);
 	static FactoryHelper *helper(const QString &category, const QString &key);
 };

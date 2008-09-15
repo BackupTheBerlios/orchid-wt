@@ -131,6 +131,9 @@ MainWindow::MainWindow() : m_service(8000) {
 	
 	ContainerResource *res = static_cast<ContainerResource*>(ResourceFactory::create("Container"));
 	
+	ExtensionManager::loadExtension("Orchid/leaf/libimageplugin.so");
+	ExtensionManager::loadExtension("Orchid/leaf/libmodelplugin.so");
+	
 	m_root.init(res);
 	m_service.setRoot(m_root);
 	m_model = new Orchid::ResourceModel(res, this);
