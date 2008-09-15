@@ -127,4 +127,32 @@ QStringList ModelResource::listChilds(const QModelIndex& parent) const {
 	return list;
 }
 
+QList<Resource::IConfigurable::Option> ModelResource::optionList() const {
+	return QList<Option>() << Option("model", qMetaTypeId<QObject*>());
+}
+
+QVariant ModelResource::option(const QString &option) const {
+	Q_D(const ModelResource);
+	if(option == "model")
+		return QVariant(d->model);
+	return QVariant();
+}
+
+bool ModelResource::setOption(const QString &option, const QVariant &value) {
+	if(option == "model") {
+		if(value.isNull()) {
+			setModel(0);
+			return true;
+		} else {
+			QObject *object = value.value<QObject*>();
+			QAbstractItemModel *model = qobject_cast<QAbstractItemModel*>(object);
+			if(model) {
+				setModel(model);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 }

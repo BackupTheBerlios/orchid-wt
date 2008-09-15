@@ -83,16 +83,20 @@ QVariant Gallery::option(const QString& name) const {
 
 bool Gallery::setOption(const QString& name, const QVariant& value) {
 	Q_D(Gallery);
+	bool result = false;
 	if(name == "urls") {
 	}
 	if(name == "title") {
 		d->title = value.toString();
+		result = true;
 	}
 	if(name == "thumbnail-width") {
 		d->thumbs->setWidth(value.toInt());
+		result = true;
 	}
 	if(name == "thumbnail-height") {
 		d->thumbs->setHeight(value.toInt());
+		result = true;
 	}
-	return false;
+	return result;
 }

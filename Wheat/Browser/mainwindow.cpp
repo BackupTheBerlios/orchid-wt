@@ -145,12 +145,14 @@ MainWindow::MainWindow() : m_service(8000) {
 	sample->setMainFragment(&m_fragment);
 	res->addResource("sample.html", sample);
 
-	XmlModelResource* xmlres = static_cast<XmlModelResource*>(ResourceFactory::create("XmlModel"));
-	xmlres->setModel(m_model);
+	Resource::IResource *xmlres = ResourceFactory::create("XmlModel");
+	Resource::IConfigurable *config = Resource::cast<Resource::IConfigurable*>(xmlres);
+	config->setOption("model", qVariantFromValue<QObject*>(m_model));
 	res->addResource("resource.model", xmlres);
-
-	ImageResource* imgres = static_cast<ImageResource*>(ResourceFactory::create("Image"));
-	imgres->setPath("test.jpg");
+	
+	Resource::IResource *imgres = ResourceFactory::create("Image");
+	config = Resource::cast<Resource::IConfigurable*>(imgres);
+	config->setOption("path", "test.jpg");
 	res->addResource("image.jpg", imgres);
 	
 	Gallery* gal = new Gallery();

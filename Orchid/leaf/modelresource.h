@@ -9,7 +9,12 @@ class QModelIndex;
 namespace Orchid {
 
 class ModelResourcePrivate;
-class ModelResource : public QObject, public Resource::IResource, public Resource::IDirectory {
+class ModelResource :
+	public QObject,
+	public Resource::IResource,
+	public Resource::IDirectory,
+	public Resource::IConfigurable
+{
 	Q_OBJECT
 public:
 	ModelResource(QAbstractItemModel* model = 0);
@@ -24,6 +29,9 @@ public:
 	virtual QString name(const QModelIndex& index) const;
 	virtual QModelIndex index(const QString& name, const QModelIndex& parent) const;
 	virtual QStringList listChilds(const QModelIndex& index) const;
+	virtual QList<Option> optionList() const;
+	virtual QVariant option(const QString&) const;
+	virtual bool setOption(const QString&, const QVariant&);
 protected:
 	ModelResource(ModelResourcePrivate* ptr, QAbstractItemModel* model);
 	ModelResourcePrivate* d_ptr;

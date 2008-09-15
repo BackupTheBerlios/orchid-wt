@@ -1,6 +1,7 @@
 #include "imageresource.h" 
 
 #include <stem/request.h>
+#include <QtCore/QVariant>
 #include <QtGui/QImage>
 
 namespace Orchid {
@@ -74,6 +75,57 @@ void ImageResource::setScaling(int sizeX, int sizeY) {
 	d->useScaling = true;
 	d->sizeX = sizeX;
 	d->sizeY = sizeY;
+}
+
+QList<Resource::IConfigurable::Option> ImageResource::optionList() const {
+	QList<Option> optionList;
+	optionList << Option("path", qMetaTypeId<QString>());
+	optionList << Option("image", qMetaTypeId<QImage>());
+	optionList << Option("use-scaling", qMetaTypeId<bool>());
+	optionList << Option("width", qMetaTypeId<int>());
+	optionList << Option("height", qMetaTypeId<int>());
+	return optionList;
+}
+
+QVariant ImageResource::option(const QString &option) const {
+	Q_D(const ImageResource);
+	QVariant res;
+	if(option == "path")
+		res = QVariant(d->path);
+	else if(option == "image")
+		res = QVariant(d->image);
+	else if(option == "use-scaling")
+		res = QVariant(d->useScaling);
+	else if(option == "width")
+		res = QVariant(d->sizeX);
+	else if(option == "height")
+		res = QVariant(d->sizeY);
+	return res;
+}
+
+bool ImageResource::setOption(const QString &option, const QVariant &value) {
+	Q_D(ImageResource);
+	bool result = false;
+	int size;
+	if(option == "path") {
+		d->path = value.toString();
+		d->image = QImage();
+		result = true;
+	} else if(option == "image") {
+		d->path.clear();
+		d->image = value.value<QImage>();
+		result = true;
+	} else if(option == "use-scaling") {
+		d->useScaling = value.toBool();
+		result = true;
+	} else if(option == "width" && (size = value.toInt()) > 0) {
+		d->sizeX = value.toInt();
+		result = true;
+	} else if(option == "height" && (size = value.toInt()) > 0) {
+		d->sizeY = value.toInt();
+		result = true;
+	}
+	return result;
 }
 
 }
