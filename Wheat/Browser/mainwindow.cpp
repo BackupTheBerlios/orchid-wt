@@ -19,9 +19,6 @@
 
 #include <flower/htmlstreams.h>
 
-#include <leaf/xmlmodelresource.h>
-#include <leaf/imageresource.h>
-
 #include "gallery.h"
 #include "resourceconfig.h"
 

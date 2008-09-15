@@ -6,28 +6,44 @@
 #include <QtCore/QVariant>
 #include <QtXml/QXmlStreamWriter>
 
-#include <leaf/imagecollection_p.h>
+#include <leaf/imagecollection.h>
 
-class GalleryPrivate : public Orchid::ImageCollectionPrivate {
+class GalleryPrivate {
 	Q_DECLARE_PUBLIC(Gallery)
 public:
 	GalleryPrivate(Gallery* gal);
+protected:
+	Gallery *q_ptr;
 private:
+	Orchid::ImageCollection *collection;
 	Orchid::ImageCollectionScaling *thumbs;
 	QString title;
 };
 
-GalleryPrivate::GalleryPrivate(Gallery* gal)
-	: Orchid::ImageCollectionPrivate(gal)
-{
+GalleryPrivate::GalleryPrivate(Gallery* gal) {
+	q_ptr = gal;
 	title = "Gallery";
+	collection = 0;
 	thumbs = 0;
 }
 
-Gallery::Gallery() : ImageCollection(new GalleryPrivate(this)) {
+Gallery::Gallery() {
+	d_ptr = new GalleryPrivate(this);
 	Q_D(Gallery);
 	d->thumbs = new Orchid::ImageCollectionScaling(160, 160);
-	insertModification("thumbs", d->thumbs);
+	d->collection = new Orchid::ImageCollection();
+	d->collection->insertModification("thumbs", d->thumbs);
+}
+
+Gallery::~Gallery() {
+	Q_D(Gallery);
+	delete d->collection;
+	delete d_ptr;
+}
+
+void Gallery::insertFile(const QString &name, const QString &file) {
+	Q_D(Gallery);
+	d->collection->insertFile(name, file);
 }
 
 void Gallery::query(Orchid::Request *request) {
@@ -46,7 +62,7 @@ void Gallery::query(Orchid::Request *request) {
 	writer.writeStartElement(Orchid::HtmlTagHeading);
 	writer.writeCharacters(d->title);
 	writer.writeEndElement();
-	foreach(QString name, images()) {
+	foreach(QString name, d->collection->images()) {
 		writer.xmlWriter()->writeStartElement("a");
 		writer.xmlWriter()->writeAttribute("href", request->url(request->location().relative(name)));
 		writer.xmlWriter()->writeEmptyElement("img");
@@ -54,6 +70,16 @@ void Gallery::query(Orchid::Request *request) {
 		writer.xmlWriter()->writeEndElement();
 	}
 	writer.writeEndDocument();
+}
+
+QStringList Gallery::childs() const {
+	Q_D(const Gallery);
+	return d->collection->childs();
+}
+
+Orchid::Resource::Handle Gallery::child(const QString &name) {
+	Q_D(Gallery);
+	return d->collection->child(name);
 }
 
 QList<Orchid::Resource::IConfigurable::Option> Gallery::optionList() const {
