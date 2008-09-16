@@ -14,6 +14,7 @@ public:
 	Gallery();
 	~Gallery();
 public:
+	void setTitle(const QString &title);
 	void insertFile(const QString &name, const QString &file);
 	
 	void query(Orchid::Request*);

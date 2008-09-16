@@ -19,7 +19,6 @@
 
 #include <flower/htmlstreams.h>
 
-#include "gallery.h"
 #include "resourceconfig.h"
 
 
@@ -130,6 +129,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	
 	ExtensionManager::loadExtension("Orchid/leaf/libimageplugin.so");
 	ExtensionManager::loadExtension("Orchid/leaf/libmodelplugin.so");
+	ExtensionManager::loadExtension("Examples/Gallery/libgalleryplugin.so");
 	
 	m_root.init(res);
 	m_service.setRoot(m_root);
@@ -152,7 +152,10 @@ MainWindow::MainWindow() : m_service(8000) {
 	config->setOption("path", "test.jpg");
 	res->addResource("image.jpg", imgres);
 	
-	Resource::IResource *gal = new Gallery();
+	Resource::IResource *demo = ResourceFactory::create("GalleryDemo");
+	res->addResource("demo", demo);	
+	
+	Resource::IResource *gal = ResourceFactory::create("Gallery");
 	config = Resource::cast<Resource::IConfigurable*>(gal);
 	config->setOption("urls", QStringList() << "image.jpg:test.jpg" << "test.jpg:test.jpg");
 	res->addResource("gallery", gal);

@@ -4,7 +4,6 @@ include_directories(
 )
 
 set(orchid_browser_SRC
-	gallery.cpp
 	main.cpp
 	mainwindow.cpp
 	resourceconfig.cpp

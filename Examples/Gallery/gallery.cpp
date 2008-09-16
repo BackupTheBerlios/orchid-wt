@@ -47,6 +47,11 @@ Gallery::~Gallery() {
 	delete d_ptr;
 }
 
+void Gallery::setTitle(const QString &title) {
+	Q_D(Gallery);
+	d->title = title;
+}
+
 void Gallery::insertFile(const QString &name, const QString &file) {
 	Q_D(Gallery);
 	IResource *image = ResourceFactory::create("Image");
