@@ -154,11 +154,6 @@ MainWindow::MainWindow() : m_service(8000) {
 	
 	Resource::IResource *demo = ResourceFactory::create("GalleryDemo");
 	res->addResource("demo", demo);	
-	
-	Resource::IResource *gal = ResourceFactory::create("Gallery");
-	config = Resource::cast<Resource::IConfigurable*>(gal);
-	config->setOption("urls", QStringList() << "image.jpg:test.jpg" << "test.jpg:test.jpg");
-	res->addResource("gallery", gal);
 
 	treeView->setModel(m_model);
 	connect(treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activateResource(const QModelIndex&)));
