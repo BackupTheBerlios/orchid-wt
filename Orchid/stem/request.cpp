@@ -5,6 +5,7 @@
 #include "resourcekeep.h"
 
 #include <QtCore/QUrl>
+#include <QtCore/QtDebug>
 
 namespace Orchid {
 
@@ -56,10 +57,12 @@ bool Request::query() {
 	Resource::IResource* resource = d->resource.resource();
 	Resource::IQueryable* res = Resource::cast<Resource::IQueryable*>(resource);
 	if(!res) {
+		qWarning() << "Request not found:" << d->location.path();
 // 		setStatus(RequestNotFound);
 		return false;
 	}
 
+	qDebug() << "Process request:" << d->location.path();
 	res->query(this);
 	return true;
 }

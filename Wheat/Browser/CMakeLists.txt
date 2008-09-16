@@ -6,11 +6,17 @@ include_directories(
 set(orchid_browser_SRC
 	main.cpp
 	mainwindow.cpp
+	resourceconfig.cpp
+	stringlistedit.cpp
 )
 
 qt4_automoc(${orchid_browser_SRC})
 
-qt4_wrap_ui(orchid_browser_SRC mainwindow.ui)
+qt4_wrap_ui(orchid_browser_SRC
+	mainwindow.ui
+	resourceconfig.ui
+	stringlistedit.ui
+)
 
 add_executable(orchid-browser ${orchid_browser_SRC})
 
@@ -19,6 +25,5 @@ target_link_libraries(orchid-browser
 	orchid-flower
 	orchid-root
 	orchid-stem
-	orchid-leaf
 )
  

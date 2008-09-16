@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/" >
+        <file alias="flower.jpg">../Commons/flower.jpg</file>
+        <file alias="flower2.jpg">../Commons/flower2.jpg</file>
+        <file alias="forest.jpg">../Commons/forest.jpg</file>
+        <file alias="geranium.jpg">../Commons/geranium.jpg</file>
+        <file alias="tree.jpg">../Commons/tree.jpg</file>
+    </qresource>
+</RCC>

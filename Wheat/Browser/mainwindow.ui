@@ -13,22 +13,27 @@
    <string>Orchid Browser</string>
   </property>
   <widget class="QWidget" name="centralwidget" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>25</y>
-     <width>601</width>
-     <height>395</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout_2" >
+   <layout class="QVBoxLayout" name="verticalLayout_3" >
     <item>
      <widget class="QSplitter" name="splitter" >
       <property name="orientation" >
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QTreeView" name="treeView" />
       <widget class="QWidget" name="" >
+       <layout class="QVBoxLayout" name="verticalLayout_2" >
+        <item>
+         <widget class="QTreeView" name="treeView" />
+        </item>
+        <item>
+         <widget class="QPushButton" name="configButton" >
+          <property name="text" >
+           <string>Configure</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="layoutWidget" >
        <layout class="QVBoxLayout" name="verticalLayout" >
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3" >
@@ -57,14 +62,6 @@
            <number>0</number>
           </property>
           <widget class="QWidget" name="tab" >
-           <property name="geometry" >
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>437</width>
-             <height>318</height>
-            </rect>
-           </property>
            <attribute name="title" >
             <string>Web View</string>
            </attribute>
@@ -81,14 +78,6 @@
            </layout>
           </widget>
           <widget class="QWidget" name="tab_2" >
-           <property name="geometry" >
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>265</width>
-             <height>372</height>
-            </rect>
-           </property>
            <attribute name="title" >
             <string>Source View</string>
            </attribute>
@@ -123,16 +112,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar" >
-   <property name="geometry" >
-    <rect>
-     <x>0</x>
-     <y>420</y>
-     <width>601</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
+  <widget class="QStatusBar" name="statusbar" />
  </widget>
  <customwidgets>
   <customwidget>

@@ -69,8 +69,10 @@ QAbstractItemModel* ModelResource::model() const {
 
 void ModelResource::setModel(QAbstractItemModel* model) {
 	Q_D(ModelResource);
-	// TODO add reseting to keeps to allow changing from one model to another
-	Q_ASSERT(!d->model);
+	if(d->model == model) return;
+	if(d->model) {
+		d->keep.resetAll();
+	}
 	d->model = model;
 }
 
@@ -119,12 +121,40 @@ QStringList ModelResource::listChilds(const QModelIndex& parent) const {
 
 	QStringList list;
 	int rows = d->model->rowCount(parent);
-	int cols = d->model->columnCount(parent);
+// 	int cols = d->model->columnCount(parent);
 	for(int i = 0; i < rows; ++i) {
 // 		for(int j = 0; j < cols; ++j)
 			list.append(name(d->model->index(i, 0, parent)));
 	}
 	return list;
+}
+
+QList<Resource::IConfigurable::Option> ModelResource::optionList() const {
+	return QList<Option>() << Option("model", qMetaTypeId<QObject*>());
+}
+
+QVariant ModelResource::option(const QString &option) const {
+	Q_D(const ModelResource);
+	if(option == "model")
+		return QVariant(d->model);
+	return QVariant();
+}
+
+bool ModelResource::setOption(const QString &option, const QVariant &value) {
+	if(option == "model") {
+		if(value.isNull()) {
+			setModel(0);
+			return true;
+		} else {
+			QObject *object = value.value<QObject*>();
+			QAbstractItemModel *model = qobject_cast<QAbstractItemModel*>(object);
+			if(model) {
+				setModel(model);
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 }

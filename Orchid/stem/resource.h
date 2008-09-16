@@ -45,19 +45,46 @@ public:
 	virtual Handle child(const QString& name) = 0;
 };
 
+class IContainer : public IDirectory {
+public:
+	virtual bool addResource(const QString& name, Resource::IResource* res) = 0;
+};
+
 class IRedirecting {
+public:
+	virtual ~IRedirecting() {}
 public:
 	virtual Handle locate(const QUrl& url) = 0;
 };
 
 class IQueryable {
 public:
+	virtual ~IQueryable() {}
+public:
 	virtual void query(Request* request) = 0;
 };
 
 class IDynamic {
 public:
+	virtual ~IDynamic() {}
+public:
 	virtual bool provides(InterfaceId id) = 0;
+};
+
+class IConfigurable {
+public:
+	virtual ~IConfigurable() {}
+public:
+	typedef QPair<QString,int> Option;
+public:
+	virtual QList<Option> optionList() const = 0;
+	virtual QVariant option(const QString& option) const = 0;
+	virtual bool setOption(const QString& option, const QVariant& value) = 0;
+};
+
+class IAdvancedConfigurable : public IConfigurable {
+public:
+	virtual QVariant optionProperty(const QString& option, const QString& property) const = 0;
 };
 
 template <class T>
@@ -71,7 +98,7 @@ inline T cast(IResource* res) {
 }
 
 class ContainerResourcePrivate;
-class ContainerResource : public Resource::IResource, public Resource::IDirectory {
+class ContainerResource : public Resource::IResource, public Resource::IContainer {
 public:
 	ContainerResource();
 	~ContainerResource();
@@ -100,8 +127,11 @@ struct OrchidInterfaceIdDecl<type*> { \
 };
 
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IDirectory);
+ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IContainer);
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IRedirecting);
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IQueryable);
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IDynamic);
+ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IConfigurable);
+ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IAdvancedConfigurable);
 
 #endif

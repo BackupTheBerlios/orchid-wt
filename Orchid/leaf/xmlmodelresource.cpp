@@ -36,7 +36,6 @@ void XmlModelResource::query(Orchid::Request* request) {
 }
 
 void XmlModelResource::query(Orchid::Request* request, const QModelIndex& index) {
-	Q_D(XmlModelResource);
 	if(!model()) return;
 
 	if(!request->open(QIODevice::ReadWrite)) return;
