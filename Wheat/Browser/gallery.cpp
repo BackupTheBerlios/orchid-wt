@@ -83,8 +83,8 @@ Orchid::Resource::Handle Gallery::child(const QString &name) {
 }
 
 QList<Orchid::Resource::IConfigurable::Option> Gallery::optionList() const {
-	QList<Option> list;
-	list << Option("urls", qMetaTypeId<QStringList>());
+	Q_D(const Gallery);
+	QList<Option> list(d->collection->optionList());
 	list << Option("title", qMetaTypeId<QString>());
 	list << Option("thumbnail-width", qMetaTypeId<int>());
 	list << Option("thumbnail-height", qMetaTypeId<int>());
@@ -93,8 +93,6 @@ QList<Orchid::Resource::IConfigurable::Option> Gallery::optionList() const {
 
 QVariant Gallery::option(const QString& name) const {
 	Q_D(const Gallery);
-	if(name == "urls") {
-	}
 	if(name == "title") {
 		return d->title;
 	}
@@ -104,14 +102,12 @@ QVariant Gallery::option(const QString& name) const {
 	if(name == "thumbnail-height") {
 		return d->thumbs->height();
 	}
-	return QVariant();
+	return d->collection->option(name);
 }
 
 bool Gallery::setOption(const QString& name, const QVariant& value) {
 	Q_D(Gallery);
 	bool result = false;
-	if(name == "urls") {
-	}
 	if(name == "title") {
 		d->title = value.toString();
 		result = true;
@@ -123,6 +119,9 @@ bool Gallery::setOption(const QString& name, const QVariant& value) {
 	if(name == "thumbnail-height") {
 		d->thumbs->setHeight(value.toInt());
 		result = true;
+	}
+	if(!result) {
+		result = d->collection->setOption(name, value);
 	}
 	return result;
 }

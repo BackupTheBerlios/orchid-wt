@@ -10,7 +10,11 @@ class ImageResource;
 class ImageCollectionMod;
 
 class ImageCollectionPrivate;
-class ImageCollection : public Resource::IResource, public Resource::IDirectory {
+class ImageCollection : 
+	public Resource::IResource,
+	public Resource::IDirectory,
+	public Resource::IConfigurable
+{
 public:
 	ImageCollection();
 	ImageCollection(const QVector<QPair<QString,QString> > &files);
@@ -18,10 +22,13 @@ public:
 public:
 	bool insertFile(const QString &name, const QString &path);
 	bool insertModification(const QString &name, ImageCollectionMod* mod);
-	QStringList childs() const;
 	QStringList images() const;
-	Resource::Handle child(const QString&);
 	QString path(const QString &name) const;
+	QStringList childs() const;
+	Resource::Handle child(const QString&);
+	QList<Option> optionList() const;
+	QVariant option(const QString &option) const;
+	bool setOption(const QString &option, const QVariant &value);
 protected:
 	ImageCollection(ImageCollectionPrivate*);
 	ImageCollectionPrivate* d_ptr;

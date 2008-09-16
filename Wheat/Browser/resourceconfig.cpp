@@ -7,6 +7,8 @@
 #include <QtGui/QSpinBox>
 #include <QtGui/QLineEdit>
 
+#include "stringlistedit.h"
+
 using namespace Orchid;
 using namespace Orchid::Resource;
 typedef IConfigurable::Option Option;
@@ -49,6 +51,11 @@ void ResourceConfig::setupConfig() {
 			QLineEdit* lineEdit = new QLineEdit(m_resource->option(option.first).toString());
 			layout->addWidget(lineEdit, row, 1);
 			m_widgets[row] = lineEdit;
+		} else if(option.second == qMetaTypeId<QStringList>()) {
+			StringListEdit *listEdit = new StringListEdit();
+			listEdit->setList(m_resource->option(option.first).toStringList());
+			layout->addWidget(listEdit, row, 1);
+			m_widgets[row] = listEdit;
 		} else {
 			layout->addWidget(new QLabel("< Option-type not supportet >"), row, 1);
 			m_widgets[row] = 0;
@@ -67,6 +74,9 @@ void ResourceConfig::accept() {
 		} else if(option.second == qMetaTypeId<QString>()) {
 			QLineEdit* lineEdit = static_cast<QLineEdit*>(m_widgets[row]);
 			m_resource->setOption(option.first, lineEdit->text());
+		} else if(option.second == qMetaTypeId<QStringList>()) {
+			StringListEdit *listEdit = static_cast<StringListEdit*>(m_widgets[row]);
+			m_resource->setOption(option.first, listEdit->list());
 		}
 		++row;
 	}

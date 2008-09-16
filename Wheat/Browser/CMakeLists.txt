@@ -8,11 +8,16 @@ set(orchid_browser_SRC
 	main.cpp
 	mainwindow.cpp
 	resourceconfig.cpp
+	stringlistedit.cpp
 )
 
 qt4_automoc(${orchid_browser_SRC})
 
-qt4_wrap_ui(orchid_browser_SRC mainwindow.ui resourceconfig.ui)
+qt4_wrap_ui(orchid_browser_SRC
+	mainwindow.ui
+	resourceconfig.ui
+	stringlistedit.ui
+)
 
 add_executable(orchid-browser ${orchid_browser_SRC})
 

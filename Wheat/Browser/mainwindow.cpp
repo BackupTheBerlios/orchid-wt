@@ -152,9 +152,9 @@ MainWindow::MainWindow() : m_service(8000) {
 	config->setOption("path", "test.jpg");
 	res->addResource("image.jpg", imgres);
 	
-	Gallery* gal = new Gallery();
-	gal->insertFile("image.jpg", "test.jpg");
-	gal->insertFile("test.jpg", "test.jpg");
+	Resource::IResource *gal = new Gallery();
+	config = Resource::cast<Resource::IConfigurable*>(imgres);
+	config->setOption("urls", QStringList() << "image.jpg:test.jpg" << "test.jpg:test.jpg");
 	res->addResource("gallery", gal);
 
 	treeView->setModel(m_model);

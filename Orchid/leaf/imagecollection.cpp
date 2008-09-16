@@ -6,6 +6,7 @@
 #include "imageresource.h"
 #include <QtCore/QHash>
 #include <QtCore/QtDebug>
+#include <QtCore/QVariant>
 
 namespace Orchid {
 
@@ -97,6 +98,45 @@ QString ImageCollection::path(const QString &name) const {
 	Q_D(const ImageCollection);
 	return d->files.value(name);
 }
+
+QList<Resource::IConfigurable::Option> ImageCollection::optionList() const {
+	QList<Option> optionList;
+	optionList << Option("urls", qMetaTypeId<QStringList>());
+	return optionList;
+}
+
+QVariant ImageCollection::option(const QString &option) const {
+	Q_D(const ImageCollection);
+	QVariant result;
+	if(option == "urls") {
+		QStringList list;
+		QHash<QString,QString>::const_iterator it;
+		for(it = d->files.begin(); it != d->files.end(); ++it) {
+			list << it.key() + ':' + it.value();
+		}
+		result.setValue(list);
+	}
+	return result;
+}
+
+bool ImageCollection::setOption(const QString &option, const QVariant &value) {
+	Q_D(ImageCollection);
+	if(option == "urls") {
+		QStringList list = value.toStringList();
+		QStringList::iterator it;
+		d->files.clear();
+		d->namelist.clear();
+		for(it = list.begin(); it != list.end(); ++it) {
+			// TODO check for mods
+			int pos = it->indexOf(':');
+			QString name(it->left(pos));
+			d->files.insert(name, it->right(it->size()-pos-1));
+			d->namelist.append(name);
+		}
+	}
+	return false;
+}
+
 
 ImageCollectionModPrivate::ImageCollectionModPrivate(ImageCollectionMod* mod) {
 	q_ptr = mod;
