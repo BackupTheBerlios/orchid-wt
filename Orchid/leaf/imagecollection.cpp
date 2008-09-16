@@ -227,6 +227,10 @@ ImageCollectionScalingPrivate::ImageCollectionScalingPrivate(
 	height = 100;
 }
 
+ImageCollectionScaling::ImageCollectionScaling()
+	: ImageCollectionMod(new ImageCollectionScalingPrivate(this))
+{ }
+
 ImageCollectionScaling::ImageCollectionScaling(int width, int height)
 	: ImageCollectionMod(new ImageCollectionScalingPrivate(this))
 {

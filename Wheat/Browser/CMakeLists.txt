@@ -26,6 +26,5 @@ target_link_libraries(orchid-browser
 	orchid-flower
 	orchid-root
 	orchid-stem
-	orchid-leaf
 )
  

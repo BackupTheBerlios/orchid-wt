@@ -60,6 +60,7 @@ class ImageCollectionScalingPrivate;
 class ImageCollectionScaling : public ImageCollectionMod, public Resource::IConfigurable
 {
 public:
+	ImageCollectionScaling();
 	ImageCollectionScaling(int width, int height);
 public:
 	int width() const;
