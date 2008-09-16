@@ -119,7 +119,7 @@ QStringList ModelResource::listChilds(const QModelIndex& parent) const {
 
 	QStringList list;
 	int rows = d->model->rowCount(parent);
-	int cols = d->model->columnCount(parent);
+// 	int cols = d->model->columnCount(parent);
 	for(int i = 0; i < rows; ++i) {
 // 		for(int j = 0; j < cols; ++j)
 			list.append(name(d->model->index(i, 0, parent)));

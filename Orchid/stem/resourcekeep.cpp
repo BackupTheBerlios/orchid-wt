@@ -224,6 +224,7 @@ Handle& Handle::operator=(const Handle& other) {
 		}
 	}
 	m_item = other.m_item;
+	return *this;
 }
 
 bool Handle::operator==(const Handle &other) const {

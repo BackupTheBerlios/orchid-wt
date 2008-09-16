@@ -167,9 +167,6 @@ MainWindow::MainWindow() : m_service(8000) {
 }
 
 void MainWindow::activateResource(const QModelIndex& index) {
-	Orchid::Resource::Handle handle(m_model->resource(index));
-	Orchid::Resource::IQueryable* res = dynamic_cast<Orchid::Resource::IQueryable*>(handle.resource());
-
 	QString path = m_model->path(index);
 	reader.get(path, &result);
 }

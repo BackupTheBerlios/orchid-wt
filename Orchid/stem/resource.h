@@ -52,20 +52,28 @@ public:
 
 class IRedirecting {
 public:
+	virtual ~IRedirecting() {}
+public:
 	virtual Handle locate(const QUrl& url) = 0;
 };
 
 class IQueryable {
+public:
+	virtual ~IQueryable() {}
 public:
 	virtual void query(Request* request) = 0;
 };
 
 class IDynamic {
 public:
+	virtual ~IDynamic() {}
+public:
 	virtual bool provides(InterfaceId id) = 0;
 };
 
 class IConfigurable {
+public:
+	virtual ~IConfigurable() {}
 public:
 	typedef QPair<QString,int> Option;
 public:
