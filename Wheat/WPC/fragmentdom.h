@@ -5,7 +5,7 @@
 #include <QtCore/QVector>
 #include <QtCore/QString>
 
-#include <flower/htmlstreamwriter.h>
+#include <flower/documentenums.h>
 
 namespace Orchid {
 
@@ -31,7 +31,7 @@ public:
 
 class DomElement : public DomNode {
 public:
-	virtual HtmlTag tag() const;
+	virtual Document::Tag tag() const;
 	virtual bool append(DomNode* node);
 	QVector<DomNode*> childs() const;
 protected:
@@ -51,21 +51,21 @@ private:
 
 class DomSection : public DomElement {
 public:
-	HtmlTag tag() const;
+	Document::Tag tag() const;
 	DomNodeType type() const;
 	bool append(DomNode* node);
 };
 
 class DomHeading : public DomElement {
 public:
-	HtmlTag tag() const;
+	Document::Tag tag() const;
 	virtual DomNodeType type() const;
 	bool append(DomNode* node);
 };
 
 class DomParagraph : public DomElement {
 public:
-	HtmlTag tag() const;
+	Document::Tag tag() const;
 	virtual DomNodeType type() const;
 	bool append(DomNode* node);
 };
@@ -78,13 +78,13 @@ public:
 
 class DomTextElement : public DomElement {
 public:
-	DomTextElement(HtmlTag tag);
+	DomTextElement(Document::Tag tag);
 public:
-	HtmlTag tag() const;
+	Document::Tag tag() const;
 	DomNodeType type() const;
 	bool append(DomNode* node);
 private:
-	HtmlTag m_tag;
+	Document::Tag m_tag;
 };
 
 }

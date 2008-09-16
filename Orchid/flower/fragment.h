@@ -5,7 +5,7 @@
 
 namespace Orchid {
 
-class HtmlStreamWriter;
+class DocumentProcessor;
 class FragmentPrivate;
 
 class Fragment : public QObject {
@@ -14,7 +14,7 @@ public:
 	explicit Fragment(QObject* parent = 0);
 	virtual ~Fragment();
 public:
-	virtual void build(HtmlStreamWriter* writer) = 0;
+	virtual void build(DocumentProcessor* writer) = 0;
 protected:
     Fragment(FragmentPrivate &dd, QObject* parent = 0);
 	FragmentPrivate*const d_ptr;

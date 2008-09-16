@@ -8,8 +8,8 @@ DomNodeType DomNode::type() const {
 	return DomUnknownType;
 }
 
-HtmlTag DomElement::tag() const {
-	return HtmlTagUnknown;
+Document::Tag DomElement::tag() const {
+	return Document::TagUnknown;
 }
 
 bool DomElement::append(DomNode* child) {
@@ -36,8 +36,8 @@ void DomCharacters::setText(const QString& text) {
 	m_text = text;
 }
 
-HtmlTag DomSection::tag() const {
-	return HtmlTagSection;
+Document::Tag DomSection::tag() const {
+	return Document::TagSection;
 }
 
 DomNodeType DomSection::type() const {
@@ -52,8 +52,8 @@ bool DomSection::append(DomNode* node) {
 	return true;
 }
 
-HtmlTag DomHeading::tag() const {
-	return HtmlTagHeading;
+Document::Tag DomHeading::tag() const {
+	return Document::TagHeading;
 }
 
 DomNodeType DomHeading::type() const {
@@ -68,8 +68,8 @@ bool DomHeading::append(DomNode* node) {
 	return true;
 }
 
-HtmlTag DomParagraph::tag() const {
-	return HtmlTagParagraph;
+Document::Tag DomParagraph::tag() const {
+	return Document::TagParagraph;
 }
 
 DomNodeType DomParagraph::type() const {
@@ -96,11 +96,11 @@ bool DomFragment::append(DomNode* node) {
 	return true;
 }
 
-DomTextElement::DomTextElement(HtmlTag tag) {
+DomTextElement::DomTextElement(Document::Tag tag) {
 	m_tag = tag;
 }
 
-HtmlTag DomTextElement::tag() const {
+Document::Tag DomTextElement::tag() const {
 	return m_tag;
 }
 
@@ -112,7 +112,7 @@ bool DomTextElement::append(DomNode* node) {
 	if(!DomNodeTypes(DomTextContent).testFlag(node->type()))
 		return false;
 
-	// TODO add check for nested HtmlTagTextLine-elements
+	// TODO add check for nested Document::TagTextLine-elements
 	
 	appendNode(node);
 	return true;

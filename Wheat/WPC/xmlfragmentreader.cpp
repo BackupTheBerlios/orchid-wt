@@ -14,7 +14,7 @@ private:
 public:
 	static XmlFragmentReaderHelper* inst();
 public:
-	HtmlTag tag(const QStringRef& string) const;
+	Document::Tag tag(const QStringRef& string) const;
 private:
 	void setup();
 private:
@@ -34,7 +34,7 @@ private:
 	QString m_tagTextSuperscript;
 	QString m_tagTextVariable;
 	QString m_tagText;
-	QHash<QStringRef, HtmlTag> m_tagLookup;
+	QHash<QStringRef, Document::Tag> m_tagLookup;
 };
 
 XmlFragmentReaderHelper* XmlFragmentReaderHelper::inst() {
@@ -44,38 +44,38 @@ XmlFragmentReaderHelper* XmlFragmentReaderHelper::inst() {
 
 XmlFragmentReaderHelper::XmlFragmentReaderHelper() {
 	m_tagSection = "section";
-	m_tagLookup.insert(&m_tagSection, HtmlTagSection);
+	m_tagLookup.insert(&m_tagSection, Document::TagSection);
 	m_tagHeading = "h";
-	m_tagLookup.insert(&m_tagHeading, HtmlTagHeading);
+	m_tagLookup.insert(&m_tagHeading, Document::TagHeading);
 	m_tagParagraph = "p";
-	m_tagLookup.insert(&m_tagParagraph, HtmlTagParagraph);
+	m_tagLookup.insert(&m_tagParagraph, Document::TagParagraph);
 	m_tagTextAbbreviation = "abbr";
-	m_tagLookup.insert(&m_tagTextAbbreviation, HtmlTagTextAbbreviation);
+	m_tagLookup.insert(&m_tagTextAbbreviation, Document::TagTextAbbreviation);
 	m_tagTextCode = "code";
-	m_tagLookup.insert(&m_tagTextCode, HtmlTagTextCode);
+	m_tagLookup.insert(&m_tagTextCode, Document::TagTextCode);
 	m_tagTextDefinition = "dfn";
-	m_tagLookup.insert(&m_tagTextDefinition, HtmlTagTextDefinition);
+	m_tagLookup.insert(&m_tagTextDefinition, Document::TagTextDefinition);
 	m_tagTextEmphasis = "em";
-	m_tagLookup.insert(&m_tagTextEmphasis, HtmlTagTextEmphasis);
+	m_tagLookup.insert(&m_tagTextEmphasis, Document::TagTextEmphasis);
 	m_tagTextKeyboard = "kbd";
-	m_tagLookup.insert(&m_tagTextKeyboard, HtmlTagTextKeyboard);
+	m_tagLookup.insert(&m_tagTextKeyboard, Document::TagTextKeyboard);
 	m_tagTextQuote = "q";
-	m_tagLookup.insert(&m_tagTextQuote, HtmlTagTextQuote);
+	m_tagLookup.insert(&m_tagTextQuote, Document::TagTextQuote);
 	m_tagTextSample = "samp";
-	m_tagLookup.insert(&m_tagTextSample, HtmlTagTextSample);
+	m_tagLookup.insert(&m_tagTextSample, Document::TagTextSample);
 	m_tagTextSpan = "span";
-	m_tagLookup.insert(&m_tagTextSpan, HtmlTagTextSpan);
+	m_tagLookup.insert(&m_tagTextSpan, Document::TagTextSpan);
 	m_tagTextStrong = "strong";
-	m_tagLookup.insert(&m_tagTextStrong, HtmlTagTextStrong);
+	m_tagLookup.insert(&m_tagTextStrong, Document::TagTextStrong);
 	m_tagTextSubscript = "sub";
-	m_tagLookup.insert(&m_tagTextSubscript, HtmlTagTextSubscript);
+	m_tagLookup.insert(&m_tagTextSubscript, Document::TagTextSubscript);
 	m_tagTextSuperscript = "sup";
-	m_tagLookup.insert(&m_tagTextSuperscript, HtmlTagTextSuperscript);
+	m_tagLookup.insert(&m_tagTextSuperscript, Document::TagTextSuperscript);
 	m_tagTextVariable = "var";
-	m_tagLookup.insert(&m_tagTextVariable, HtmlTagTextVariable);
+	m_tagLookup.insert(&m_tagTextVariable, Document::TagTextVariable);
 }
 
-HtmlTag XmlFragmentReaderHelper::tag(const QStringRef& name) const {
+Document::Tag XmlFragmentReaderHelper::tag(const QStringRef& name) const {
 	return m_tagLookup.value(name);
 }
 
@@ -86,7 +86,7 @@ public:
 	 : q_ptr (reader), errorCode(XmlFragmentReader::NoError)
 	{ }
 public:
-	DomTextElement* readInline(HtmlTag tag);
+	DomTextElement* readInline(Document::Tag tag);
 	DomParagraph* readParagraph();
 	DomHeading* readHeading();
 	DomSection* readSection();
@@ -110,7 +110,7 @@ void XmlFragmentReaderPrivate::error(XmlFragmentReader::ErrorCode code, const QS
 	errorColumn = xml->columnNumber();
 }
 
-DomTextElement* XmlFragmentReaderPrivate::readInline(HtmlTag tag) {
+DomTextElement* XmlFragmentReaderPrivate::readInline(Document::Tag tag) {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
 	DomTextElement* element = new DomTextElement(tag);
 	while(!xml->atEnd() && !errorCode) {
@@ -120,20 +120,20 @@ DomTextElement* XmlFragmentReaderPrivate::readInline(HtmlTag tag) {
 			chars->setText(xml->text().toString());
 			element->append(chars);
 		} else if(xml->isStartElement()) {
-			HtmlTag tag = helper->tag(xml->name());
+			Document::Tag tag = helper->tag(xml->name());
 			switch(tag) {
-				case HtmlTagTextAbbreviation:
-				case HtmlTagTextCode:
-				case HtmlTagTextDefinition:
-				case HtmlTagTextEmphasis:
-				case HtmlTagTextKeyboard:
-				case HtmlTagTextQuote:
-				case HtmlTagTextSample:
-				case HtmlTagTextSpan:
-				case HtmlTagTextStrong:
-				case HtmlTagTextSubscript:
-				case HtmlTagTextSuperscript:
-				case HtmlTagTextVariable:
+				case Document::TagTextAbbreviation:
+				case Document::TagTextCode:
+				case Document::TagTextDefinition:
+				case Document::TagTextEmphasis:
+				case Document::TagTextKeyboard:
+				case Document::TagTextQuote:
+				case Document::TagTextSample:
+				case Document::TagTextSpan:
+				case Document::TagTextStrong:
+				case Document::TagTextSubscript:
+				case Document::TagTextSuperscript:
+				case Document::TagTextVariable:
 					element->append(readInline(tag));
 					break;
 				default:
@@ -158,20 +158,20 @@ DomHeading* XmlFragmentReaderPrivate::readHeading() {
 			chars->setText(xml->text().toString());
 			heading->append(chars);
 		} else if(xml->isStartElement()) {
-			HtmlTag tag = helper->tag(xml->name());
+			Document::Tag tag = helper->tag(xml->name());
 			switch(tag) {
-				case HtmlTagTextAbbreviation:
-				case HtmlTagTextCode:
-				case HtmlTagTextDefinition:
-				case HtmlTagTextEmphasis:
-				case HtmlTagTextKeyboard:
-				case HtmlTagTextQuote:
-				case HtmlTagTextSample:
-				case HtmlTagTextSpan:
-				case HtmlTagTextStrong:
-				case HtmlTagTextSubscript:
-				case HtmlTagTextSuperscript:
-				case HtmlTagTextVariable:
+				case Document::TagTextAbbreviation:
+				case Document::TagTextCode:
+				case Document::TagTextDefinition:
+				case Document::TagTextEmphasis:
+				case Document::TagTextKeyboard:
+				case Document::TagTextQuote:
+				case Document::TagTextSample:
+				case Document::TagTextSpan:
+				case Document::TagTextStrong:
+				case Document::TagTextSubscript:
+				case Document::TagTextSuperscript:
+				case Document::TagTextVariable:
 					heading->append(readInline(tag));
 					break;
 				default:
@@ -196,20 +196,20 @@ DomParagraph* XmlFragmentReaderPrivate::readParagraph() {
 			chars->setText(xml->text().toString());
 			paragraph->append(chars);
 		} else if(xml->isStartElement()) {
-			HtmlTag tag = helper->tag(xml->name());
+			Document::Tag tag = helper->tag(xml->name());
 			switch(tag) {
-				case HtmlTagTextAbbreviation:
-				case HtmlTagTextCode:
-				case HtmlTagTextDefinition:
-				case HtmlTagTextEmphasis:
-				case HtmlTagTextKeyboard:
-				case HtmlTagTextQuote:
-				case HtmlTagTextSample:
-				case HtmlTagTextSpan:
-				case HtmlTagTextStrong:
-				case HtmlTagTextSubscript:
-				case HtmlTagTextSuperscript:
-				case HtmlTagTextVariable:
+				case Document::TagTextAbbreviation:
+				case Document::TagTextCode:
+				case Document::TagTextDefinition:
+				case Document::TagTextEmphasis:
+				case Document::TagTextKeyboard:
+				case Document::TagTextQuote:
+				case Document::TagTextSample:
+				case Document::TagTextSpan:
+				case Document::TagTextStrong:
+				case Document::TagTextSubscript:
+				case Document::TagTextSuperscript:
+				case Document::TagTextVariable:
 					paragraph->append(readInline(tag));
 					break;
 				default:
@@ -231,9 +231,9 @@ DomSection*  XmlFragmentReaderPrivate::readSection() {
 		xml->readNext();
 		if(xml->isStartElement()) {
 			switch(helper->tag(xml->name())) {
-				case HtmlTagSection: section->append(readSection()); break;
-				case HtmlTagHeading: section->append(readHeading()); break;
-				case HtmlTagParagraph: section->append(readParagraph()); break;
+				case Document::TagSection: section->append(readSection()); break;
+				case Document::TagHeading: section->append(readHeading()); break;
+				case Document::TagParagraph: section->append(readParagraph()); break;
 				default:
 					error(XmlFragmentReader::UnallowedElement, QString("'%1' not allowed here").arg(xml->name().toString()));
 					break;
@@ -254,9 +254,9 @@ DomFragment* XmlFragmentReaderPrivate::readFragment() {
 		xml->readNext();
 		if(xml->isStartElement()) {
 			switch(helper->tag(xml->name())) {
-				case HtmlTagSection: fragment->append(readSection()); break;
-				case HtmlTagHeading: fragment->append(readHeading()); break;
-				case HtmlTagParagraph: fragment->append(readParagraph()); break;
+				case Document::TagSection: fragment->append(readSection()); break;
+				case Document::TagHeading: fragment->append(readHeading()); break;
+				case Document::TagParagraph: fragment->append(readParagraph()); break;
 				default:
 					error(XmlFragmentReader::UnallowedElement, QString("'%1' not allowed here").arg(xml->name().toString()));
 					break;

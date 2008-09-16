@@ -13,7 +13,7 @@ private:
 public:
 	static XmlFragmentWriterHelper* inst();
 public:
-	QString tagName(HtmlTag tag);
+	QString tagName(Document::Tag tag);
 private:
 	QVector<QString> m_lookup;
 };
@@ -24,25 +24,25 @@ XmlFragmentWriterHelper* XmlFragmentWriterHelper::inst() {
 }
 
 XmlFragmentWriterHelper::XmlFragmentWriterHelper() {
-	m_lookup.resize(HtmlTagCount);
-	m_lookup[HtmlTagSection] = "section";
-	m_lookup[HtmlTagHeading] = "h";
-	m_lookup[HtmlTagParagraph] = "p";
-	m_lookup[HtmlTagTextAbbreviation] = "abbr";
-	m_lookup[HtmlTagTextCode] = "code";
-	m_lookup[HtmlTagTextDefinition] = "dfn";
-	m_lookup[HtmlTagTextEmphasis] = "em";
-	m_lookup[HtmlTagTextKeyboard] = "kbd";
-	m_lookup[HtmlTagTextQuote] = "q";
-	m_lookup[HtmlTagTextSample] = "samp";
-	m_lookup[HtmlTagTextSpan] = "span";
-	m_lookup[HtmlTagTextStrong] = "strong";
-	m_lookup[HtmlTagTextSubscript] = "sub";
-	m_lookup[HtmlTagTextSuperscript] = "sup";
-	m_lookup[HtmlTagTextVariable] = "var";
+	m_lookup.resize(Document::TagCount);
+	m_lookup[Document::TagSection] = "section";
+	m_lookup[Document::TagHeading] = "h";
+	m_lookup[Document::TagParagraph] = "p";
+	m_lookup[Document::TagTextAbbreviation] = "abbr";
+	m_lookup[Document::TagTextCode] = "code";
+	m_lookup[Document::TagTextDefinition] = "dfn";
+	m_lookup[Document::TagTextEmphasis] = "em";
+	m_lookup[Document::TagTextKeyboard] = "kbd";
+	m_lookup[Document::TagTextQuote] = "q";
+	m_lookup[Document::TagTextSample] = "samp";
+	m_lookup[Document::TagTextSpan] = "span";
+	m_lookup[Document::TagTextStrong] = "strong";
+	m_lookup[Document::TagTextSubscript] = "sub";
+	m_lookup[Document::TagTextSuperscript] = "sup";
+	m_lookup[Document::TagTextVariable] = "var";
 }
 
-QString XmlFragmentWriterHelper::tagName(HtmlTag tag) {
+QString XmlFragmentWriterHelper::tagName(Document::Tag tag) {
 	return m_lookup[tag];
 }
 

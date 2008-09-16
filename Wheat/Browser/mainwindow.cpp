@@ -6,7 +6,7 @@
 #include <QtDebug>
 #include <QXmlStreamWriter>
 
-#include <flower/htmlstreamwriter.h>
+#include <flower/xhtmlstreamwriter.h>
 
 #include <flower/style.h>
 #include <flower/styleattributes.h>
@@ -15,7 +15,7 @@
 #include <stem/resourcemodel.h>
 #include <stem/location.h>
 
-#include <flower/htmlstreams.h>
+#include <flower/documentstreams.h>
 
 #include <leaf/xmlmodelresource.h>
 
@@ -27,24 +27,24 @@ public:
 	void setMainFragment(Orchid::Fragment* fragment);
 	void query(Orchid::Request* request);
 private:
-	Orchid::HtmlHead m_head;
+	Orchid::DocumentHead m_head;
 	Orchid::Fragment* m_body;
 };
 
 
-void MyStyle::writeHeading(Orchid::HtmlStreamWriter* writer, const QString& text) const {
-	Orchid::StyleAttributes attrs = writer->attributes(this);
-	QXmlStreamWriter* xml = writer->xmlWriter();
-
-	xml->writeStartElement("h1");
-	QString classname = attrs.classname("heading1");
-	if(!classname.isNull()) {
-		xml->writeAttribute("class", classname);
-	} else if(!m_headingStyle.isEmpty()) {
-		xml->writeAttribute("style", m_headingStyle);
-	}
-	xml->writeCharacters(text);
-	xml->writeEndElement();
+void MyStyle::writeHeading(Orchid::DocumentProcessor* writer, const QString& text) const {
+// 	Orchid::StyleAttributes attrs = writer->attributes(this);
+// 	QXmlStreamWriter* xml = writer->xmlWriter();
+// 
+// 	xml->writeStartElement("h1");
+// 	QString classname = attrs.classname("heading1");
+// 	if(!classname.isNull()) {
+// 		xml->writeAttribute("class", classname);
+// 	} else if(!m_headingStyle.isEmpty()) {
+// 		xml->writeAttribute("style", m_headingStyle);
+// 	}
+// 	xml->writeCharacters(text);
+// 	xml->writeEndElement();
 }
 
 void MyStyle::setHeading(const QString& heading) {
@@ -56,8 +56,8 @@ QString MyStyle::content() const {
 }
 
 
-void MyFragment::build(Orchid::HtmlStreamWriter* writer) {
-	using namespace Orchid::HTML;
+void MyFragment::build(Orchid::DocumentProcessor* writer) {
+	using namespace Orchid::Document;
 
 	BlockStream blocks(writer);
 
@@ -65,7 +65,7 @@ void MyFragment::build(Orchid::HtmlStreamWriter* writer) {
 
 	blocks.paragraph() << "The Pascal statement " <<code<<"i := 1;"<<end<< " assigns the literal value one to the variable "<<variable<<'i'<<end<<'.';
 
-	(blocks << role(Orchid::HtmlRoleDefinition)).paragraph() << "An " <<id("def-acronym")<< definition<<"acronym"<<end<< " is a word formed from the initial letters or groups of letters of words in a set phrase or series of words.";
+	(blocks << role(RoleDefinition)).paragraph() << "An " <<id("def-acronym")<< definition<<"acronym"<<end<< " is a word formed from the initial letters or groups of letters of words in a set phrase or series of words.";
 
 	blocks.paragraph() << "Do " <<emphasis<<"not"<<end<< " phone before 9 a.m.";
 
@@ -113,9 +113,9 @@ void OrchidResource::query(Orchid::Request* request) {
 	writer.setDevice(request);
 	writer.xmlWriter()->setAutoFormatting(true);
 	m_head.setTitle("Sample.html");
-	writer.writeStartDocument(m_head);
+	writer.startDocument(m_head);
 	m_body->build(&writer);
-	writer.writeEndDocument();
+	writer.endDocument();
 }
 
 MainWindow::MainWindow() : m_service(8000) {
