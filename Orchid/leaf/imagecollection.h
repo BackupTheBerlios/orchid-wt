@@ -12,7 +12,7 @@ class ImageCollectionMod;
 class ImageCollectionPrivate;
 class ImageCollection : 
 	public Resource::IResource,
-	public Resource::IDirectory,
+	public Resource::IContainer,
 	public Resource::IConfigurable
 {
 public:
@@ -20,6 +20,8 @@ public:
 	ImageCollection(const QVector<QPair<QString,QString> > &files);
 	~ImageCollection();
 public:
+	bool addResource(const QString &name, Resource::IResource *resoure);
+	bool insertImage(const QString &naem, ImageResource *resource);
 	bool insertFile(const QString &name, const QString &path);
 	bool insertModification(const QString &name, ImageCollectionMod* mod);
 	QStringList images() const;
@@ -55,7 +57,8 @@ private:
 };
 
 class ImageCollectionScalingPrivate;
-class ImageCollectionScaling : public ImageCollectionMod {
+class ImageCollectionScaling : public ImageCollectionMod, public Resource::IConfigurable
+{
 public:
 	ImageCollectionScaling(int width, int height);
 public:
@@ -63,6 +66,9 @@ public:
 	int height() const;
 	void setWidth(int width);
 	void setHeight(int height);
+	QList<Option> optionList() const;
+	QVariant option(const QString &option) const;
+	bool setOption(const QString &option, const QVariant &value);
 protected:
 	ImageResource* createResource(const QString& path);
 private:

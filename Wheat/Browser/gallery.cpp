@@ -8,6 +8,12 @@
 
 #include <leaf/imagecollection.h>
 
+#include <leaf/imageresource.h>
+
+// TODO think about validating the casts
+
+using namespace Orchid::Resource;
+
 class GalleryPrivate {
 	Q_DECLARE_PUBLIC(Gallery)
 public:
@@ -15,8 +21,8 @@ public:
 protected:
 	Gallery *q_ptr;
 private:
-	Orchid::ImageCollection *collection;
-	Orchid::ImageCollectionScaling *thumbs;
+	IResource *collection;
+	IResource *thumbs;
 	QString title;
 };
 
@@ -32,7 +38,7 @@ Gallery::Gallery() {
 	Q_D(Gallery);
 	d->thumbs = new Orchid::ImageCollectionScaling(160, 160);
 	d->collection = new Orchid::ImageCollection();
-	d->collection->insertModification("thumbs", d->thumbs);
+	cast<IContainer*>(d->collection)->addResource("thumbs", d->thumbs);
 }
 
 Gallery::~Gallery() {
@@ -43,7 +49,9 @@ Gallery::~Gallery() {
 
 void Gallery::insertFile(const QString &name, const QString &file) {
 	Q_D(Gallery);
-	d->collection->insertFile(name, file);
+	IResource *image = new Orchid::ImageResource(file);
+	cast<IConfigurable*>(image)->setOption("path", file);
+	cast<IContainer*>(d->collection)->addResource(name, image);
 }
 
 void Gallery::query(Orchid::Request *request) {
@@ -62,7 +70,7 @@ void Gallery::query(Orchid::Request *request) {
 	writer.writeStartElement(Orchid::HtmlTagHeading);
 	writer.writeCharacters(d->title);
 	writer.writeEndElement();
-	foreach(QString name, d->collection->images()) {
+	foreach(QString name, cast<IDirectory*>(d->thumbs)->childs()) {
 		writer.xmlWriter()->writeStartElement("a");
 		writer.xmlWriter()->writeAttribute("href", request->url(request->location().relative(name)));
 		writer.xmlWriter()->writeEmptyElement("img");
@@ -74,17 +82,17 @@ void Gallery::query(Orchid::Request *request) {
 
 QStringList Gallery::childs() const {
 	Q_D(const Gallery);
-	return d->collection->childs();
+	return cast<IDirectory*>(d->collection)->childs();
 }
 
 Orchid::Resource::Handle Gallery::child(const QString &name) {
 	Q_D(Gallery);
-	return d->collection->child(name);
+	return cast<IDirectory*>(d->collection)->child(name);
 }
 
 QList<Orchid::Resource::IConfigurable::Option> Gallery::optionList() const {
 	Q_D(const Gallery);
-	QList<Option> list(d->collection->optionList());
+	QList<Option> list(cast<IConfigurable*>(d->collection)->optionList());
 	list << Option("title", qMetaTypeId<QString>());
 	list << Option("thumbnail-width", qMetaTypeId<int>());
 	list << Option("thumbnail-height", qMetaTypeId<int>());
@@ -97,12 +105,12 @@ QVariant Gallery::option(const QString& name) const {
 		return d->title;
 	}
 	if(name == "thumbnail-width") {
-		return d->thumbs->width();
+		return cast<IConfigurable*>(d->thumbs)->option("width");
 	}
 	if(name == "thumbnail-height") {
-		return d->thumbs->height();
+		return cast<IConfigurable*>(d->thumbs)->option("height");
 	}
-	return d->collection->option(name);
+	return cast<IConfigurable*>(d->collection)->option(name);
 }
 
 bool Gallery::setOption(const QString& name, const QVariant& value) {
@@ -113,15 +121,15 @@ bool Gallery::setOption(const QString& name, const QVariant& value) {
 		result = true;
 	}
 	if(name == "thumbnail-width") {
-		d->thumbs->setWidth(value.toInt());
+		cast<IConfigurable*>(d->thumbs)->setOption("width", value);
 		result = true;
 	}
 	if(name == "thumbnail-height") {
-		d->thumbs->setHeight(value.toInt());
+		cast<IConfigurable*>(d->thumbs)->setOption("height", value);
 		result = true;
 	}
 	if(!result) {
-		result = d->collection->setOption(name, value);
+		result = cast<IConfigurable*>(d->collection)->setOption(name, value);
 	}
 	return result;
 }

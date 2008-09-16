@@ -45,6 +45,11 @@ public:
 	virtual Handle child(const QString& name) = 0;
 };
 
+class IContainer : public IDirectory {
+public:
+	virtual bool addResource(const QString& name, Resource::IResource* res) = 0;
+};
+
 class IRedirecting {
 public:
 	virtual Handle locate(const QUrl& url) = 0;
@@ -85,7 +90,7 @@ inline T cast(IResource* res) {
 }
 
 class ContainerResourcePrivate;
-class ContainerResource : public Resource::IResource, public Resource::IDirectory {
+class ContainerResource : public Resource::IResource, public Resource::IContainer {
 public:
 	ContainerResource();
 	~ContainerResource();
@@ -114,6 +119,7 @@ struct OrchidInterfaceIdDecl<type*> { \
 };
 
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IDirectory);
+ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IContainer);
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IRedirecting);
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IQueryable);
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IDynamic);

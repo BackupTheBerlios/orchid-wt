@@ -20,7 +20,9 @@ public:
 	ImageResource(const QString& path);
 	ImageResource(const QImage& image);
 public:
+	QString path() const;
 	void setPath(const QString& path);
+	QImage image() const;
 	void setImage(const QImage& image);
 	void query(Orchid::Request*);
 	void setScaling(int sizeX, int sizeY);

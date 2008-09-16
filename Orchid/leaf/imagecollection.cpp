@@ -36,6 +36,43 @@ ImageCollection::~ImageCollection() {
 	delete d_ptr;
 }
 
+bool ImageCollection::addResource(const QString &name, Resource::IResource *resource) {
+	bool result = false;
+	
+	ImageCollectionMod *mod = dynamic_cast<ImageCollectionMod*>(resource);
+	if(mod) {
+		result = insertModification(name, mod);
+	}
+	ImageResource *image;
+	if(!result && (image = dynamic_cast<ImageResource*>(resource))) {
+		result = insertImage(name, image);
+	}
+	return result;
+}
+
+bool ImageCollection::insertImage(const QString &name, ImageResource *resource) {
+	Q_D(ImageCollection);
+	QString path = resource->path();
+	if(path.isNull()) {
+		qWarning() << "ImageCollection requires its images to have paths";
+		return false;
+	}
+	if(d->files.contains(name)) {
+		qWarning() << "ImageCollection allready contains the file " << name;
+		return false;
+	}
+	if(d->mods.contains(name)) {
+		qWarning() << "ImageCollection allready contains the modification" << name;
+		return false;
+	}
+	
+	Resource::Handle handle = d->keep.getHandle(name);
+	handle.init(resource);
+	d->files.insert(name, path);
+	d->namelist.append(name);
+	return true;
+}
+
 bool ImageCollection::insertFile(const QString &name, const QString &path) {
 	Q_D(ImageCollection);
 	if(d->files.contains(name)) {
@@ -121,6 +158,7 @@ QVariant ImageCollection::option(const QString &option) const {
 
 bool ImageCollection::setOption(const QString &option, const QVariant &value) {
 	Q_D(ImageCollection);
+	bool result = false;
 	if(option == "urls") {
 		QStringList list = value.toStringList();
 		QStringList::iterator it;
@@ -133,8 +171,9 @@ bool ImageCollection::setOption(const QString &option, const QVariant &value) {
 			d->files.insert(name, it->right(it->size()-pos-1));
 			d->namelist.append(name);
 		}
+		result = true;
 	}
-	return false;
+	return result;
 }
 
 
@@ -214,6 +253,43 @@ void ImageCollectionScaling::setWidth(int width) {
 void ImageCollectionScaling::setHeight(int height) {
 	Q_D(ImageCollectionScaling);
 	d->height = height;
+}
+
+QList<Resource::IConfigurable::Option> ImageCollectionScaling::optionList() const {
+	QList<Option> optionList;
+	optionList << Option("width", qMetaTypeId<int>());
+	optionList << Option("height", qMetaTypeId<int>());
+	return optionList;
+}
+
+QVariant ImageCollectionScaling::option(const QString &option) const {
+	Q_D(const ImageCollectionScaling);
+	QVariant result;
+	if(option == "width") {
+		result = d->width;
+	} else if(option == "height") {
+		result = d->height;
+	}
+	return result;
+}
+
+bool ImageCollectionScaling::setOption(const QString &option, const QVariant &value) {
+	Q_D(ImageCollectionScaling);
+	bool result = false;
+	if(option == "width") {
+		int width = value.toInt();
+		if(width > 0) {
+			d->width = width;
+			result = true;
+		}
+	} else if(option == "height") {
+		int height = value.toInt();
+		if(height > 0) {
+			d->height = height;
+			result = true;
+		}
+	}
+	return result;
 }
 
 ImageResource* ImageCollectionScaling::createResource(const QString &path) {
