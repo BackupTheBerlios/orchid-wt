@@ -153,7 +153,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	res->addResource("image.jpg", imgres);
 	
 	Resource::IResource *gal = new Gallery();
-	config = Resource::cast<Resource::IConfigurable*>(imgres);
+	config = Resource::cast<Resource::IConfigurable*>(gal);
 	config->setOption("urls", QStringList() << "image.jpg:test.jpg" << "test.jpg:test.jpg");
 	res->addResource("gallery", gal);
 
