@@ -1,76 +1,76 @@
-#include "htmlstreams.h"
+#include "documentstreams.h"
 
 namespace Orchid {
 
-namespace HTML {
+namespace Document {
 
 BlockStream& section(BlockStream& s) {
-	s.writer()->writeStartElement(HtmlTagSection);
+	s.writer()->startElement(TagSection);
 	return s;
 }
 
 BlockStream& end(BlockStream& s) {
-	s.writer()->writeEndElement();
+	s.writer()->endElement();
 	return s;
 }
 
 InlineStream& code(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextCode);
+	s.writer()->startElement(TagTextCode);
 	return s;
 }
 
 InlineStream& definition(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextDefinition);
+	s.writer()->startElement(TagTextDefinition);
 	return s;
 }
 
 InlineStream& emphasis(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextEmphasis);
+	s.writer()->startElement(TagTextEmphasis);
 	return s;
 }
 
 InlineStream& keyboard(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextKeyboard);
+	s.writer()->startElement(TagTextKeyboard);
 	return s;
 }
 
 InlineStream& quote(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextQuote);
+	s.writer()->startElement(TagTextQuote);
 	return s;
 }
 
 InlineStream& sample(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextSample);
+	s.writer()->startElement(TagTextSample);
 	return s;
 }
 
 InlineStream& span(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextSpan);
+	s.writer()->startElement(TagTextSpan);
 	return s;
 }
 
 InlineStream& strong(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextStrong);
+	s.writer()->startElement(TagTextStrong);
 	return s;
 }
 
 InlineStream& subscript(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextSubscript);
+	s.writer()->startElement(TagTextSubscript);
 	return s;
 }
 
 InlineStream& superscript(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextSuperscript);
+	s.writer()->startElement(TagTextSuperscript);
 	return s;
 }
 
 InlineStream& variable(InlineStream& s) {
-	s.writer()->writeStartElement(HtmlTagTextVariable);
+	s.writer()->startElement(TagTextVariable);
 	return s;
 }
 
 InlineStream& end(InlineStream& s) {
-	s.writer()->writeEndElement();
+	s.writer()->endElement();
 	return s;
 }
 

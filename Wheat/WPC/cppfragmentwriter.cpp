@@ -17,7 +17,7 @@ private:
 public:
 	static CppFragmentWriterHelper* inst();
 public:
-	QString enumName(HtmlTag tag);
+	QString enumName(Document::Tag tag);
 private:
 	QVector<QString> m_lookup;
 };
@@ -28,25 +28,25 @@ CppFragmentWriterHelper* CppFragmentWriterHelper::inst() {
 }
 
 CppFragmentWriterHelper::CppFragmentWriterHelper() {
-	m_lookup.resize(HtmlTagCount);
-	m_lookup[HtmlTagSection] = "HtmlTagSection";
-	m_lookup[HtmlTagHeading] = "HtmlTagHeading";
-	m_lookup[HtmlTagParagraph] = "HtmlTagParagraph";
-	m_lookup[HtmlTagTextAbbreviation] = "HtmlTagTextAbbreviation";
-	m_lookup[HtmlTagTextCode] = "HtmlTagTextCode";
-	m_lookup[HtmlTagTextDefinition] = "HtmlTagTextDefinition";
-	m_lookup[HtmlTagTextEmphasis] = "HtmlTagTextEmphasis";
-	m_lookup[HtmlTagTextKeyboard] = "HtmlTagTextKeyboard";
-	m_lookup[HtmlTagTextQuote] = "HtmlTagTextQuote";
-	m_lookup[HtmlTagTextSample] = "HtmlTagTextSample";
-	m_lookup[HtmlTagTextSpan] = "HtmlTagTextSpan";
-	m_lookup[HtmlTagTextStrong] = "HtmlTagTextStrong";
-	m_lookup[HtmlTagTextSubscript] = "HtmlTagTextSubscript";
-	m_lookup[HtmlTagTextSuperscript] = "HtmlTagTextSuperscript";
-	m_lookup[HtmlTagTextVariable] = "HtmlTagTextVariable";
+	m_lookup.resize(Document::TagCount);
+	m_lookup[Document::TagSection] = "TagSection";
+	m_lookup[Document::TagHeading] = "TagHeading";
+	m_lookup[Document::TagParagraph] = "TagParagraph";
+	m_lookup[Document::TagTextAbbreviation] = "TagTextAbbreviation";
+	m_lookup[Document::TagTextCode] = "TagTextCode";
+	m_lookup[Document::TagTextDefinition] = "TagTextDefinition";
+	m_lookup[Document::TagTextEmphasis] = "TagTextEmphasis";
+	m_lookup[Document::TagTextKeyboard] = "TagTextKeyboard";
+	m_lookup[Document::TagTextQuote] = "TagTextQuote";
+	m_lookup[Document::TagTextSample] = "TagTextSample";
+	m_lookup[Document::TagTextSpan] = "TagTextSpan";
+	m_lookup[Document::TagTextStrong] = "TagTextStrong";
+	m_lookup[Document::TagTextSubscript] = "TagTextSubscript";
+	m_lookup[Document::TagTextSuperscript] = "TagTextSuperscript";
+	m_lookup[Document::TagTextVariable] = "TagTextVariable";
 }
 
-QString CppFragmentWriterHelper::enumName(HtmlTag tag) {
+QString CppFragmentWriterHelper::enumName(Document::Tag tag) {
 	return m_lookup[tag];
 }
 
@@ -69,7 +69,7 @@ void CppFragmentWriterPrivate::writeElement(DomElement* element) {
 	CppFragmentWriterHelper* helper = CppFragmentWriterHelper::inst();
 	switch(element->tag()) {
 		default:
-			*stream << "\t\twriter->writeStartElement("<<helper->enumName(element->tag())<<");\n";
+			*stream << "\t\twriter->startElement("<<helper->enumName(element->tag())<<");\n";
 			break;
 	}
 	foreach(DomNode* child, element->childs()) {
@@ -77,7 +77,7 @@ void CppFragmentWriterPrivate::writeElement(DomElement* element) {
 			case DomUnknownType: break;
 			case DomPCDATAType: {
 				DomCharacters* chars = static_cast<DomCharacters*>(child);
-				*stream << "\t\twriter->writeCharacters(\""<< chars->text()<<"\");\n";
+				*stream << "\t\twriter->insertCharacters(\""<< chars->text()<<"\");\n";
 			} break;
 			default: {
 				DomElement* childElement = dynamic_cast<DomElement*>(child);
@@ -87,7 +87,7 @@ void CppFragmentWriterPrivate::writeElement(DomElement* element) {
 	}
 	switch(element->tag()) {
 		default:
-			*stream << "\t\twriter->writeEndElement();\n";
+			*stream << "\t\twriter->endElement();\n";
 			break;
 	}
 }
@@ -110,13 +110,14 @@ void CppFragmentWriter::write(DomFragment* fragment) {
 	*d->stream
 		<< "class " << classname << " : public Orchid::Fragment {\n"
 		<< "public:\n"
-		<< "\tvoid build(HtmlStreamWriter* writer) {\n";
+		<< "\tvoid build(DocumentProcessor* writer) {\n"
+		<< "\t\tusing namespace ::Orchid::Document;\n";
 	foreach(DomNode* child, fragment->childs()) {
 		switch(child->type()) {
 			case DomUnknownType: break;
 			case DomPCDATAType: {
 				DomCharacters* chars = static_cast<DomCharacters*>(child);
-				*d->stream << "\t\twriter->writeCharacters("<< chars->text()<<");\n";
+				*d->stream << "\t\twriter->insertCharacters("<< chars->text()<<");\n";
 			} break;
 			default: {
 				DomElement* childElement = dynamic_cast<DomElement*>(child);

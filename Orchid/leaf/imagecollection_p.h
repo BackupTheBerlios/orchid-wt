@@ -14,6 +14,8 @@ class ImageCollectionPrivate {
 	Q_DECLARE_PUBLIC(ImageCollection)
 public:
 	ImageCollectionPrivate(ImageCollection* collection);
+public:
+	void resetFiles();
 protected:
 	ImageCollection* q_ptr;
 private:
@@ -27,6 +29,8 @@ class ImageCollectionModPrivate {
 	Q_DECLARE_PUBLIC(ImageCollectionMod)
 public:
 	ImageCollectionModPrivate(ImageCollectionMod* mod);
+public:
+	void resetKeep();
 protected:
 	ImageCollectionMod* q_ptr;
 private:
@@ -39,7 +43,7 @@ public:
 	ImageCollectionScalingPrivate(ImageCollectionScaling* scaling);
 private:
 	Q_DECLARE_PUBLIC(ImageCollectionScaling)
-	int maxX, maxY;
+	int width, height;
 };
 
 }

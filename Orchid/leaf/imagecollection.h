@@ -10,18 +10,27 @@ class ImageResource;
 class ImageCollectionMod;
 
 class ImageCollectionPrivate;
-class ImageCollection : public Resource::IResource, public Resource::IDirectory {
+class ImageCollection : 
+	public Resource::IResource,
+	public Resource::IContainer,
+	public Resource::IConfigurable
+{
 public:
 	ImageCollection();
 	ImageCollection(const QVector<QPair<QString,QString> > &files);
 	~ImageCollection();
 public:
+	bool addResource(const QString &name, Resource::IResource *resoure);
+	bool insertImage(const QString &naem, ImageResource *resource);
 	bool insertFile(const QString &name, const QString &path);
 	bool insertModification(const QString &name, ImageCollectionMod* mod);
-	QStringList childs() const;
 	QStringList images() const;
-	Resource::Handle child(const QString&);
 	QString path(const QString &name) const;
+	QStringList childs() const;
+	Resource::Handle child(const QString&);
+	QList<Option> optionList() const;
+	QVariant option(const QString &option) const;
+	bool setOption(const QString &option, const QVariant &value);
 protected:
 	ImageCollection(ImageCollectionPrivate*);
 	ImageCollectionPrivate* d_ptr;
@@ -48,9 +57,19 @@ private:
 };
 
 class ImageCollectionScalingPrivate;
-class ImageCollectionScaling : public ImageCollectionMod {
+class ImageCollectionScaling : public ImageCollectionMod, public Resource::IConfigurable
+{
 public:
-	ImageCollectionScaling(int maxX, int maxY);
+	ImageCollectionScaling();
+	ImageCollectionScaling(int width, int height);
+public:
+	int width() const;
+	int height() const;
+	void setWidth(int width);
+	void setHeight(int height);
+	QList<Option> optionList() const;
+	QVariant option(const QString &option) const;
+	bool setOption(const QString &option, const QVariant &value);
 protected:
 	ImageResource* createResource(const QString& path);
 private:

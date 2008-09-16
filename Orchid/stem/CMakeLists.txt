@@ -4,9 +4,12 @@ include_directories(
 )
 
 set(orchid_stem_SRC
+	extensionmanager.cpp
+	extensionplugin.cpp
 	location.cpp
 	request.cpp
 	resource.cpp
+	resourcefactory.cpp
 	resourcekeep.cpp
 	resourcemodel.cpp
 )

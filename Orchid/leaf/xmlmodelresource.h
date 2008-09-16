@@ -9,7 +9,7 @@ class XmlModelResourcePrivate;
 class XmlModelResource : public ModelResource, public Orchid::Resource::IQueryable {
 	Q_OBJECT
 public:
-	XmlModelResource(QAbstractItemModel* model);
+	XmlModelResource(QAbstractItemModel* model = 0);
 	~XmlModelResource();
 public:
 	void query(Orchid::Request* request);

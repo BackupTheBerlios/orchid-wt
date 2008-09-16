@@ -19,3 +19,4 @@ include_directories(
 
 add_subdirectory(Orchid)
 add_subdirectory(Wheat)
+add_subdirectory(Examples)

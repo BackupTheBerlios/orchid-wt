@@ -1,5 +1,5 @@
-#ifndef _ORCHID_HTMLHEAD_H_
-#define _ORCHID_HTMLHEAD_H_
+#ifndef _ORCHID_DOCUMENTHEAD_H_
+#define _ORCHID_DOCUMENTHEAD_H_
 
 #include <QtCore/QSharedData>
 #include <QtCore/QString>
@@ -11,20 +11,20 @@ namespace Orchid {
 
 class Style;
 
-class HtmlHeadPrivate;
-class HtmlHead {
+class DocumentHeadPrivate;
+class DocumentHead {
 public:
-	HtmlHead();
-	HtmlHead(const HtmlHead &head);
-	~HtmlHead();
+	DocumentHead();
+	DocumentHead(const DocumentHead &head);
+	~DocumentHead();
 public:
 	QString title() const;
 	void setTitle(const QString &title);
 	void addStyle(Style *style, const QString& url = QString());
 	QVector<QPair<QString,Style*> > styleUrls() const;
-	HtmlHead& operator=(const HtmlHead &other);
+	DocumentHead& operator=(const DocumentHead &other);
 private:
-	QSharedDataPointer<HtmlHeadPrivate> d;
+	QSharedDataPointer<DocumentHeadPrivate> d;
 };
 
 }

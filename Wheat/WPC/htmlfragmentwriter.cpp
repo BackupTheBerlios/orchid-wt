@@ -1,5 +1,7 @@
 #include "htmlfragmentwriter.h"
 
+#include <flower/documentprocessor.h>
+
 #include "fragmentdom.h"
 
 namespace Orchid {
@@ -12,7 +14,7 @@ public:
 protected:
 	HtmlFragmentWriter* q_ptr;
 private:
-	HtmlStreamWriter* writer;
+	DocumentProcessor* writer;
 	Q_DECLARE_PUBLIC(HtmlFragmentWriter)
 };
 
@@ -23,7 +25,7 @@ HtmlFragmentWriterPrivate::HtmlFragmentWriterPrivate(HtmlFragmentWriter* writer)
 void HtmlFragmentWriterPrivate::writeElement(DomElement* element) {
 	switch(element->tag()) {
 		default:
-			writer->writeStartElement(element->tag());
+			writer->startElement(element->tag());
 			break;
 	}
 	foreach(DomNode* child, element->childs()) {
@@ -31,7 +33,7 @@ void HtmlFragmentWriterPrivate::writeElement(DomElement* element) {
 			case DomUnknownType: break;
 			case DomPCDATAType: {
 				DomCharacters* chars = static_cast<DomCharacters*>(child);
-				writer->writeCharacters(chars->text());
+				writer->insertCharacters(chars->text());
 			} break;
 			default: {
 				DomElement* element = dynamic_cast<DomElement*>(child);
@@ -39,10 +41,10 @@ void HtmlFragmentWriterPrivate::writeElement(DomElement* element) {
 			} break;
 		}
 	}
-	writer->writeEndElement();
+	writer->endElement();
 }
 
-HtmlFragmentWriter::HtmlFragmentWriter(HtmlStreamWriter* writer) {
+HtmlFragmentWriter::HtmlFragmentWriter(DocumentProcessor* writer) {
 	d_ptr = new HtmlFragmentWriterPrivate(this);
 	Q_D(HtmlFragmentWriter);
 	d->writer = writer;
@@ -60,7 +62,7 @@ void HtmlFragmentWriter::write(DomFragment* fragment) {
 			case DomUnknownType: break;
 			case DomPCDATAType: {
 				DomCharacters* chars = static_cast<DomCharacters*>(child);
-				d->writer->writeCharacters(chars->text());
+				d->writer->insertCharacters(chars->text());
 			} break;
 			default: {
 				DomElement* element = dynamic_cast<DomElement*>(child);

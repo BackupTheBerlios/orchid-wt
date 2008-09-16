@@ -69,15 +69,4 @@ Orchid::Resource::Handle ContainerResource::child(const QString& name) {
 	return d->m_childs.value(name);
 }
 
-SimpleTextResource::SimpleTextResource(const QString& text) {
-	m_text = text;
-}
-
-void SimpleTextResource::query(Request* request) {
-	qDebug() << "query";
-	if(!request->open(QIODevice::ReadWrite)) return;
-	QTextStream stream(request);
-	stream << m_text;
-}
-
 }

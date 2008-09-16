@@ -4,14 +4,19 @@ include_directories(
 )
 
 set(orchid_browser_SRC
-	gallery.cpp
 	main.cpp
 	mainwindow.cpp
+	resourceconfig.cpp
+	stringlistedit.cpp
 )
 
 qt4_automoc(${orchid_browser_SRC})
 
-qt4_wrap_ui(orchid_browser_SRC mainwindow.ui)
+qt4_wrap_ui(orchid_browser_SRC
+	mainwindow.ui
+	resourceconfig.ui
+	stringlistedit.ui
+)
 
 qt4_add_resources(orchid_browser_SRC browser.qrc)
 

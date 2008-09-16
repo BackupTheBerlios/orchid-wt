@@ -46,11 +46,6 @@ void ModelItemResource::query(Orchid::Request* request) {
 }
 
 	
-ModelResource::ModelResource() {
-	d_ptr = new ModelResourcePrivate(this);
-	Q_ASSERT(false && "Don't use this method");
-}
-
 ModelResource::ModelResource(QAbstractItemModel* model) {
 	d_ptr = new ModelResourcePrivate(this);
 	Q_D(ModelResource);
@@ -62,7 +57,6 @@ ModelResource::ModelResource(ModelResourcePrivate* ptr, QAbstractItemModel* mode
 	Q_D(ModelResource);
 	d->model = model;
 }
-	
 
 ModelResource::~ModelResource() {
 	delete d_ptr;
@@ -72,6 +66,16 @@ QAbstractItemModel* ModelResource::model() const {
 	Q_D(const ModelResource);
 	return d->model;
 }
+
+void ModelResource::setModel(QAbstractItemModel* model) {
+	Q_D(ModelResource);
+	if(d->model == model) return;
+	if(d->model) {
+		d->keep.resetAll();
+	}
+	d->model = model;
+}
+
 
 QStringList ModelResource::childs() const {
 	return listChilds(QModelIndex());
@@ -89,6 +93,7 @@ Resource::Handle ModelResource::child(const QString& name) {
 }
 
 void ModelResource::query(Orchid::Request* request, const QModelIndex& index) {
+	if(!index.isValid()) return;
 	if(!request->open(QIODevice::ReadWrite)) return;
 	QTextStream stream(request);
 	stream << "<h1>" << index.data().toString() << "</h1>\n"
@@ -102,6 +107,8 @@ QString ModelResource::name(const QModelIndex& index) const {
 
 QModelIndex ModelResource::index(const QString& name, const QModelIndex& parent) const {
 	Q_D(const ModelResource);
+	if(!d->model) return QModelIndex();
+
 	QStringList parts = name.split('-');
 	int row = parts[0].toInt();
 // 	int col = parts[1].toInt();
@@ -110,14 +117,44 @@ QModelIndex ModelResource::index(const QString& name, const QModelIndex& parent)
 
 QStringList ModelResource::listChilds(const QModelIndex& parent) const {
 	Q_D(const ModelResource);
+	if(!d->model) return QStringList();
+
 	QStringList list;
 	int rows = d->model->rowCount(parent);
-	int cols = d->model->columnCount(parent);
+// 	int cols = d->model->columnCount(parent);
 	for(int i = 0; i < rows; ++i) {
 // 		for(int j = 0; j < cols; ++j)
 			list.append(name(d->model->index(i, 0, parent)));
 	}
 	return list;
+}
+
+QList<Resource::IConfigurable::Option> ModelResource::optionList() const {
+	return QList<Option>() << Option("model", qMetaTypeId<QObject*>());
+}
+
+QVariant ModelResource::option(const QString &option) const {
+	Q_D(const ModelResource);
+	if(option == "model")
+		return QVariant(d->model);
+	return QVariant();
+}
+
+bool ModelResource::setOption(const QString &option, const QVariant &value) {
+	if(option == "model") {
+		if(value.isNull()) {
+			setModel(0);
+			return true;
+		} else {
+			QObject *object = value.value<QObject*>();
+			QAbstractItemModel *model = qobject_cast<QAbstractItemModel*>(object);
+			if(model) {
+				setModel(model);
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 }

@@ -27,6 +27,8 @@ public:
 public:
 	Handle getHandle(const QString& name);
 	Handle tryGetHandle(const QString& name);
+	void reset(const QString& name);
+	void resetAll();
 private:
 	KeepPrivate* d;
 };

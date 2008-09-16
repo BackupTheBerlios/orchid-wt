@@ -1,13 +1,13 @@
-#ifndef _BAMBOO_HTMLSTREAMS_H_
-#define _BAMBOO_HTMLSTREAMS_H_
+#ifndef _ORCHID_DOCUMENTSTREAMS_H_
+#define _ORCHID_DOCUMENTSTREAMS_H_
 
 #include <QtCore/QString>
-#include "htmlstreamwriter.h"
+#include "documentprocessor.h"
 #include <QtCore/QVariant>
 
 namespace Orchid {
 
-namespace HTML {
+namespace Document {
 
 class role;
 class id;
@@ -22,44 +22,44 @@ class abbreviation;
 class InlineStream;
 class BlockStream {
 public:
-	inline BlockStream(HtmlStreamWriter* writer);
+	inline BlockStream(DocumentProcessor* writer);
 public:
-	inline HtmlStreamWriter* writer() const;
+	inline DocumentProcessor* writer() const;
 	inline BlockStream& operator<<(BlockStream&(*)(BlockStream&));
 	inline InlineStream heading();
 	inline InlineStream paragraph();
 	inline InlineStream text();
-	inline BlockStream& operator<<(const ::Orchid::HTML::heading& obj);
-	inline BlockStream& operator<<(const ::Orchid::HTML::paragraph& obj);
+	inline BlockStream& operator<<(const ::Orchid::Document::heading& obj);
+	inline BlockStream& operator<<(const ::Orchid::Document::paragraph& obj);
 	inline BlockStream& operator<<(const role& role);
 	inline BlockStream& operator<<(const id& id);
 	inline BlockStream& operator<<(const classname& name);
 	inline BlockStream& operator<<(const language& lang);
 private:
-	HtmlStreamWriter* m_writer;
+	DocumentProcessor* m_writer;
 };
 
-inline BlockStream::BlockStream(HtmlStreamWriter* writer)
+inline BlockStream::BlockStream(DocumentProcessor* writer)
 	: m_writer(writer) {}
 
-inline HtmlStreamWriter* BlockStream::writer() const { return m_writer; }
+inline DocumentProcessor* BlockStream::writer() const { return m_writer; }
 inline BlockStream& BlockStream::operator<<(BlockStream&(*fp)(BlockStream&))
 { return fp(*this); }
 
 
-class HtmlTextManip;
+class TextManip;
 class InlineStream {
 	friend class BlockStream;
 public:
-	inline InlineStream(HtmlStreamWriter* writer);
+	inline InlineStream(DocumentProcessor* writer);
 	inline InlineStream(InlineStream& other);
 	inline ~InlineStream();
 public:
-	inline HtmlStreamWriter* writer() const;
+	inline DocumentProcessor* writer() const;
 	inline InlineStream& operator<<(InlineStream&(*)(InlineStream&));
 	inline InlineStream& operator<<(QChar c);
 	inline InlineStream& operator<<(const QString& str);
-	inline InlineStream& operator<<(const HtmlTextManip&);
+	inline InlineStream& operator<<(const TextManip&);
 	inline InlineStream& operator<<(const role& role);
 	inline InlineStream& operator<<(const id& id);
 	inline InlineStream& operator<<(const abbreviation& abbr);
@@ -70,11 +70,11 @@ private:
 	Q_DISABLE_COPY(InlineStream);
 // 	InlineStream& operator=(const InlineStream& other); 
 private:
-	HtmlStreamWriter* m_writer;
+	DocumentProcessor* m_writer;
 	bool m_inBlock;
 };
 
-inline InlineStream::InlineStream(HtmlStreamWriter* writer)
+inline InlineStream::InlineStream(DocumentProcessor* writer)
 	: m_writer(writer), m_inBlock(false) { }
 inline InlineStream::InlineStream(InlineStream& other)
 	: m_writer(other.writer()), m_inBlock(other.m_inBlock)
@@ -82,20 +82,20 @@ inline InlineStream::InlineStream(InlineStream& other)
 inline InlineStream::InlineStream(BlockStream& block)
 	: m_writer(block.writer()), m_inBlock(true) { }
 inline InlineStream::~InlineStream() 
-{ if(m_inBlock) m_writer->writeEndElement(); }
+{ if(m_inBlock) m_writer->endElement(); }
 	
-inline HtmlStreamWriter* InlineStream::writer() const { return m_writer; }
+inline DocumentProcessor* InlineStream::writer() const { return m_writer; }
 inline InlineStream& InlineStream::operator<<(QChar c)
-{ m_writer->writeCharacters(c); return *this; }
+{ m_writer->insertCharacters(c); return *this; }
 inline InlineStream& InlineStream::operator<<(const QString& str)
-{ m_writer->writeCharacters(str); return *this; }
+{ m_writer->insertCharacters(str); return *this; }
 inline InlineStream& InlineStream::operator<<(InlineStream&(*fp)(InlineStream&))
 { return fp(*this); }
 
 inline InlineStream BlockStream::heading()
-{ m_writer->writeStartElement(HtmlTagHeading); return InlineStream(*this); }
+{ m_writer->startElement(TagHeading); return InlineStream(*this); }
 inline InlineStream BlockStream::paragraph()
-{ m_writer->writeStartElement(HtmlTagParagraph); return InlineStream(*this); }
+{ m_writer->startElement(TagParagraph); return InlineStream(*this); }
 inline InlineStream BlockStream::text()
 { return InlineStream(m_writer); }
 
@@ -120,35 +120,35 @@ InlineStream& variable(InlineStream& s);
 // end
 InlineStream& end(InlineStream& s);
 
-// class HtmlTextManip {
+// class TextManip {
 // public:
 // 	virtual InlineStream& apply(InlineStream&) = 0;
 // };
 
 class role {
 public:
-	inline role(HtmlRole val) { this->val = val; }
+	inline role(Role val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->setAttribute(HtmlAttributeRole, val);
+		s.writer()->setAttribute(AttributeRole, val);
 		return s;
 	}
 	inline InlineStream& apply(InlineStream& s) const {
-		s.writer()->setAttribute(HtmlAttributeRole, val);
+		s.writer()->setAttribute(AttributeRole, val);
 		return s;
 	}
 private:
-	HtmlRole val;
+	Role val;
 };
 
 class id {
 public:
 	inline id(const QString val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->setAttribute(HtmlAttributeId, val);
+		s.writer()->setAttribute(AttributeId, val);
 		return s;
 	}
 	inline InlineStream& apply(InlineStream& s) const {
-		s.writer()->setAttribute(HtmlAttributeId, val);
+		s.writer()->setAttribute(AttributeId, val);
 		return s;
 	}
 private:
@@ -159,11 +159,11 @@ class classname {
 public:
 	inline classname(const QString val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->setAttribute(HtmlAttributeClassname, val);
+		s.writer()->setAttribute(AttributeClassname, val);
 		return s;
 	}
 	inline InlineStream& apply(InlineStream& s) const {
-		s.writer()->setAttribute(HtmlAttributeClassname, val);
+		s.writer()->setAttribute(AttributeClassname, val);
 		return s;
 	}
 private:
@@ -174,11 +174,11 @@ class language {
 public:
 	inline language(const QString val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->setAttribute(HtmlAttributeLanguage, val);
+		s.writer()->setAttribute(AttributeLanguage, val);
 		return s;
 	}
 	inline InlineStream& apply(InlineStream& s) const {
-		s.writer()->setAttribute(HtmlAttributeLanguage, val);
+		s.writer()->setAttribute(AttributeLanguage, val);
 		return s;
 	}
 private:
@@ -189,9 +189,9 @@ class heading {
 public:
 	inline heading(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->writeStartElement(HtmlTagHeading);
-		s.writer()->writeCharacters(text);
-		s.writer()->writeEndElement();
+		s.writer()->startElement(TagHeading);
+		s.writer()->insertCharacters(text);
+		s.writer()->endElement();
 		return s;
 	}
 private:
@@ -202,9 +202,9 @@ class paragraph {
 public:
 	inline paragraph(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->writeStartElement(HtmlTagParagraph);
-		s.writer()->writeCharacters(text);
-		s.writer()->writeEndElement();
+		s.writer()->startElement(TagParagraph);
+		s.writer()->insertCharacters(text);
+		s.writer()->endElement();
 		return s;
 	}
 private:
@@ -215,8 +215,8 @@ class abbreviation {
 public:
 	inline abbreviation(const QString& full) { this->full = full; }
 	inline InlineStream& apply(InlineStream& s) const {
-		s.writer()->setAttribute(HtmlAttributeInlineFullText, QVariant(full));
-		s.writer()->writeStartElement(HtmlTagTextAbbreviation);
+		s.writer()->setAttribute(AttributeInlineFullText, QVariant(full));
+		s.writer()->startElement(TagTextAbbreviation);
 		return s;
 	}
 private:
@@ -231,17 +231,17 @@ private:
 // 		this->mark1 = mark1; this->mark2 = mark2;
 // 	}
 // 	inline InlineStream& apply(InlineStream& s) const {
-// 		s.writer()->setAttribute(HtmlAttributeQuoteStartMark, mark1);
-// 		s.writer()->setAttribute(HtmlAttributeQuoteEndMark, mark2);
-// 		s.writer()->writeBeginTag(HtmlSpecialTestAbbreviation);
+// 		s.writer()->setAttribute(AttributeQuoteStartMark, mark1);
+// 		s.writer()->setAttribute(AttributeQuoteEndMark, mark2);
+// 		s.writer()->writeBeginTag(SpecialTestAbbreviation);
 // 		return s;
 // 	}
 // }
 
 
-inline BlockStream& BlockStream::operator<<(const HTML::heading& h)
+inline BlockStream& BlockStream::operator<<(const Document::heading& h)
 { return h.apply(*this); }
-inline BlockStream& BlockStream::operator<<(const HTML::paragraph& p)
+inline BlockStream& BlockStream::operator<<(const Document::paragraph& p)
 { return p.apply(*this); }
 inline BlockStream& BlockStream::operator<<(const role& role)
 { return role.apply(*this); }
