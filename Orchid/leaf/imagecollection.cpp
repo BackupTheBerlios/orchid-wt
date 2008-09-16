@@ -14,6 +14,26 @@ ImageCollectionPrivate::ImageCollectionPrivate(ImageCollection* collection) {
 	q_ptr = collection;
 }
 
+void ImageCollectionPrivate::resetFiles() {
+	Q_Q(ImageCollection);
+	QStringList::iterator it;
+	for(it = namelist.begin(); it != namelist.end(); ++it) {
+		keep.reset(*it);
+	}
+	namelist.clear();
+	files.clear();
+
+	QSet<QString>::iterator mod;
+	for(mod = mods.begin(); mod != mods.end(); ++mod) {
+		Resource::Handle handle = keep.getHandle(*mod);
+		Resource::IResource *res = handle.resource();
+		ImageCollectionMod *mod = dynamic_cast<ImageCollectionMod*>(res);
+		
+		Q_ASSERT(mod);
+		mod->setCollection(q);
+	}
+}
+
 ImageCollection::ImageCollection() {
 	d_ptr = new ImageCollectionPrivate(this);
 }
@@ -162,8 +182,7 @@ bool ImageCollection::setOption(const QString &option, const QVariant &value) {
 	if(option == "urls") {
 		QStringList list = value.toStringList();
 		QStringList::iterator it;
-		d->files.clear();
-		d->namelist.clear();
+		d->resetFiles();
 		for(it = list.begin(); it != list.end(); ++it) {
 			// TODO check for mods
 			int pos = it->indexOf(':');
@@ -182,6 +201,10 @@ ImageCollectionModPrivate::ImageCollectionModPrivate(ImageCollectionMod* mod) {
 	collection = 0;
 };
 
+void ImageCollectionModPrivate::resetKeep() {
+	keep.resetAll();
+}
+
 ImageCollectionMod::ImageCollectionMod() {
 	d_ptr = new ImageCollectionModPrivate(this);
 }
@@ -197,6 +220,7 @@ ImageCollectionMod::~ImageCollectionMod() {
 void ImageCollectionMod::setCollection(ImageCollection* collection) {
 	Q_D(ImageCollectionMod);
 	d->collection = collection;
+	d->resetKeep();
 }
 
 QStringList ImageCollectionMod::childs() const {
@@ -284,12 +308,14 @@ bool ImageCollectionScaling::setOption(const QString &option, const QVariant &va
 		int width = value.toInt();
 		if(width > 0) {
 			d->width = width;
+			d->resetKeep();
 			result = true;
 		}
 	} else if(option == "height") {
 		int height = value.toInt();
 		if(height > 0) {
 			d->height = height;
+			d->resetKeep();
 			result = true;
 		}
 	}

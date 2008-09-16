@@ -8,6 +8,8 @@
 
 #include "resource.h"
 
+// TODO make theoretical proof of the keep being thread-safe
+
 namespace Orchid {
 namespace Resource {
 
@@ -19,6 +21,8 @@ struct KeepItem {
 	IResource* resource;
 	QMutex mutex; 
 	QAtomicInt handleRefs;
+	
+	// TODO validate the use of keepRefs as it is insecure now
 	int keepRefs; // threads waiting for using this resource
 	KeepingFlags flags;
 };
@@ -146,6 +150,40 @@ Handle Keep::tryGetHandle(const QString& name) {
 		}
 	}
 	return Handle(item);
+}
+
+void Keep::reset(const QString &name) {
+	QMutexLocker locker(&d->mutex);
+	
+	QHash<QString, KeepItem*>::iterator it = d->items.find(name);
+	if(it == d->items.end()) return;
+	
+	KeepItem *item = it.value();
+	if(item->keepRefs) return;
+	
+	d->items.erase(it);
+	if(!item->handleRefs) {
+		delete item->resource;
+		delete item;
+	}
+}
+
+void Keep::resetAll() {
+	QMutexLocker locker(&d->mutex);
+	QHash<QString, KeepItem*>::iterator it;
+	while((it = d->items.begin()) != d->items.end()) {
+		KeepItem *item = it.value();
+		
+		if(item->keepRefs)
+			continue;
+
+		d->items.erase(it);
+		
+		if(!item->handleRefs) {
+			delete item->resource;
+			delete item;
+		}
+	}
 }
 
 

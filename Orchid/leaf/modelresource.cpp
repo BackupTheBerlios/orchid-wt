@@ -69,8 +69,10 @@ QAbstractItemModel* ModelResource::model() const {
 
 void ModelResource::setModel(QAbstractItemModel* model) {
 	Q_D(ModelResource);
-	// TODO add reseting to keeps to allow changing from one model to another
-	Q_ASSERT(!d->model);
+	if(d->model == model) return;
+	if(d->model) {
+		d->keep.resetAll();
+	}
 	d->model = model;
 }
 
