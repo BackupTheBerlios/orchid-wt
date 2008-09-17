@@ -2,6 +2,8 @@
 
 #include "resourcemodel.moc"
 
+#include "location.h"
+
 // TODO clean up
 
 #include <QtDebug>
@@ -16,14 +18,14 @@ public:
 			parent = 0;
 			populated = false;
 		}
-		Node(Node* parent, Resource::Handle handle) {
+		Node(Node* parent, Resource::Location location) {
 			this->parent = parent;
-			this->handle = handle;
+			this->location = location;
 			populated = false;
 		}
 	public:
 		Node* parent;
-		Resource::Handle handle;
+		Resource::Location location;
 		QVector<Node> childs;
 		bool populated;
 	};
@@ -41,7 +43,7 @@ private:
 };
 
 ResourceModelPrivate::ResourceModelPrivate(ResourceModel* model, Resource::Handle res) : q_ptr(model) {
-	root = new Node(0, res);
+	root = new Node(0, Resource::Location(res, ""));
 }
 
 ResourceModelPrivate::Node* ResourceModelPrivate::node(const QModelIndex& index) const {
@@ -51,27 +53,28 @@ ResourceModelPrivate::Node* ResourceModelPrivate::node(const QModelIndex& index)
 void ResourceModelPrivate::populate(Node* node) const {
 	if(node->populated) return;
 	
-	Orchid::Resource::IDirectory* dir = dynamic_cast<Orchid::Resource::IDirectory*>(node->handle.resource());
+	Resource::Handle handle = node->location.resource();
+	Resource::IDirectory* dir = dynamic_cast<Resource::IDirectory*>(handle.resource());
 	
 	if(!dir) { node->populated = true; return; }
 	
 	QStringList list = dir->childs();
-	QVector<ResourceModelPrivate::Node> childs(list.count());
-	
-	for(int i = list.count()-1; i >= 0; --i) {
-		Node &child = childs[i];
-		child.parent = node;
-		child.handle = dir->child(list[i]);
+	if(list.count() != 0) {
+		QVector<ResourceModelPrivate::Node> childs(list.count());	
+		QStringList::iterator it;
+		Node *child = &childs[0];
+		for(it = list.begin(); it != list.end(); ++it, ++child) {
+			child->parent = node;
+			child->location = node->location.relative(*it);
+		}
+		node->childs = childs;
 	}
-	node->childs = childs;
 	node->populated = true;
 }
 
 
-ResourceModel::ResourceModel(Resource::Base* resource, QObject* parent) : QAbstractItemModel(parent) {
-	Resource::Handle handle;
-	handle.init(resource);
-	d_ptr = new ResourceModelPrivate(this, handle);
+ResourceModel::ResourceModel(Resource::Handle root, QObject* parent) : QAbstractItemModel(parent) {
+	d_ptr = new ResourceModelPrivate(this, root);
 }
 
 ResourceModel::~ResourceModel() {
@@ -136,9 +139,10 @@ QVariant ResourceModel::data(const QModelIndex &index, int role) const {
 	switch(role) {
 		case Qt::DisplayRole:
 			if(index.column() == 0) {
-				return node->handle.name();
+				return node->location.name();
 			} else if(index.column() == 1) {
-				Resource::Base* resource = node->handle.resource();
+				Resource::Handle handle = node->location.resource();
+				Resource::Base* resource = handle.resource();
 				if(dynamic_cast<Resource::IDirectory*>(resource))
 					return "Directory";
 				if(dynamic_cast<Resource::IQueryable*>(resource))
@@ -148,8 +152,9 @@ QVariant ResourceModel::data(const QModelIndex &index, int role) const {
 			break;
 		case Qt::ToolTipRole:
 			return path(index);
-		case Qt::ForegroundRole:
-			switch(node->handle.ownership()) {
+		case Qt::ForegroundRole: {
+			Resource::Handle handle = node->location.resource();
+			switch(handle.ownership()) {
 				case Resource::OwnedPrivate:
 					return Qt::lightGray;
 				case Resource::OwnedInternal:
@@ -157,6 +162,7 @@ QVariant ResourceModel::data(const QModelIndex &index, int role) const {
 				case Resource::OwnedExternal:
 					return Qt::black;
 			}
+		}
 	}
 	return QVariant();
 }
@@ -166,13 +172,7 @@ QString ResourceModel::path(const QModelIndex &index) const {
 	
 	ResourceModelPrivate::Node *node = d->node(index);
 	if(!node) return QString();
-	
-	QStringList path;
-	while(node) {
-		path.prepend(node->handle.name());
-		node = node->parent;
-	}
-	return path.join("/");
+	return '/' + node->location.path();
 }
 
 Resource::Handle ResourceModel::resource(const QModelIndex &index) const {
@@ -181,7 +181,10 @@ Resource::Handle ResourceModel::resource(const QModelIndex &index) const {
 	ResourceModelPrivate::Node *node = d->node(index);
 	if(!node) return Resource::Handle();
 	
-	return node->handle;
+	return node->location.resource();
+}
+
+void ResourceModel::update() {
 }
 
 }

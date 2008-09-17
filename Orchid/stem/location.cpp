@@ -61,13 +61,17 @@ QString Location::path() const {
 	return d->path;
 }
 
+QString Location::name() const {
+	return d->path.mid(d->path.lastIndexOf('/')+1);
+}
+
 Handle Location::resource() const {
 	// NOTE could be optimised by using references on string instead
 	// of stringlist
 	Base* res = d->root.resource();
-	QStringList path = d->path.split('/');
-	if(path.isEmpty()) return d->root;
+	if(d->path.isEmpty()) return d->root;
 	
+	QStringList path = d->path.split('/');
 	Handle handle;
 	
 	while(res) {
@@ -107,6 +111,7 @@ Location Location::relative(const QString &rel) const {
 		p1Length = d->path.lastIndexOf('/', p1Length)-1;
 	}
 	if(p1Length < 0) return Location();
+	if(p1Length == 0) return Location(d->root, rel.mid(p2Skip));
 	return Location(d->root, d->path.left(p1Length) + '/' + rel.mid(p2Skip));
 }
 

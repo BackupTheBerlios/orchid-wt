@@ -6,6 +6,7 @@
 
 #include "resource.h"
 
+#include <QtDebug> // TODO remove
 
 // TODO make theoretical proof of the keep being thread-safe
 
@@ -113,6 +114,8 @@ void KeepPrivate::initItem(KeepItem* item, Base* resource, KeepingFlags flags) {
 }
 
 void KeepPrivate::releaseItem(KeepItem* item) {
+	qDebug() << "release item" << item->name;
+	
 	// Secure this operation
 	QMutexLocker locker(&mutex);
 	

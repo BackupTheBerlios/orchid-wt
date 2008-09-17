@@ -25,7 +25,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	
 	m_root.init(res);
 	m_service.setRoot(m_root);
-	m_model = new Orchid::ResourceModel(res, this);
+	m_model = new Orchid::ResourceModel(m_root, this);
 	
 	res->addResource("sample.html", ResourceFactory::create("Document-Streams-Sample"));
 

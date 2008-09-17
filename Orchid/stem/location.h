@@ -23,6 +23,7 @@ public:
 	bool isNull() const;
 	Handle root() const;
 	QString path() const;
+	QString name() const;
 	Handle resource() const;
 	Location relative(const QString& rel) const;
 	Location& operator=(const Location &other);
