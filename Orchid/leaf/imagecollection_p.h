@@ -22,7 +22,6 @@ private:
 	QStringList namelist;
 	QHash<QString,QString> files;
 	QSet<QString> mods;
-	Orchid::Resource::Keep keep;
 };
 
 class ImageCollectionModPrivate : public Resource::BasePrivate {
@@ -33,7 +32,6 @@ public:
 	void resetKeep();
 private:
 	ImageCollection* collection;
-	Resource::Keep keep;
 };
 
 class ImageCollectionScalingPrivate : public ImageCollectionModPrivate {

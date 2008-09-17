@@ -18,7 +18,6 @@ public:
 private:
 	Q_DECLARE_PUBLIC(ModelResource)
 	QAbstractItemModel* model;
-	Resource::Keep keep;
 };
 
 }

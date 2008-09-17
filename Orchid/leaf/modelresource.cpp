@@ -18,7 +18,6 @@ public:
 private:
 	ModelResource* root;
 	QModelIndex index;
-	Orchid::Resource::Keep keep;
 };
 
 ModelItemResource::ModelItemResource(ModelResource* root, const QModelIndex& index) {
@@ -31,7 +30,7 @@ QStringList ModelItemResource::childs() const {
 }
 
 Resource::Handle ModelItemResource::child(const QString &name) {
-	Orchid::Resource::Handle handle = keep.acquireHandle(name);
+	Orchid::Resource::Handle handle = keep()->acquireHandle(name);
 	if(handle.isEmpty()) {
 		handle.init(new ModelItemResource(root, root->index(name, index)));
 	}
@@ -70,7 +69,7 @@ void ModelResource::setModel(QAbstractItemModel* model) {
 	Q_D(ModelResource);
 	if(d->model == model) return;
 	if(d->model) {
-		d->keep.resetAll();
+		keep()->resetAll();
 	}
 	d->model = model;
 }
@@ -83,7 +82,7 @@ QStringList ModelResource::childs() const {
 Resource::Handle ModelResource::child(const QString& name) {
 	Q_D(ModelResource);
 	
-	Orchid::Resource::Handle handle = d->keep.acquireHandle(name);
+	Orchid::Resource::Handle handle = keep()->acquireHandle(name);
 	if(handle.isEmpty()) {
 		handle.init(new ModelItemResource(this, index(name, QModelIndex())));
 	}

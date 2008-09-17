@@ -17,14 +17,14 @@ void ImageCollectionPrivate::resetFiles() {
 	Q_Q(ImageCollection);
 	QStringList::iterator it;
 	for(it = namelist.begin(); it != namelist.end(); ++it) {
-		keep.reset(*it);
+		q->keep()->reset(*it);
 	}
 	namelist.clear();
 	files.clear();
 
 	QSet<QString>::iterator mod;
 	for(mod = mods.begin(); mod != mods.end(); ++mod) {
-		Resource::Handle handle = keep.acquireHandle(*mod);
+		Resource::Handle handle = q->keep()->acquireHandle(*mod);
 		Resource::Base *res = handle.resource();
 		ImageCollectionMod *mod = dynamic_cast<ImageCollectionMod*>(res);
 		
@@ -85,7 +85,7 @@ bool ImageCollection::insertImage(const QString &name, ImageResource *resource) 
 		return false;
 	}
 	
-	Resource::Handle handle = d->keep.acquireHandle(name);
+	Resource::Handle handle = keep()->acquireHandle(name);
 	handle.init(resource);
 	d->files.insert(name, path);
 	d->namelist.append(name);
@@ -119,7 +119,7 @@ bool ImageCollection::insertModification(const QString &name, ImageCollectionMod
 		return false;
 	}
 	
-	Resource::Handle handle = d->keep.acquireHandle(name);
+	Resource::Handle handle = keep()->acquireHandle(name);
 	handle.init(mod, Resource::KeepPersistant);
 	mod->setCollection(this);
 	d->mods.insert(name);
@@ -141,7 +141,7 @@ QStringList ImageCollection::images() const {
 Resource::Handle ImageCollection::child(const QString &name) {
 	Q_D(ImageCollection);
 	
-	Resource::Handle handle = d->keep.acquireHandle(name);
+	Resource::Handle handle = keep()->acquireHandle(name);
 	if(handle.isEmpty()) {
 		QString path = d->files.value(name);
 		if(path.isNull()) return Resource::Handle();
@@ -202,7 +202,8 @@ ImageCollectionModPrivate::ImageCollectionModPrivate(ImageCollectionMod* mod)
 }
 
 void ImageCollectionModPrivate::resetKeep() {
-	keep.resetAll();
+	Q_Q(ImageCollectionMod);
+	q->keep()->resetAll();
 }
 
 ImageCollectionMod::ImageCollectionMod()
@@ -235,7 +236,7 @@ Resource::Handle ImageCollectionMod::child(const QString &name) {
 	QString path = d->collection->path(name);
 	if(path.isNull()) return Resource::Handle();
 	
-	Resource::Handle handle = d->keep.acquireHandle(name);
+	Resource::Handle handle = keep()->acquireHandle(name);
 	if(handle.isEmpty()) {
 		handle.init(createResource(path));
 	}
