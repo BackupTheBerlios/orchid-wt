@@ -9,7 +9,7 @@
 
 namespace Orchid {
 
-class ModelItemResource : public Resource::IResource, public Resource::IDirectory, public Resource::IQueryable  {
+class ModelItemResource : public Resource::Base, public Resource::IDirectory, public Resource::IQueryable  {
 	friend class ModelResource;
 public:
 	ModelItemResource(ModelResource* root, const QModelIndex& index);
@@ -33,7 +33,7 @@ QStringList ModelItemResource::childs() const {
 }
 
 Resource::Handle ModelItemResource::child(const QString &name) {
-	Orchid::Resource::Handle handle = keep.getHandle(name);
+	Orchid::Resource::Handle handle = keep.acquireHandle(name);
 	if(handle.isEmpty()) {
 		handle.init(new ModelItemResource(root, root->index(name, index)));
 	}
@@ -84,7 +84,7 @@ QStringList ModelResource::childs() const {
 Resource::Handle ModelResource::child(const QString& name) {
 	Q_D(ModelResource);
 	
-	Orchid::Resource::Handle handle = d->keep.getHandle(name);
+	Orchid::Resource::Handle handle = d->keep.acquireHandle(name);
 	if(handle.isEmpty()) {
 		handle.init(new ModelItemResource(this, index(name, QModelIndex())));
 	}

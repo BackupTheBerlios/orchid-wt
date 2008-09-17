@@ -5,6 +5,8 @@
 #include <QStringList>
 #include <QUrl>
 
+#include "resourcebase.h"
+
 namespace Orchid {
 
 typedef int InterfaceId;
@@ -34,10 +36,6 @@ class Request;
 namespace Resource {
 
 class Handle;
-class IResource {
-public:
-	virtual ~IResource() {}
-};
 
 class IDirectory {
 public:
@@ -47,7 +45,7 @@ public:
 
 class IContainer : public IDirectory {
 public:
-	virtual bool addResource(const QString& name, Resource::IResource* res) = 0;
+	virtual bool addResource(const QString& name, Resource::Base* res) = 0;
 };
 
 class IRedirecting {
@@ -88,7 +86,7 @@ public:
 };
 
 template <class T>
-inline T cast(IResource* res) {
+inline T cast(Base* res) {
 	IDynamic* dyn = dynamic_cast<IDynamic*>(res);
 	if(dyn && !dyn->provides(interfacePtrId<T>()))
 		return 0;
@@ -98,16 +96,14 @@ inline T cast(IResource* res) {
 }
 
 class ContainerResourcePrivate;
-class ContainerResource : public Resource::IResource, public Resource::IContainer {
+class ContainerResource : public Resource::Base, public Resource::IContainer {
 public:
 	ContainerResource();
 	~ContainerResource();
 public:
-	bool addResource(const QString& name, Resource::IResource* res);
+	bool addResource(const QString& name, Resource::Base* res);
 	QStringList childs() const;
 	Orchid::Resource::Handle child(const QString& name);
-protected:
-	ContainerResourcePrivate* d_ptr;
 private:
 	Q_DECLARE_PRIVATE(ContainerResource)
 };

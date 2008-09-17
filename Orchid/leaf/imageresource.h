@@ -11,7 +11,7 @@ namespace Orchid {
 
 class ImageResourcePrivate;
 class ImageResource :
-	public Resource::IResource,
+	public Resource::Base,
 	public Resource::IQueryable,
 	public Resource::IConfigurable
 {

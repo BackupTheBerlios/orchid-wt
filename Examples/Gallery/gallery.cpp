@@ -18,8 +18,8 @@ public:
 protected:
 	Gallery *q_ptr;
 private:
-	IResource *collection;
-	IResource *thumbs;
+	Base *collection;
+	Base *thumbs;
 	QString title;
 };
 
@@ -54,7 +54,7 @@ void Gallery::setTitle(const QString &title) {
 
 void Gallery::insertFile(const QString &name, const QString &file) {
 	Q_D(Gallery);
-	IResource *image = ResourceFactory::create("Image");
+	Base *image = ResourceFactory::create("Image");
 	IConfigurable *imageSettings = cast<IConfigurable*>(image);
 	Q_ASSERT(imageSettings);
 	imageSettings->setOption("path", file);

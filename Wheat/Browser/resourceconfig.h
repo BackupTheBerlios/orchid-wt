@@ -8,7 +8,7 @@
 
 class ResourceConfig : public QDialog, private Ui::ResourceConfig {
 public:
-	ResourceConfig(Orchid::Resource::IResource* resource, QWidget* parent = 0);
+	ResourceConfig(Orchid::Resource::Base* resource, QWidget* parent = 0);
 public:
 	void accept();
 private:

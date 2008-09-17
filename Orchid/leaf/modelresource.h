@@ -11,7 +11,7 @@ namespace Orchid {
 class ModelResourcePrivate;
 class ModelResource :
 	public QObject,
-	public Resource::IResource,
+	public Resource::Base,
 	public Resource::IDirectory,
 	public Resource::IConfigurable
 {

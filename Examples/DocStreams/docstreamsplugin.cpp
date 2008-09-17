@@ -13,8 +13,8 @@ class DocStreamsResourceFactory : public ResourceFactoryHelper {
 		list << "Document-Streams-Sample";
 		return list;
 	}
-	Resource::IResource *create(const QString &key) {
-		Resource::IResource *res = 0;
+	Resource::Base *create(const QString &key) {
+		Resource::Base *res = 0;
 		if(key == "Document-Streams-Sample") {
 			res = new DocStreamsSample();
 		}

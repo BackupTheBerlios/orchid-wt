@@ -6,11 +6,11 @@
 namespace Orchid {
 namespace Resource {
 
-class IResource;
+class Base;
 
 enum KeepingFlag {
 	KeepPersistant = 1,
-	KeepExclusive = 2,
+	KeepLonglifed = 2,
 };
 Q_DECLARE_FLAGS(KeepingFlags, KeepingFlag);
 Q_DECLARE_OPERATORS_FOR_FLAGS(KeepingFlags);
@@ -18,15 +18,15 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(KeepingFlags);
 class Handle;
 class KeepItem;
 class KeepPrivate;
-class Keep : public QObject {
-	Q_OBJECT
-	friend class ::Orchid::Resource::Handle;
+class Keep {
+	friend class KeepPrivate;
+	friend class Handle;
 public:
 	Keep();
 	~Keep();
 public:
-	Handle getHandle(const QString& name);
-	Handle tryGetHandle(const QString& name);
+	Handle acquireHandle(const QString& name);
+	Handle tryAcquireHandle(const QString& name);
 	void reset(const QString& name);
 	void resetAll();
 private:
@@ -42,8 +42,8 @@ public:
 public:
 	bool isNull() const;
 	bool isEmpty() const;
-	IResource* resource() const;
-	bool init(IResource* resource, KeepingFlags flags = KeepingFlags());
+	Base* resource() const;
+	void init(Base* resource, KeepingFlags flags = KeepingFlags());
 	QString name() const;
 	Handle& operator=(const Handle& other);
 	bool operator==(const Handle& other) const;

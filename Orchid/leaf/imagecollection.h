@@ -11,7 +11,7 @@ class ImageCollectionMod;
 
 class ImageCollectionPrivate;
 class ImageCollection : 
-	public Resource::IResource,
+	public Resource::Base,
 	public Resource::IContainer,
 	public Resource::IConfigurable
 {
@@ -20,7 +20,7 @@ public:
 	ImageCollection(const QVector<QPair<QString,QString> > &files);
 	~ImageCollection();
 public:
-	bool addResource(const QString &name, Resource::IResource *resoure);
+	bool addResource(const QString &name, Resource::Base *resoure);
 	bool insertImage(const QString &naem, ImageResource *resource);
 	bool insertFile(const QString &name, const QString &path);
 	bool insertModification(const QString &name, ImageCollectionMod* mod);
@@ -39,7 +39,7 @@ private:
 };
 
 class ImageCollectionModPrivate;
-class ImageCollectionMod : public Resource::IResource, public Resource::IDirectory {
+class ImageCollectionMod : public Resource::Base, public Resource::IDirectory {
 public:
 	ImageCollectionMod();
 	~ImageCollectionMod();

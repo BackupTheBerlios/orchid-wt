@@ -5,7 +5,7 @@
 
 class GalleryPrivate;
 class Gallery :
-	public Orchid::Resource::IResource,
+	public Orchid::Resource::Base,
 	public Orchid::Resource::IQueryable,
 	public Orchid::Resource::IDirectory,
 	public Orchid::Resource::IConfigurable

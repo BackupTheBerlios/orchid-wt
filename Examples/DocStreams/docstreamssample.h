@@ -9,7 +9,7 @@ class Fragment;
 class Style;
 }
 
-class DocStreamsSample : public Orchid::Resource::IResource, public Orchid::Resource::IQueryable {
+class DocStreamsSample : public Orchid::Resource::Base, public Orchid::Resource::IQueryable {
 public:
 	DocStreamsSample();
 	~DocStreamsSample();

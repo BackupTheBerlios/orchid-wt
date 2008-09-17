@@ -13,7 +13,7 @@ using namespace Orchid;
 using namespace Orchid::Resource;
 typedef IConfigurable::Option Option;
 
-ResourceConfig::ResourceConfig(IResource *resource, QWidget* parent) : QDialog(parent) {
+ResourceConfig::ResourceConfig(Base *resource, QWidget* parent) : QDialog(parent) {
 	m_resource = cast<IConfigurable*>(resource);
 	m_advanced = cast<IAdvancedConfigurable*>(resource);
 	m_options = m_resource->optionList();
