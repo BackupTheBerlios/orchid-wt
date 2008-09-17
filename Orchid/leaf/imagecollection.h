@@ -33,7 +33,6 @@ public:
 	bool setOption(const QString &option, const QVariant &value);
 protected:
 	ImageCollection(ImageCollectionPrivate*);
-	ImageCollectionPrivate* d_ptr;
 private:
 	Q_DECLARE_PRIVATE(ImageCollection)
 };
@@ -51,7 +50,6 @@ protected:
 	virtual ImageResource* createResource(const QString& path) = 0;
 protected:
 	ImageCollectionMod(ImageCollectionModPrivate *d);
-	ImageCollectionModPrivate* d_ptr;
 private:
 	Q_DECLARE_PRIVATE(ImageCollectionMod);
 };

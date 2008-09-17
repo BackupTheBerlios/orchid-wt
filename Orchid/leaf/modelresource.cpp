@@ -5,8 +5,6 @@
 #include <stem/request.h>
 #include <QtCore/QTextStream>
 
-#include "modelresource.moc"
-
 namespace Orchid {
 
 class ModelItemResource : public Resource::Base, public Resource::IDirectory, public Resource::IQueryable  {
@@ -46,20 +44,21 @@ void ModelItemResource::query(Orchid::Request* request) {
 }
 
 	
-ModelResource::ModelResource(QAbstractItemModel* model) {
-	d_ptr = new ModelResourcePrivate(this);
+ModelResource::ModelResource(QAbstractItemModel* model)
+	: Base(new ModelResourcePrivate(this))
+{
 	Q_D(ModelResource);
 	d->model = model;
 }
 
-ModelResource::ModelResource(ModelResourcePrivate* ptr, QAbstractItemModel* model) {
-	d_ptr = ptr;
+ModelResource::ModelResource(ModelResourcePrivate* dptr, QAbstractItemModel* model)
+	: Base(dptr)
+{
 	Q_D(ModelResource);
 	d->model = model;
 }
 
 ModelResource::~ModelResource() {
-	delete d_ptr;
 }
 
 QAbstractItemModel* ModelResource::model() const {

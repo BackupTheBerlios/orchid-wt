@@ -19,6 +19,7 @@ public:
 	ImageResource();
 	ImageResource(const QString& path);
 	ImageResource(const QImage& image);
+	~ImageResource();
 public:
 	QString path() const;
 	void setPath(const QString& path);
@@ -29,8 +30,6 @@ public:
 	QList<Option> optionList() const;
 	QVariant option(const QString&) const;
 	bool setOption(const QString&, const QVariant&);
-protected:
-	ImageResourcePrivate* d_ptr;
 private:
 	Q_DECLARE_PRIVATE(ImageResource)
 };

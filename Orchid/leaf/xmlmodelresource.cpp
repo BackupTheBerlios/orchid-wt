@@ -1,7 +1,5 @@
 #include "xmlmodelresource.h"
 
-#include "xmlmodelresource.moc" 
-
 #include "modelresource_p.h"
 
 #include <QtXml/QXmlStreamWriter>

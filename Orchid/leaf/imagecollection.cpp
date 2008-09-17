@@ -10,8 +10,7 @@
 
 namespace Orchid {
 
-ImageCollectionPrivate::ImageCollectionPrivate(ImageCollection* collection) {
-	q_ptr = collection;
+ImageCollectionPrivate::ImageCollectionPrivate(ImageCollection* collection) : BasePrivate(collection) {
 }
 
 void ImageCollectionPrivate::resetFiles() {
@@ -34,16 +33,17 @@ void ImageCollectionPrivate::resetFiles() {
 	}
 }
 
-ImageCollection::ImageCollection() {
-	d_ptr = new ImageCollectionPrivate(this);
-}
+ImageCollection::ImageCollection()
+	: Base(new ImageCollectionPrivate(this))
+{ }
 
-ImageCollection::ImageCollection(ImageCollectionPrivate* d) {
-	d_ptr = d;
-};
+ImageCollection::ImageCollection(ImageCollectionPrivate* d)
+	: Base(d)
+{ }
 
-ImageCollection::ImageCollection(const QVector<QPair<QString,QString> >& files) {
-	d_ptr = new ImageCollectionPrivate(this);
+ImageCollection::ImageCollection(const QVector<QPair<QString,QString> >& files)
+	: Base(new ImageCollectionPrivate(this))
+{
 	Q_D(ImageCollection);
 	QVector<QPair<QString,QString> >::const_iterator it;
 	for(it = files.constBegin(); it!= files.constEnd(); ++it) {
@@ -53,7 +53,6 @@ ImageCollection::ImageCollection(const QVector<QPair<QString,QString> >& files) 
 }
 
 ImageCollection::~ImageCollection() {
-	delete d_ptr;
 }
 
 bool ImageCollection::addResource(const QString &name, Resource::Base *resource) {
@@ -196,25 +195,25 @@ bool ImageCollection::setOption(const QString &option, const QVariant &value) {
 }
 
 
-ImageCollectionModPrivate::ImageCollectionModPrivate(ImageCollectionMod* mod) {
-	q_ptr = mod;
+ImageCollectionModPrivate::ImageCollectionModPrivate(ImageCollectionMod* mod)
+	: BasePrivate(mod)
+{
 	collection = 0;
-};
+}
 
 void ImageCollectionModPrivate::resetKeep() {
 	keep.resetAll();
 }
 
-ImageCollectionMod::ImageCollectionMod() {
-	d_ptr = new ImageCollectionModPrivate(this);
-}
+ImageCollectionMod::ImageCollectionMod()
+	: Base(new ImageCollectionModPrivate(this))
+{ }
 
-ImageCollectionMod::ImageCollectionMod(ImageCollectionModPrivate* d) {
-	d_ptr = d;
-};
+ImageCollectionMod::ImageCollectionMod(ImageCollectionModPrivate* d)
+	: Base(d)
+{ }
 
 ImageCollectionMod::~ImageCollectionMod() {
-	delete d_ptr;
 }
 
 void ImageCollectionMod::setCollection(ImageCollection* collection) {

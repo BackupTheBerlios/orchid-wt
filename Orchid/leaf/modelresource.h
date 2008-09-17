@@ -10,12 +10,10 @@ namespace Orchid {
 
 class ModelResourcePrivate;
 class ModelResource :
-	public QObject,
 	public Resource::Base,
 	public Resource::IDirectory,
 	public Resource::IConfigurable
 {
-	Q_OBJECT
 public:
 	ModelResource(QAbstractItemModel* model = 0);
 	~ModelResource();
@@ -33,8 +31,7 @@ public:
 	virtual QVariant option(const QString&) const;
 	virtual bool setOption(const QString&, const QVariant&);
 protected:
-	ModelResource(ModelResourcePrivate* ptr, QAbstractItemModel* model);
-	ModelResourcePrivate* d_ptr;
+	ModelResource(ModelResourcePrivate* d, QAbstractItemModel* model = 0);
 private:
 	Q_DECLARE_PRIVATE(ModelResource)
 };
