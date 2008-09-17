@@ -16,8 +16,8 @@ class ImageResourceFactory : public ResourceFactoryHelper {
 		list << "ImageCollectionScaling";
 		return list;
 	}
-	Resource::IResource *create(const QString &key) {
-		Resource::IResource *res = 0;
+	Resource::Base *create(const QString &key) {
+		Resource::Base *res = 0;
 		if(key == "Image") {
 			res = new ImageResource();
 		} else if(key == "ImageCollection") {

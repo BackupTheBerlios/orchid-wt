@@ -14,8 +14,8 @@ class GalleryResourceFactory : public ResourceFactoryHelper {
 		list << "GalleryDemo";
 		return list;
 	}
-	Resource::IResource *create(const QString &key) {
-		Resource::IResource *res = 0;
+	Resource::Base *create(const QString &key) {
+		Resource::Base *res = 0;
 		if(key == "Gallery") {
 			res = new Gallery();
 		} else if(key == "GalleryDemo") {

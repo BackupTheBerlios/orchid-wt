@@ -11,8 +11,8 @@ QStringList ResourceFactory::keys() {
 	return list;
 }
 
-Resource::IResource *ResourceFactory::create(const QString &key) {
-	Resource::IResource *res = 0;
+Resource::Base *ResourceFactory::create(const QString &key) {
+	Resource::Base *res = 0;
 	if(key == "Container") {
 		res = new ContainerResource();
 	}

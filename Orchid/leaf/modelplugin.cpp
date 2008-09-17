@@ -14,8 +14,8 @@ class ModelResourceFactory : public ResourceFactoryHelper {
 		list << "XmlModel";
 		return list;
 	}
-	Resource::IResource *create(const QString &key) {
-		Resource::IResource *res = 0;
+	Resource::Base *create(const QString &key) {
+		Resource::Base *res = 0;
 		if(key == "Model") {
 			res = new ModelResource();
 		} else if(key == "XmlModel") {

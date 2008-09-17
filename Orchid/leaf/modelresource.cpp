@@ -5,11 +5,9 @@
 #include <stem/request.h>
 #include <QtCore/QTextStream>
 
-#include "modelresource.moc"
-
 namespace Orchid {
 
-class ModelItemResource : public Resource::IResource, public Resource::IDirectory, public Resource::IQueryable  {
+class ModelItemResource : public Resource::Base, public Resource::IDirectory, public Resource::IQueryable  {
 	friend class ModelResource;
 public:
 	ModelItemResource(ModelResource* root, const QModelIndex& index);
@@ -20,7 +18,6 @@ public:
 private:
 	ModelResource* root;
 	QModelIndex index;
-	Orchid::Resource::Keep keep;
 };
 
 ModelItemResource::ModelItemResource(ModelResource* root, const QModelIndex& index) {
@@ -33,7 +30,7 @@ QStringList ModelItemResource::childs() const {
 }
 
 Resource::Handle ModelItemResource::child(const QString &name) {
-	Orchid::Resource::Handle handle = keep.getHandle(name);
+	Orchid::Resource::Handle handle = keep()->acquireHandle(name);
 	if(handle.isEmpty()) {
 		handle.init(new ModelItemResource(root, root->index(name, index)));
 	}
@@ -46,20 +43,21 @@ void ModelItemResource::query(Orchid::Request* request) {
 }
 
 	
-ModelResource::ModelResource(QAbstractItemModel* model) {
-	d_ptr = new ModelResourcePrivate(this);
+ModelResource::ModelResource(QAbstractItemModel* model)
+	: Base(new ModelResourcePrivate(this))
+{
 	Q_D(ModelResource);
 	d->model = model;
 }
 
-ModelResource::ModelResource(ModelResourcePrivate* ptr, QAbstractItemModel* model) {
-	d_ptr = ptr;
+ModelResource::ModelResource(ModelResourcePrivate* dptr, QAbstractItemModel* model)
+	: Base(dptr)
+{
 	Q_D(ModelResource);
 	d->model = model;
 }
 
 ModelResource::~ModelResource() {
-	delete d_ptr;
 }
 
 QAbstractItemModel* ModelResource::model() const {
@@ -71,7 +69,7 @@ void ModelResource::setModel(QAbstractItemModel* model) {
 	Q_D(ModelResource);
 	if(d->model == model) return;
 	if(d->model) {
-		d->keep.resetAll();
+		keep()->resetAll();
 	}
 	d->model = model;
 }
@@ -84,7 +82,7 @@ QStringList ModelResource::childs() const {
 Resource::Handle ModelResource::child(const QString& name) {
 	Q_D(ModelResource);
 	
-	Orchid::Resource::Handle handle = d->keep.getHandle(name);
+	Orchid::Resource::Handle handle = keep()->acquireHandle(name);
 	if(handle.isEmpty()) {
 		handle.init(new ModelItemResource(this, index(name, QModelIndex())));
 	}

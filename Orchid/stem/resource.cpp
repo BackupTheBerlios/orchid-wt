@@ -2,6 +2,8 @@
 #include "request.h"
 #include "resourcekeep.h"
 
+#include "resourcebase_p.h"
+
 #include <QTextStream>
 #include <QMutex>
 
@@ -27,19 +29,16 @@ int regInterface(const char *name) {
 	return id;
 }
 
-class ContainerResourcePrivate {
+class ContainerResourcePrivate : public Resource::BasePrivate {
+	Q_DECLARE_PUBLIC(ContainerResource)
 public:
 	ContainerResourcePrivate(ContainerResource* resource);
-protected:
-	ContainerResource* q_ptr;
 private:
-	Q_DECLARE_PUBLIC(ContainerResource)
-	Orchid::Resource::Keep m_keep;
 	QHash<QString, Orchid::Resource::Handle> m_childs;
 };
 
-ContainerResourcePrivate::ContainerResourcePrivate(ContainerResource* resource)
-	: q_ptr(resource)
+ContainerResourcePrivate::ContainerResourcePrivate(ContainerResource* resource) 
+	: BasePrivate(resource)
 { }
 
 ContainerResource::ContainerResource() {
@@ -51,9 +50,9 @@ ContainerResource::~ContainerResource() {
 }
 
 
-bool ContainerResource::addResource(const QString& name, Resource::IResource* res, Resource::Ownership ownership) {
+bool ContainerResource::addResource(const QString& name, Resource::Base* res, Resource::Ownership ownership) {
 	Q_D(ContainerResource);
-	Resource::Handle handle = d->m_keep.getHandle(name);
+	Resource::Handle handle = keep()->acquireHandle(name);
 	handle.init(res, ownership, Resource::KeepPersistant);
 	d->m_childs.insert(name, handle);
 	return true;

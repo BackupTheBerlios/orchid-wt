@@ -29,17 +29,17 @@ MainWindow::MainWindow() : m_service(8000) {
 	
 	res->addResource("sample.html", ResourceFactory::create("Document-Streams-Sample"));
 
-	Resource::IResource *xmlres = ResourceFactory::create("XmlModel");
+	Resource::Base *xmlres = ResourceFactory::create("XmlModel");
 	Resource::IConfigurable *config = Resource::cast<Resource::IConfigurable*>(xmlres);
 	config->setOption("model", qVariantFromValue<QObject*>(m_model));
 	res->addResource("resource.model", xmlres);
 	
-	Resource::IResource *imgres = ResourceFactory::create("Image");
+	Resource::Base *imgres = ResourceFactory::create("Image");
 	config = Resource::cast<Resource::IConfigurable*>(imgres);
 	config->setOption("path", "test.jpg");
 	res->addResource("image.jpg", imgres);
 	
-	Resource::IResource *demo = ResourceFactory::create("GalleryDemo");
+	Resource::Base *demo = ResourceFactory::create("GalleryDemo");
 	res->addResource("demo", demo);	
 
 	treeView->setModel(m_model);

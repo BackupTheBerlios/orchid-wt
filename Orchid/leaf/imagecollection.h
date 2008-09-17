@@ -11,7 +11,7 @@ class ImageCollectionMod;
 
 class ImageCollectionPrivate;
 class ImageCollection : 
-	public Resource::IResource,
+	public Resource::Base,
 	public Resource::IContainer,
 	public Resource::IConfigurable
 {
@@ -20,8 +20,8 @@ public:
 	ImageCollection(const QVector<QPair<QString,QString> > &files);
 	~ImageCollection();
 public:
-	bool addResource(const QString &name, Resource::IResource *resoure, Resource::Ownership ownership);
-	bool insertImage(const QString &naem, ImageResource *resource, Resource::Ownership ownership);
+	bool addResource(const QString &name, Resource::Base *resoure, Resource::Ownership ownership);
+	bool insertImage(const QString &name, ImageResource *resource, Resource::Ownership ownership);
 	bool insertFile(const QString &name, const QString &path);
 	bool insertModification(const QString &name, ImageCollectionMod* mod, Resource::Ownership ownership);
 
@@ -37,13 +37,12 @@ public:
 	bool setOption(const QString &option, const QVariant &value);
 protected:
 	ImageCollection(ImageCollectionPrivate*);
-	ImageCollectionPrivate* d_ptr;
 private:
 	Q_DECLARE_PRIVATE(ImageCollection)
 };
 
 class ImageCollectionModPrivate;
-class ImageCollectionMod : public Resource::IResource, public Resource::IDirectory {
+class ImageCollectionMod : public Resource::Base, public Resource::IDirectory {
 public:
 	ImageCollectionMod();
 	~ImageCollectionMod();
@@ -56,7 +55,6 @@ protected:
 	virtual ImageResource* createResource(const ImageResource *other) = 0;
 protected:
 	ImageCollectionMod(ImageCollectionModPrivate *d);
-	ImageCollectionModPrivate* d_ptr;
 private:
 	Q_DECLARE_PRIVATE(ImageCollectionMod);
 };

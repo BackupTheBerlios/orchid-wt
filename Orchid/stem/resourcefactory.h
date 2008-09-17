@@ -9,18 +9,18 @@ class QStringList;
 namespace Orchid {
 
 namespace Resource {
-class IResource;
+class Base;
 }
 
 class ResourceFactoryHelper : public FactoryHelper {
 public:
-	virtual Resource::IResource *create(const QString &key) = 0;
+	virtual Resource::Base *create(const QString &key) = 0;
 };
 
 class ResourceFactory {
 public:
 	static QStringList keys();
-	static Resource::IResource *create(const QString &key);
+	static Resource::Base *create(const QString &key);
 };
 
 }

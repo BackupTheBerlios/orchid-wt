@@ -4,39 +4,35 @@
 #include <QtCore/QHash>
 #include <QtCore/QSet>
 
+#include <stem/resourcebase_p.h>
+
 namespace Orchid {
 
 class ImageCollection;
 class ImageCollectionMod;
 class ImageCollectionScaling;
 
-class ImageCollectionPrivate {
+class ImageCollectionPrivate : public Resource::BasePrivate {
 	Q_DECLARE_PUBLIC(ImageCollection)
 public:
 	ImageCollectionPrivate(ImageCollection* collection);
 public:
 	void resetFiles();
-protected:
-	ImageCollection* q_ptr;
 private:
 	QStringList imageList;
 	QStringList fileList;
 	QHash<QString,QString> files;
 	QSet<QString> mods;
-	Orchid::Resource::Keep keep;
 };
 
-class ImageCollectionModPrivate {
+class ImageCollectionModPrivate : public Resource::BasePrivate {
 	Q_DECLARE_PUBLIC(ImageCollectionMod)
 public:
 	ImageCollectionModPrivate(ImageCollectionMod* mod);
 public:
 	void resetKeep();
-protected:
-	ImageCollectionMod* q_ptr;
 private:
 	ImageCollection* collection;
-	Resource::Keep keep;
 };
 
 class ImageCollectionScalingPrivate : public ImageCollectionModPrivate {

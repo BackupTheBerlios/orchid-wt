@@ -1,16 +1,15 @@
 #include "imageresource.h" 
 
+#include <stem/resourcebase_p.h>
 #include <stem/request.h>
 #include <QtCore/QVariant>
 #include <QtGui/QImage>
 
 namespace Orchid {
 
-class ImageResourcePrivate {
+class ImageResourcePrivate : Resource::BasePrivate {
 public:
 	ImageResourcePrivate(ImageResource* res);
-protected:
-	ImageResource* q_ptr;
 private:
 	QImage image;
 	QString path;
@@ -21,23 +20,31 @@ private:
 };
 
 
-ImageResourcePrivate::ImageResourcePrivate(ImageResource* res) {
-	q_ptr = res;
+ImageResourcePrivate::ImageResourcePrivate(ImageResource* res)
+	: BasePrivate(res)
+{
 	useScaling = false;
 }
 
-ImageResource::ImageResource() {
-	d_ptr = new ImageResourcePrivate(this);
+ImageResource::ImageResource()
+	: Base(new ImageResourcePrivate(this))
+{ }
+
+ImageResource::ImageResource(const QString& path)
+	: Base(new ImageResourcePrivate(this))
+{
+	Q_D(ImageResource);
+	d->path = path;
 }
 
-ImageResource::ImageResource(const QString& path) {
-	d_ptr = new ImageResourcePrivate(this);
-	d_ptr->path = path;
+ImageResource::ImageResource(const QImage& image)
+	: Base(new ImageResourcePrivate(this))
+{
+	Q_D(ImageResource);
+	d->image = image;
 }
 
-ImageResource::ImageResource(const QImage& image) {
-	d_ptr = new ImageResourcePrivate(this);
-	d_ptr->image = image;
+ImageResource::~ImageResource() {
 }
 
 QString ImageResource::path() const {

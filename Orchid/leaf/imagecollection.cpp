@@ -10,23 +10,22 @@
 
 namespace Orchid {
 
-ImageCollectionPrivate::ImageCollectionPrivate(ImageCollection* collection) {
-	q_ptr = collection;
+ImageCollectionPrivate::ImageCollectionPrivate(ImageCollection* collection) : BasePrivate(collection) {
 }
 
 void ImageCollectionPrivate::resetFiles() {
 	Q_Q(ImageCollection);
 	QStringList::iterator it;
 	for(it = fileList.begin(); it != fileList.end(); ++it) {
-		keep.reset(*it);
+		q->keep()->reset(*it);
 	}
 	fileList.clear();
 	files.clear();
 
 	QSet<QString>::iterator mod;
 	for(mod = mods.begin(); mod != mods.end(); ++mod) {
-		Resource::Handle handle = keep.getHandle(*mod);
-		Resource::IResource *res = handle.resource();
+		Resource::Handle handle = q->keep()->acquireHandle(*mod);
+		Resource::Base *res = handle.resource();
 		ImageCollectionMod *mod = dynamic_cast<ImageCollectionMod*>(res);
 		
 		Q_ASSERT(mod);
@@ -34,16 +33,17 @@ void ImageCollectionPrivate::resetFiles() {
 	}
 }
 
-ImageCollection::ImageCollection() {
-	d_ptr = new ImageCollectionPrivate(this);
-}
+ImageCollection::ImageCollection()
+	: Base(new ImageCollectionPrivate(this))
+{ }
 
-ImageCollection::ImageCollection(ImageCollectionPrivate* d) {
-	d_ptr = d;
-};
+ImageCollection::ImageCollection(ImageCollectionPrivate* d)
+	: Base(d)
+{ }
 
-ImageCollection::ImageCollection(const QVector<QPair<QString,QString> >& files) {
-	d_ptr = new ImageCollectionPrivate(this);
+ImageCollection::ImageCollection(const QVector<QPair<QString,QString> >& files)
+	: Base(new ImageCollectionPrivate(this))
+{
 	Q_D(ImageCollection);
 	QVector<QPair<QString,QString> >::const_iterator it;
 	for(it = files.constBegin(); it!= files.constEnd(); ++it) {
@@ -53,10 +53,9 @@ ImageCollection::ImageCollection(const QVector<QPair<QString,QString> >& files) 
 }
 
 ImageCollection::~ImageCollection() {
-	delete d_ptr;
 }
 
-bool ImageCollection::addResource(const QString &name, Resource::IResource *resource, Resource::Ownership ownership) {
+bool ImageCollection::addResource(const QString &name, Resource::Base *resource, Resource::Ownership ownership) {
 	bool result = false;
 	
 	ImageCollectionMod *mod = dynamic_cast<ImageCollectionMod*>(resource);
@@ -86,7 +85,7 @@ bool ImageCollection::insertImage(const QString &name, ImageResource *resource, 
 		return false;
 	}
 	
-	Resource::Handle handle = d->keep.getHandle(name);
+	Resource::Handle handle = keep()->acquireHandle(name);
 	handle.init(resource, ownership, Resource::KeepPersistant);
 	d->imageList.append(name);
 	return true;
@@ -119,7 +118,7 @@ bool ImageCollection::insertModification(const QString &name, ImageCollectionMod
 		return false;
 	}
 	
-	Resource::Handle handle = d->keep.getHandle(name);
+	Resource::Handle handle = keep()->acquireHandle(name);
 	handle.init(mod, ownership, Resource::KeepPersistant);
 	mod->setCollection(this);
 	d->mods.insert(name);
@@ -162,7 +161,7 @@ QStringList ImageCollection::childs() const {
 Resource::Handle ImageCollection::child(const QString &name) {
 	Q_D(ImageCollection);
 	
-	Resource::Handle handle = d->keep.getHandle(name);
+	Resource::Handle handle = keep()->acquireHandle(name);
 	if(handle.isEmpty()) {
 		QString path = d->files.value(name);
 		if(path.isNull()) return Resource::Handle();
@@ -211,25 +210,26 @@ bool ImageCollection::setOption(const QString &option, const QVariant &value) {
 }
 
 
-ImageCollectionModPrivate::ImageCollectionModPrivate(ImageCollectionMod* mod) {
-	q_ptr = mod;
+ImageCollectionModPrivate::ImageCollectionModPrivate(ImageCollectionMod* mod)
+	: BasePrivate(mod)
+{
 	collection = 0;
-};
+}
 
 void ImageCollectionModPrivate::resetKeep() {
-	keep.resetAll();
+	Q_Q(ImageCollectionMod);
+	q->keep()->resetAll();
 }
 
-ImageCollectionMod::ImageCollectionMod() {
-	d_ptr = new ImageCollectionModPrivate(this);
-}
+ImageCollectionMod::ImageCollectionMod()
+	: Base(new ImageCollectionModPrivate(this))
+{ }
 
-ImageCollectionMod::ImageCollectionMod(ImageCollectionModPrivate* d) {
-	d_ptr = d;
-};
+ImageCollectionMod::ImageCollectionMod(ImageCollectionModPrivate* d)
+	: Base(d)
+{ }
 
 ImageCollectionMod::~ImageCollectionMod() {
-	delete d_ptr;
 }
 
 void ImageCollectionMod::setCollection(ImageCollection* collection) {
@@ -250,16 +250,20 @@ Resource::Handle ImageCollectionMod::child(const QString &name) {
 	Resource::Handle handle;
 	if(!d->collection) return Resource::Handle();
 	if(d->collection->isImageResource(name)) {
-		handle = d->keep.getHandle(name);
+		handle = keep()->acquireHandle(name);
 		
-		Resource::Handle source = d->collection->child(name);
-		ImageResource *res = dynamic_cast<ImageResource*>(source.resource());
-		handle.init(createResource(res));
+		if(handle.isEmpty()) {
+			Resource::Handle source = d->collection->child(name);
+			ImageResource *res = dynamic_cast<ImageResource*>(source.resource());
+			handle.init(createResource(res));
+		}
 	} else if(d->collection->isImageFile(name)) {
-		handle = d->keep.getHandle(name);
+		handle = keep()->acquireHandle(name);
 		
-		QString path = d->collection->imageFilePath(name);
-		handle.init(createResource(path));
+		if(handle.isEmpty()) {
+			QString path = d->collection->imageFilePath(name);
+			handle.init(createResource(path));
+		}
 	}
 	if(handle.isEmpty()) {
 		return Resource::Handle();

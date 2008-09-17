@@ -11,7 +11,7 @@ namespace Orchid {
 
 class ImageResourcePrivate;
 class ImageResource :
-	public Resource::IResource,
+	public Resource::Base,
 	public Resource::IQueryable,
 	public Resource::IConfigurable
 {
@@ -19,6 +19,7 @@ public:
 	ImageResource();
 	ImageResource(const QString& path);
 	ImageResource(const QImage& image);
+	~ImageResource();
 public:
 	QString path() const;
 	void setPath(const QString& path);
@@ -30,8 +31,6 @@ public:
 	QVariant option(const QString&) const;
 	bool setOption(const QString&, const QVariant&);
 	virtual ImageResource *clone() const;
-protected:
-	ImageResourcePrivate* d_ptr;
 private:
 	Q_DECLARE_PRIVATE(ImageResource)
 };

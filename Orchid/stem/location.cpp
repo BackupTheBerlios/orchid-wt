@@ -64,7 +64,7 @@ QString Location::path() const {
 Handle Location::resource() const {
 	// NOTE could be optimised by using references on string instead
 	// of stringlist
-	IResource* res = d->root.resource();
+	Base* res = d->root.resource();
 	QStringList path = d->path.split('/');
 	if(path.isEmpty()) return d->root;
 	
