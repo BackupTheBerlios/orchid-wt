@@ -29,6 +29,7 @@ public:
 	QList<Option> optionList() const;
 	QVariant option(const QString&) const;
 	bool setOption(const QString&, const QVariant&);
+	virtual ImageResource *clone() const;
 protected:
 	ImageResourcePrivate* d_ptr;
 private:

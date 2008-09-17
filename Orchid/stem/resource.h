@@ -5,6 +5,8 @@
 #include <QStringList>
 #include <QUrl>
 
+#include "resourceglobals.h"
+
 namespace Orchid {
 
 typedef int InterfaceId;
@@ -47,7 +49,7 @@ public:
 
 class IContainer : public IDirectory {
 public:
-	virtual bool addResource(const QString& name, Resource::IResource* res) = 0;
+	virtual bool addResource(const QString& name, IResource* res, Ownership ownership = OwnedExternal) = 0;
 };
 
 class IRedirecting {
@@ -103,7 +105,7 @@ public:
 	ContainerResource();
 	~ContainerResource();
 public:
-	bool addResource(const QString& name, Resource::IResource* res);
+	bool addResource(const QString& name, Resource::IResource* res, Resource::Ownership ownership = Resource::OwnedExternal);
 	QStringList childs() const;
 	Orchid::Resource::Handle child(const QString& name);
 protected:

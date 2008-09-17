@@ -20,12 +20,16 @@ public:
 	ImageCollection(const QVector<QPair<QString,QString> > &files);
 	~ImageCollection();
 public:
-	bool addResource(const QString &name, Resource::IResource *resoure);
-	bool insertImage(const QString &naem, ImageResource *resource);
+	bool addResource(const QString &name, Resource::IResource *resoure, Resource::Ownership ownership);
+	bool insertImage(const QString &naem, ImageResource *resource, Resource::Ownership ownership);
 	bool insertFile(const QString &name, const QString &path);
-	bool insertModification(const QString &name, ImageCollectionMod* mod);
-	QStringList images() const;
-	QString path(const QString &name) const;
+	bool insertModification(const QString &name, ImageCollectionMod* mod, Resource::Ownership ownership);
+
+	bool isImageResource(const QString &name) const;
+	bool isImageFile(const QString &name) const;
+	bool isModification(const QString &name) const;
+	QString imageFilePath(const QString &name) const;
+	QStringList imageList() const;
 	QStringList childs() const;
 	Resource::Handle child(const QString&);
 	QList<Option> optionList() const;
@@ -49,6 +53,7 @@ public:
 	Resource::Handle child(const QString&);
 protected:
 	virtual ImageResource* createResource(const QString& path) = 0;
+	virtual ImageResource* createResource(const ImageResource *other) = 0;
 protected:
 	ImageCollectionMod(ImageCollectionModPrivate *d);
 	ImageCollectionModPrivate* d_ptr;
@@ -72,6 +77,7 @@ public:
 	bool setOption(const QString &option, const QVariant &value);
 protected:
 	ImageResource* createResource(const QString& path);
+	ImageResource* createResource(const ImageResource *other);
 private:
 	Q_DECLARE_PRIVATE(ImageCollectionScaling);
 };

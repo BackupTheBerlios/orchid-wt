@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+#include "resourceglobals.h"
+
 namespace Orchid {
 namespace Resource {
 
@@ -10,7 +12,7 @@ class IResource;
 
 enum KeepingFlag {
 	KeepPersistant = 1,
-	KeepExclusive = 2,
+	KeepExclusive  = 2
 };
 Q_DECLARE_FLAGS(KeepingFlags, KeepingFlag);
 Q_DECLARE_OPERATORS_FOR_FLAGS(KeepingFlags);
@@ -42,8 +44,9 @@ public:
 public:
 	bool isNull() const;
 	bool isEmpty() const;
+	Ownership ownership() const;
 	IResource* resource() const;
-	bool init(IResource* resource, KeepingFlags flags = KeepingFlags());
+	bool init(IResource* resource, Ownership ownership = OwnedPrivate, KeepingFlags flags = KeepingFlags());
 	QString name() const;
 	Handle& operator=(const Handle& other);
 	bool operator==(const Handle& other) const;

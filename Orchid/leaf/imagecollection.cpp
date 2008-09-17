@@ -17,10 +17,10 @@ ImageCollectionPrivate::ImageCollectionPrivate(ImageCollection* collection) {
 void ImageCollectionPrivate::resetFiles() {
 	Q_Q(ImageCollection);
 	QStringList::iterator it;
-	for(it = namelist.begin(); it != namelist.end(); ++it) {
+	for(it = fileList.begin(); it != fileList.end(); ++it) {
 		keep.reset(*it);
 	}
-	namelist.clear();
+	fileList.clear();
 	files.clear();
 
 	QSet<QString>::iterator mod;
@@ -48,7 +48,7 @@ ImageCollection::ImageCollection(const QVector<QPair<QString,QString> >& files) 
 	QVector<QPair<QString,QString> >::const_iterator it;
 	for(it = files.constBegin(); it!= files.constEnd(); ++it) {
 		d->files.insert(it->first, it->second);
-		d->namelist << it->first;
+		d->fileList << it->first;
 	}
 }
 
@@ -56,21 +56,21 @@ ImageCollection::~ImageCollection() {
 	delete d_ptr;
 }
 
-bool ImageCollection::addResource(const QString &name, Resource::IResource *resource) {
+bool ImageCollection::addResource(const QString &name, Resource::IResource *resource, Resource::Ownership ownership) {
 	bool result = false;
 	
 	ImageCollectionMod *mod = dynamic_cast<ImageCollectionMod*>(resource);
 	if(mod) {
-		result = insertModification(name, mod);
+		result = insertModification(name, mod, ownership);
 	}
 	ImageResource *image;
 	if(!result && (image = dynamic_cast<ImageResource*>(resource))) {
-		result = insertImage(name, image);
+		result = insertImage(name, image, ownership);
 	}
 	return result;
 }
 
-bool ImageCollection::insertImage(const QString &name, ImageResource *resource) {
+bool ImageCollection::insertImage(const QString &name, ImageResource *resource, Resource::Ownership ownership) {
 	Q_D(ImageCollection);
 	QString path = resource->path();
 	if(path.isNull()) {
@@ -87,9 +87,8 @@ bool ImageCollection::insertImage(const QString &name, ImageResource *resource) 
 	}
 	
 	Resource::Handle handle = d->keep.getHandle(name);
-	handle.init(resource);
-	d->files.insert(name, path);
-	d->namelist.append(name);
+	handle.init(resource, ownership, Resource::KeepPersistant);
+	d->imageList.append(name);
 	return true;
 }
 
@@ -105,11 +104,11 @@ bool ImageCollection::insertFile(const QString &name, const QString &path) {
 	}
 	
 	d->files.insert(name, path);
-	d->namelist.append(name);
+	d->fileList.append(name);
 	return true;
 }
 
-bool ImageCollection::insertModification(const QString &name, ImageCollectionMod* mod) {
+bool ImageCollection::insertModification(const QString &name, ImageCollectionMod* mod, Resource::Ownership ownership) {
 	Q_D(ImageCollection);
 	if(d->files.contains(name)) {
 		qWarning() << "ImageCollection allready contains the file " << name;
@@ -121,22 +120,43 @@ bool ImageCollection::insertModification(const QString &name, ImageCollectionMod
 	}
 	
 	Resource::Handle handle = d->keep.getHandle(name);
-	handle.init(mod, Resource::KeepPersistant);
+	handle.init(mod, ownership, Resource::KeepPersistant);
 	mod->setCollection(this);
 	d->mods.insert(name);
 	return true;
 }
 
+bool ImageCollection::isImageResource(const QString &name) const {
+	Q_D(const ImageCollection);
+	return d->imageList.contains(name);
+}
+
+bool ImageCollection::isImageFile(const QString &name) const {
+	Q_D(const ImageCollection);
+	return d->fileList.contains(name);
+}
+
+bool ImageCollection::isModification(const QString &name) const {
+	Q_D(const ImageCollection);
+	return d->mods.contains(name);
+}
+
+QString ImageCollection::imageFilePath(const QString &name) const {
+	Q_D(const ImageCollection);
+	return d->files.value(name);
+}
+
+QStringList ImageCollection::imageList() const {
+	Q_D(const ImageCollection);
+	return d->imageList + d->fileList;
+}
+
 QStringList ImageCollection::childs() const {
 	Q_D(const ImageCollection);
 	QStringList list(d->mods.toList());
-	list << d->files.keys();
+	list << d->imageList;
+	list << d->fileList;
 	return list;
-}
-
-QStringList ImageCollection::images() const {
-	Q_D(const ImageCollection);
-	return d->namelist;
 }
 
 Resource::Handle ImageCollection::child(const QString &name) {
@@ -146,14 +166,9 @@ Resource::Handle ImageCollection::child(const QString &name) {
 	if(handle.isEmpty()) {
 		QString path = d->files.value(name);
 		if(path.isNull()) return Resource::Handle();
-		handle.init(new ImageResource(path));
+		handle.init(new ImageResource(path), Resource::OwnedPrivate);
 	}
 	return handle;
-}
-
-QString ImageCollection::path(const QString &name) const {
-	Q_D(const ImageCollection);
-	return d->files.value(name);
 }
 
 QList<Resource::IConfigurable::Option> ImageCollection::optionList() const {
@@ -188,7 +203,7 @@ bool ImageCollection::setOption(const QString &option, const QVariant &value) {
 			int pos = it->indexOf(':');
 			QString name(it->left(pos));
 			d->files.insert(name, it->right(it->size()-pos-1));
-			d->namelist.append(name);
+			d->fileList.append(name);
 		}
 		result = true;
 	}
@@ -226,19 +241,28 @@ void ImageCollectionMod::setCollection(ImageCollection* collection) {
 QStringList ImageCollectionMod::childs() const {
 	Q_D(const ImageCollectionMod);
 	if(!d->collection) return QStringList();
-	return d->collection->images();
+	return d->collection->imageList();
 }
 
 Resource::Handle ImageCollectionMod::child(const QString &name) {
 	Q_D(ImageCollectionMod);
 	
+	Resource::Handle handle;
 	if(!d->collection) return Resource::Handle();
-	QString path = d->collection->path(name);
-	if(path.isNull()) return Resource::Handle();
-	
-	Resource::Handle handle = d->keep.getHandle(name);
-	if(handle.isEmpty()) {
+	if(d->collection->isImageResource(name)) {
+		handle = d->keep.getHandle(name);
+		
+		Resource::Handle source = d->collection->child(name);
+		ImageResource *res = dynamic_cast<ImageResource*>(source.resource());
+		handle.init(createResource(res));
+	} else if(d->collection->isImageFile(name)) {
+		handle = d->keep.getHandle(name);
+		
+		QString path = d->collection->imageFilePath(name);
 		handle.init(createResource(path));
+	}
+	if(handle.isEmpty()) {
+		return Resource::Handle();
 	}
 	return handle;
 }
@@ -325,6 +349,13 @@ bool ImageCollectionScaling::setOption(const QString &option, const QVariant &va
 ImageResource* ImageCollectionScaling::createResource(const QString &path) {
 	Q_D(ImageCollectionScaling);
 	ImageResource* res = new ImageResource(path);
+	res->setScaling(d->width, d->height);
+	return res;
+}
+
+ImageResource *ImageCollectionScaling::createResource(const ImageResource *other) {
+	Q_D(ImageCollectionScaling);
+	ImageResource* res = other->clone();
 	res->setScaling(d->width, d->height);
 	return res;
 }

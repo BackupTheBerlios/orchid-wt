@@ -148,6 +148,15 @@ QVariant ResourceModel::data(const QModelIndex &index, int role) const {
 			break;
 		case Qt::ToolTipRole:
 			return path(index);
+		case Qt::ForegroundRole:
+			switch(node->handle.ownership()) {
+				case Resource::OwnedPrivate:
+					return Qt::lightGray;
+				case Resource::OwnedInternal:
+					return Qt::darkGray;
+				case Resource::OwnedExternal:
+					return Qt::black;
+			}
 	}
 	return QVariant();
 }

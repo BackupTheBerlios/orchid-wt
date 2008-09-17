@@ -38,7 +38,7 @@ Gallery::Gallery() {
 	
 	IContainer *collection = cast<IContainer*>(d->collection);
 	Q_ASSERT(collection);
-	collection->addResource("thumbs", d->thumbs);
+	collection->addResource("thumbs", d->thumbs, OwnedPrivate);
 }
 
 Gallery::~Gallery() {

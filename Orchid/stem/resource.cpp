@@ -51,10 +51,10 @@ ContainerResource::~ContainerResource() {
 }
 
 
-bool ContainerResource::addResource(const QString& name, Resource::IResource* res) {
+bool ContainerResource::addResource(const QString& name, Resource::IResource* res, Resource::Ownership ownership) {
 	Q_D(ContainerResource);
-	Orchid::Resource::Handle handle = d->m_keep.getHandle(name);
-	handle.init(res, Orchid::Resource::KeepPersistant);
+	Resource::Handle handle = d->m_keep.getHandle(name);
+	handle.init(res, ownership, Resource::KeepPersistant);
 	d->m_childs.insert(name, handle);
 	return true;
 }

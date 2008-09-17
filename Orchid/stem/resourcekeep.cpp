@@ -21,6 +21,7 @@ struct KeepItem {
 	IResource* resource;
 	QMutex mutex; 
 	QAtomicInt handleRefs;
+	Ownership ownership;
 	
 	// TODO validate the use of keepRefs as it is insecure now
 	int keepRefs; // threads waiting for using this resource
@@ -220,23 +221,31 @@ bool Handle::isEmpty() const {
 	return !m_item->resource;
 }
 
+Ownership Handle::ownership() const {
+	if(!m_item) return OwnedPrivate;
+	return m_item->ownership;
+}
+
 IResource* Handle::resource() const {
 	if(!m_item) return 0;
 	return m_item->resource;
 }
 
-bool Handle::init(IResource* resource, KeepingFlags flags) {
+bool Handle::init(IResource* resource, Ownership ownership, KeepingFlags flags) {
 	if(!m_item) {
 		// is not keeped => no flags allowed
 		if(flags != KeepingFlags())
 			return false;
 		m_item = new KeepItem(0, QString());
 		m_item->resource = resource;
+		m_item->ownership = ownership;
 		m_item->handleRefs.ref();
 		return true;
 	}
 	
+	if(m_item->resource) return false;
 	if(!m_item->keep) return false;
+	m_item->ownership = ownership;
 	return m_item->keep->d->initItem(m_item, resource, flags);
 }
 

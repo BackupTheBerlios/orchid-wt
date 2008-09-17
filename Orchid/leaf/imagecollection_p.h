@@ -19,7 +19,8 @@ public:
 protected:
 	ImageCollection* q_ptr;
 private:
-	QStringList namelist;
+	QStringList imageList;
+	QStringList fileList;
 	QHash<QString,QString> files;
 	QSet<QString> mods;
 	Orchid::Resource::Keep keep;
