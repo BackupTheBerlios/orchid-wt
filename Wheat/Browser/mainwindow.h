@@ -20,9 +20,16 @@ public:
 	MainWindow();
 public slots:
 	void activateResource(const QModelIndex& index);
+	void addResource();
 	void configResource();
 private slots:
 	void requestFinished(int id, bool error);
+	void fileNew();
+	void fileOpen();
+	void fileSave();
+	void fileSaveAs();
+private:
+	void setupActions();
 private:
 	Orchid::ResourceModel* m_model;
 	Orchid::Resource::Handle m_root;

@@ -6,8 +6,8 @@ namespace Orchid {
 	
 QStringList ResourceFactory::keys() {
 	QStringList list;
-	list << ExtensionManager::keys("resource");
 	list << ContainerResource::staticTypeName();
+	list << ExtensionManager::keys("resource");
 	return list;
 }
 

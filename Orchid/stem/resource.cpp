@@ -34,7 +34,7 @@ class ContainerResourcePrivate : public Resource::BasePrivate {
 public:
 	ContainerResourcePrivate(ContainerResource* resource);
 private:
-	QHash<QString, Orchid::Resource::Handle> m_childs;
+	QStringList m_childs;
 };
 
 ContainerResourcePrivate::ContainerResourcePrivate(ContainerResource* resource) 
@@ -53,19 +53,23 @@ ContainerResource::~ContainerResource() {
 bool ContainerResource::addResource(const QString& name, Resource::Base* res, Resource::Ownership ownership) {
 	Q_D(ContainerResource);
 	Resource::Handle handle = keep()->acquireHandle(name);
+	if(!handle.isEmpty()) return false;
 	handle.init(res, ownership, Resource::KeepPersistant);
-	d->m_childs.insert(name, handle);
+	d->m_childs << name;
 	return true;
 }
 
 QStringList ContainerResource::childs() const {
 	Q_D(const ContainerResource);
-	return d->m_childs.keys();
+	return d->m_childs;
 }
 
 Orchid::Resource::Handle ContainerResource::child(const QString& name) {
 	Q_D(ContainerResource);
-	return d->m_childs.value(name);
+	Resource::Handle handle = keep()->acquireHandle(name);
+	if(handle.isEmpty())
+		return Resource::Handle();
+	return handle;
 }
 
 }
