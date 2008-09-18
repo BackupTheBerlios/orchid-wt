@@ -6,7 +6,7 @@
 
 // TODO clean up
 
-#include <QtDebug>
+#include <QVector>
 
 namespace Orchid {
 
@@ -17,22 +17,29 @@ public:
 		Node() {
 			parent = 0;
 			populated = false;
+			hasInfos = false;
 		}
 		Node(Node* parent, Resource::Location location) {
 			this->parent = parent;
 			this->location = location;
 			populated = false;
+			hasInfos = false;
 		}
 	public:
 		Node* parent;
-		Resource::Location location;
 		QVector<Node> childs;
-		bool populated;
+		Resource::Location location;
+		QString name;
+		QString info;
+		Resource::Ownership ownership;
+		bool populated : 1;
+		bool hasInfos : 1;
 	};
 public:
 	ResourceModelPrivate(ResourceModel* model, Resource::Handle res);
 	Node* node(const QModelIndex& index) const;
 	void populate(Node* node) const;
+	void loadInfos(Node* node) const;
 public:
 	Node* root;
 	
@@ -54,6 +61,7 @@ void ResourceModelPrivate::populate(Node* node) const {
 	if(node->populated) return;
 	
 	Resource::Handle handle = node->location.resource();
+	
 	Resource::IDirectory* dir = dynamic_cast<Resource::IDirectory*>(handle.resource());
 	
 	if(!dir) { node->populated = true; return; }
@@ -72,6 +80,21 @@ void ResourceModelPrivate::populate(Node* node) const {
 	node->populated = true;
 }
 
+void ResourceModelPrivate::loadInfos(Node* node) const {
+	Resource::Handle handle = node->location.resource();
+	Resource::Base *res = handle.resource();
+	
+	node->name = handle.name();
+	node->ownership = handle.ownership();
+	if(Resource::cast<Resource::IDirectory*>(res)) {
+		node->info = "Directory";
+	} else if(Resource::cast<Resource::IQueryable*>(res)) {
+		node->info = "Queryable";
+	} else {
+		node->info = "Resource";
+	}
+	node->hasInfos = true;
+}
 
 ResourceModel::ResourceModel(Resource::Handle root, QObject* parent) : QAbstractItemModel(parent) {
 	d_ptr = new ResourceModelPrivate(this, root);
@@ -133,28 +156,18 @@ int ResourceModel::columnCount(const QModelIndex &parent) const {
 
 QVariant ResourceModel::data(const QModelIndex &index, int role) const {
 	Q_D(const ResourceModel);
-	ResourceModelPrivate::Node *node = d->node(index);
-	if(!node) return QVariant();
-	
 	switch(role) {
 		case Qt::DisplayRole:
 			if(index.column() == 0) {
-				return node->location.name();
+				return name(index);
 			} else if(index.column() == 1) {
-				Resource::Handle handle = node->location.resource();
-				Resource::Base* resource = handle.resource();
-				if(dynamic_cast<Resource::IDirectory*>(resource))
-					return "Directory";
-				if(dynamic_cast<Resource::IQueryable*>(resource))
-					return "Queryable";
-				return "Resource";
+				return info(index);
 			}
 			break;
 		case Qt::ToolTipRole:
 			return path(index);
 		case Qt::ForegroundRole: {
-			Resource::Handle handle = node->location.resource();
-			switch(handle.ownership()) {
+			switch(ownership(index)) {
 				case Resource::OwnedPrivate:
 					return Qt::lightGray;
 				case Resource::OwnedInternal:
@@ -169,10 +182,34 @@ QVariant ResourceModel::data(const QModelIndex &index, int role) const {
 
 QString ResourceModel::path(const QModelIndex &index) const {
 	Q_D(const ResourceModel);
-	
 	ResourceModelPrivate::Node *node = d->node(index);
 	if(!node) return QString();
+	if(!node->hasInfos) d->loadInfos(node);
 	return '/' + node->location.path();
+}
+
+QString ResourceModel::name(const QModelIndex &index) const {
+	Q_D(const ResourceModel);
+	ResourceModelPrivate::Node *node = d->node(index);
+	if(!node) return QString();
+	if(!node->hasInfos) d->loadInfos(node);
+	return node->name;
+}
+
+QString ResourceModel::info(const QModelIndex &index) const {
+	Q_D(const ResourceModel);
+	ResourceModelPrivate::Node *node = d->node(index);
+	if(!node) return QString();
+	if(!node->hasInfos) d->loadInfos(node);
+	return node->info;
+}
+
+Resource::Ownership ResourceModel::ownership(const QModelIndex &index) const {
+	Q_D(const ResourceModel);
+	ResourceModelPrivate::Node *node = d->node(index);
+	if(!node) return Resource::OwnedPrivate;
+	if(!node->hasInfos) d->loadInfos(node);
+	return node->ownership;
 }
 
 Resource::Handle ResourceModel::resource(const QModelIndex &index) const {

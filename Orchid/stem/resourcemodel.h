@@ -23,6 +23,9 @@ public:
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 	
 	QString path(const QModelIndex &index) const;
+	QString name(const QModelIndex &index) const;
+	QString info(const QModelIndex &index) const;
+	Resource::Ownership ownership(const QModelIndex &index) const;
 	
 	Resource::Handle resource(const QModelIndex &index) const;
 public slots:
