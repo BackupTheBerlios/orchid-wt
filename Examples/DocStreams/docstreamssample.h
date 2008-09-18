@@ -10,6 +10,7 @@ class Style;
 }
 
 class DocStreamsSample : public Orchid::Resource::Base, public Orchid::Resource::IQueryable {
+	ORCHID_RESOURCE("Document-Streams-Sample")
 public:
 	DocStreamsSample();
 	~DocStreamsSample();

@@ -39,7 +39,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	config->setOption("path", "test.jpg");
 	res->addResource("image.jpg", imgres);
 	
-	Resource::Base *demo = ResourceFactory::create("GalleryDemo");
+	Resource::Base *demo = ResourceFactory::create("Hardcoded-Gallery-Demo");
 	res->addResource("demo", demo);	
 
 	treeView->setModel(m_model);

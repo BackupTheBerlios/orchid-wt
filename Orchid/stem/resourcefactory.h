@@ -3,8 +3,9 @@
 
 #include "extensionmanager.h"
 
+#include <stem/resourcebase.h>
+
 class QString;
-class QStringList;
 
 namespace Orchid {
 
@@ -12,9 +13,26 @@ namespace Resource {
 class Base;
 }
 
-class ResourceFactoryHelper : public FactoryHelper {
+class ResourceFactoryHelperBase : public FactoryHelper {
 public:
-	virtual Resource::Base *create(const QString &key) = 0;
+	virtual Resource::Base *create() = 0;
+};
+
+template <class T>
+class ResourceFactoryHelper : public ResourceFactoryHelperBase {
+public:
+	ResourceFactoryHelper() {
+		// compiletime check for ORCHID_RESOURCE macro in T
+		T *p = static_cast<T*>(0);
+		p->checkForResourceMacro(p);
+	}
+public:
+	QString key() const {
+		return T::staticTypeName();
+	}
+	Resource::Base *create() {
+		return new T();
+	}
 };
 
 class ResourceFactory {

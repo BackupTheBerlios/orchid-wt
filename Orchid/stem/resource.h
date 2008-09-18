@@ -99,6 +99,7 @@ inline T cast(Base* res) {
 
 class ContainerResourcePrivate;
 class ContainerResource : public Resource::Base, public Resource::IContainer {
+	ORCHID_RESOURCE("Container")
 public:
 	ContainerResource();
 	~ContainerResource();

@@ -3,16 +3,15 @@
 
 #include <stem/extensionplugin.h>
 
-class ModelResourceFactory;
 class ModelPlugin : public Orchid::ExtensionPlugin {
 	Q_OBJECT
-	public:
-		ModelPlugin();
-		~ModelPlugin();
-	public:
-		QList<Orchid::FactoryHelper*> helpers() const;
-	private:
-		ModelResourceFactory *factory;
+public:
+	ModelPlugin();
+	~ModelPlugin();
+public:
+	QList<Orchid::FactoryHelper*> helpers() const;
+private:
+	QList<Orchid::FactoryHelper*> m_helpers;
 };
 
 #endif

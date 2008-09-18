@@ -7,34 +7,18 @@
 
 using namespace Orchid;
 
-class GalleryResourceFactory : public ResourceFactoryHelper {
-	QStringList keys() const {
-		QStringList list;
-		list << "Gallery";
-		list << "GalleryDemo";
-		return list;
-	}
-	Resource::Base *create(const QString &key) {
-		Resource::Base *res = 0;
-		if(key == "Gallery") {
-			res = new Gallery();
-		} else if(key == "GalleryDemo") {
-			res = new GalleryDemo();
-		}
-		return res;
-	}
-};
-
 GalleryPlugin::GalleryPlugin() {
-	factory = new GalleryResourceFactory();
+	m_helpers << new ResourceFactoryHelper<Gallery>();
+	m_helpers << new ResourceFactoryHelper<GalleryDemo>();
 }
 
 GalleryPlugin::~GalleryPlugin() {
-	delete factory;
+	foreach(FactoryHelper *helper, m_helpers)
+		delete helper;
 }
 
 QList<FactoryHelper*> GalleryPlugin::helpers() const {
-	return QList<FactoryHelper*>() << factory;
+	return m_helpers;
 }
 
 Q_EXPORT_PLUGIN2(examlpes_gallery_extension, GalleryPlugin)

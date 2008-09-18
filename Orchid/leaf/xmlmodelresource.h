@@ -7,6 +7,7 @@ namespace Orchid {
 
 class XmlModelResourcePrivate;
 class XmlModelResource : public ModelResource, public Orchid::Resource::IQueryable {
+	ORCHID_RESOURCE("XmlModel")
 public:
 	XmlModelResource(QAbstractItemModel* model = 0);
 	~XmlModelResource();

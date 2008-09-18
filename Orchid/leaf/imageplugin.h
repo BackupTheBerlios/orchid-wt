@@ -3,7 +3,6 @@
 
 #include <stem/extensionplugin.h>
 
-class ImageResourceFactory;
 class ImagePlugin : public Orchid::ExtensionPlugin {
 	Q_OBJECT
 public:
@@ -12,7 +11,7 @@ public:
 public:
 	QList<Orchid::FactoryHelper*> helpers() const;
 private:
-	ImageResourceFactory *factory;
+	QList<Orchid::FactoryHelper*> m_helpers;
 };
 
 #endif

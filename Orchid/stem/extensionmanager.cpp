@@ -35,11 +35,7 @@ bool ExtensionManager::loadExtension(const QString &path) {
 			QList<FactoryHelper*>::const_iterator i;
 			for(i = helpers.begin(); i != helpers.end(); ++i) {
 				// TODO read category from helper
-				QStringList keys = (*i)->keys();
-				QStringList::iterator j;
-				for(j = keys.begin(); j != keys.end(); ++j) {
-					d->lookup.insert(*j, *i);
-				}
+				d->lookup.insert((*i)->key(), *i);
 			}
 			return true;
 		} else {

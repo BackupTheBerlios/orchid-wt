@@ -15,6 +15,7 @@ class ImageResource :
 	public Resource::IQueryable,
 	public Resource::IConfigurable
 {
+	ORCHID_RESOURCE("Image")
 public:
 	ImageResource();
 	ImageResource(const QString& path);

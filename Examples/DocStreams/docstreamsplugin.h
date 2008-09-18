@@ -3,7 +3,6 @@
 
 #include <stem/extensionplugin.h>
 
-class DocStreamsResourceFactory;
 class DocStreamsPlugin : public Orchid::ExtensionPlugin {
 	Q_OBJECT
 public:
@@ -12,7 +11,7 @@ public:
 public:
 	QList<Orchid::FactoryHelper*> helpers() const;
 private:
-	DocStreamsResourceFactory *factory;
+	QList<Orchid::FactoryHelper*> m_helpers;
 };
 
 #endif

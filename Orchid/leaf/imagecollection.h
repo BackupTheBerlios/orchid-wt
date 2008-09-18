@@ -15,6 +15,7 @@ class ImageCollection :
 	public Resource::IContainer,
 	public Resource::IConfigurable
 {
+	ORCHID_RESOURCE("ImageCollection")
 public:
 	ImageCollection();
 	ImageCollection(const QVector<QPair<QString,QString> > &files);
@@ -43,6 +44,7 @@ private:
 
 class ImageCollectionModPrivate;
 class ImageCollectionMod : public Resource::Base, public Resource::IDirectory {
+	ORCHID_RESOURCE("ImageCollectionMod-unused")
 public:
 	ImageCollectionMod();
 	~ImageCollectionMod();
@@ -62,6 +64,7 @@ private:
 class ImageCollectionScalingPrivate;
 class ImageCollectionScaling : public ImageCollectionMod, public Resource::IConfigurable
 {
+	ORCHID_RESOURCE("ImageCollectionScaling")
 public:
 	ImageCollectionScaling();
 	ImageCollectionScaling(int width, int height);

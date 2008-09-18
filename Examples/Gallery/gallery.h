@@ -10,6 +10,7 @@ class Gallery :
 	public Orchid::Resource::IDirectory,
 	public Orchid::Resource::IConfigurable
 {
+	ORCHID_RESOURCE("Gallery")
 public:
 	Gallery();
 	~Gallery();
