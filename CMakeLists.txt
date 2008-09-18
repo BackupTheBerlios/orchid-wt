@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 project(Orchid-Resources)
 
-ADD_DEFINITIONS(-DDEBUG -ggdb -O)
+ADD_DEFINITIONS(-DDEBUG -ggdb)
 
 set(QT_USE_QTXML true)
 set(QT_USE_QTWEBKIT true)

@@ -52,6 +52,7 @@ MainWindow::MainWindow() : m_service(8000) {
 }
 
 void MainWindow::activateResource(const QModelIndex& index) {
+	m_model->update(index);
 	QString path = m_model->path(index);
 	reader.get(path, &result);
 }
@@ -68,6 +69,7 @@ void MainWindow::configResource() {
 		QString path = m_model->path(index);
 		reader.get(path, &result);
 	}
+	m_model->update();
 }
 
 void MainWindow::requestFinished(int id, bool error) {

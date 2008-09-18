@@ -29,6 +29,7 @@ public:
 	
 	Resource::Handle resource(const QModelIndex &index) const;
 public slots:
+	void update(const QModelIndex &index);
 	void update();
 protected:
 	ResourceModelPrivate* d_ptr;

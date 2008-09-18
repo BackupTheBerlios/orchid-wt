@@ -6,7 +6,7 @@
 
 // TODO clean up
 
-#include <QVector>
+#include <QtCore/QVector>
 
 namespace Orchid {
 
@@ -15,6 +15,7 @@ public:
 	class Node {
 	public:
 		Node() {
+			row = 0;
 			parent = 0;
 			populated = false;
 			hasInfos = false;
@@ -25,13 +26,20 @@ public:
 			populated = false;
 			hasInfos = false;
 		}
+		~Node() {
+			QVector<Node*>::iterator it;
+			for(it = childs.begin(); it != childs.end(); ++it) {
+				delete *it;
+			}
+		}
 	public:
 		Node* parent;
-		QVector<Node> childs;
+		QVector<Node*> childs;
 		Resource::Location location;
 		QString name;
 		QString info;
 		Resource::Ownership ownership;
+		int row;
 		bool populated : 1;
 		bool hasInfos : 1;
 	};
@@ -54,6 +62,7 @@ ResourceModelPrivate::ResourceModelPrivate(ResourceModel* model, Resource::Handl
 }
 
 ResourceModelPrivate::Node* ResourceModelPrivate::node(const QModelIndex& index) const {
+	if(!index.isValid()) return root;
 	return static_cast<Node*>(index.internalPointer());
 }
 
@@ -68,14 +77,15 @@ void ResourceModelPrivate::populate(Node* node) const {
 	
 	QStringList list = dir->childs();
 	if(list.count() != 0) {
-		QVector<ResourceModelPrivate::Node> childs(list.count());	
+		int row = 0;
 		QStringList::iterator it;
-		Node *child = &childs[0];
-		for(it = list.begin(); it != list.end(); ++it, ++child) {
+		for(it = list.begin(); it != list.end(); ++it, ++row) {
+			Node *child = new Node();
 			child->parent = node;
 			child->location = node->location.relative(*it);
+			child->row = row;
+			node->childs << child;
 		}
-		node->childs = childs;
 	}
 	node->populated = true;
 }
@@ -116,9 +126,7 @@ QModelIndex ResourceModel::index(int row, int column, const QModelIndex &parent)
 	if(!p->populated)
 		d->populate(p);
 	
-	if(row < 0 || row >= p->childs.count());
-
-	return createIndex(row, column, &p->childs[row]);
+	return createIndex(row, column, p->childs[row]);
 }
 
 QModelIndex ResourceModel::parent(const QModelIndex &index) const {
@@ -130,9 +138,7 @@ QModelIndex ResourceModel::parent(const QModelIndex &index) const {
 	
 	if(!pp) return QModelIndex();
 	
-	int row = parent - &pp->childs[0];
-	
-	return createIndex(row, 0, parent);
+	return createIndex(parent->row, 0, parent);
 }
 
 int ResourceModel::rowCount(const QModelIndex &parent) const {
@@ -221,7 +227,82 @@ Resource::Handle ResourceModel::resource(const QModelIndex &index) const {
 	return node->location.resource();
 }
 
+void ResourceModel::update(const QModelIndex &index) {
+	Q_D(const ResourceModel);
+
+	ResourceModelPrivate::Node *node = d->node(index);
+	if(!node) return;
+		// ok reached a point where src and dest differ
+	
+	d->loadInfos(node);
+
+	Resource::Handle handle = node->location.resource();
+	Resource::Base *res = handle.resource();
+	QStringList childs;
+	Resource::IDirectory *dir = Resource::cast<Resource::IDirectory*>(res);
+	if(dir) {
+		childs = dir->childs();
+	}
+	
+	int destRest = 0;
+	int srcRest = 0;
+	while(destRest < node->childs.count() || srcRest < childs.count()) {
+		while(destRest < node->childs.count() && srcRest < childs.count()) {
+			if(node->childs[destRest]->name != childs[srcRest])
+				break;
+			
+			update(createIndex(destRest, 0, node->childs[destRest]));
+			
+			node->childs[destRest]->row = destRest;
+			++destRest; ++srcRest;
+		}
+		// ok reached a point where src and dest differ
+		// search for good new combination
+		int destTest = destRest, srcTest = srcRest;
+		for(destTest = destRest; destTest < node->childs.count(); ++destTest) {
+			// TODO optimize this
+			for(srcTest = srcRest; srcTest < childs.count(); ++srcTest) {
+				if(node->childs[destTest]->name == childs[srcTest])
+					break;
+			}
+			if(srcTest < childs.count())
+				break;
+		}
+		if(destTest == node->childs.count()) {
+			// ok we reached the end, insert the full rest
+			srcTest = childs.count();
+		}
+		
+		// we searched to the next pair with the same name or the end
+		if(destRest != destTest && destRest < node->childs.count()) {
+			beginRemoveRows(index, destRest, destTest-1);
+			for(int i = destRest; i < destTest; ++i) {
+				delete node->childs[i];
+			}
+			node->childs.remove(destRest, destTest-destRest);
+			endRemoveRows();
+		}
+		int newCount = srcTest-srcRest;
+		if(newCount != 0 && srcRest < childs.count()) {
+			beginInsertRows(index, destRest, destRest+newCount-1);
+			node->childs.insert(destRest, newCount, 0);
+			for(int i = 0; i < newCount; ++i) {
+				ResourceModelPrivate::Node *child = new ResourceModelPrivate::Node();
+				child->parent = node;
+				child->location = node->location.relative(childs[srcRest+i]);
+				child->row = destRest+i;
+				node->childs[destRest+i] = child;
+			}
+			destRest += newCount;
+			srcRest = srcTest;
+			endInsertRows();
+		}
+	}
+}
+
 void ResourceModel::update() {
+	Q_D(ResourceModel);
+	update(QModelIndex());
 }
 
 }
