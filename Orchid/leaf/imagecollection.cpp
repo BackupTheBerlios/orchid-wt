@@ -69,6 +69,23 @@ bool ImageCollection::addResource(const QString &name, Resource::Base *resource,
 	return result;
 }
 
+bool ImageCollection::remove(const QString &name) {
+	Q_D(ImageCollection);
+	if(!d->imageList.contains(name)) return false;
+	return keep()->reset(name);
+}
+
+bool ImageCollection::removeAll() {
+	Q_D(ImageCollection);
+	Resource::Keep *k = keep();
+	QStringList::iterator it;
+	for(it = d->imageList.begin(); it != d->imageList.end(); ++it) {
+		Q_ASSERT(k->reset(*it));
+	}
+	d->imageList.clear();
+	return true;
+}
+
 bool ImageCollection::insertImage(const QString &name, ImageResource *resource, Resource::Ownership ownership) {
 	Q_D(ImageCollection);
 	QString path = resource->path();
@@ -76,8 +93,12 @@ bool ImageCollection::insertImage(const QString &name, ImageResource *resource, 
 		qWarning() << "ImageCollection requires its images to have paths";
 		return false;
 	}
-	if(d->files.contains(name)) {
+	if(d->fileList.contains(name)) {
 		qWarning() << "ImageCollection allready contains the file " << name;
+		return false;
+	}
+	if(d->imageList.contains(name)) {
+		qWarning() << "ImageCollection allready contains the image " << name;
 		return false;
 	}
 	if(d->mods.contains(name)) {
@@ -93,8 +114,13 @@ bool ImageCollection::insertImage(const QString &name, ImageResource *resource, 
 
 bool ImageCollection::insertFile(const QString &name, const QString &path) {
 	Q_D(ImageCollection);
-	if(d->files.contains(name)) {
+	
+	if(d->fileList.contains(name)) {
 		qWarning() << "ImageCollection allready contains the file " << name;
+		return false;
+	}
+	if(d->imageList.contains(name)) {
+		qWarning() << "ImageCollection allready contains the image " << name;
 		return false;
 	}
 	if(d->mods.contains(name)) {
@@ -109,8 +135,12 @@ bool ImageCollection::insertFile(const QString &name, const QString &path) {
 
 bool ImageCollection::insertModification(const QString &name, ImageCollectionMod* mod, Resource::Ownership ownership) {
 	Q_D(ImageCollection);
-	if(d->files.contains(name)) {
+	if(d->fileList.contains(name)) {
 		qWarning() << "ImageCollection allready contains the file " << name;
+		return false;
+	}
+	if(d->imageList.contains(name)) {
+		qWarning() << "ImageCollection allready contains the image " << name;
 		return false;
 	}
 	if(d->mods.contains(name)) {
@@ -201,8 +231,7 @@ bool ImageCollection::setOption(const QString &option, const QVariant &value) {
 			// TODO check for mods
 			int pos = it->indexOf(':');
 			QString name(it->left(pos));
-			d->files.insert(name, it->right(it->size()-pos-1));
-			d->fileList.append(name);
+			insertFile(name, it->right(it->size()-pos-1));
 		}
 		result = true;
 	}

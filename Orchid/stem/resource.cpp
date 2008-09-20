@@ -41,12 +41,10 @@ ContainerResourcePrivate::ContainerResourcePrivate(ContainerResource* resource)
 	: BasePrivate(resource)
 { }
 
-ContainerResource::ContainerResource() {
-	d_ptr = new ContainerResourcePrivate(this);
+ContainerResource::ContainerResource() : Base(new ContainerResourcePrivate(this)) {
 }
 
 ContainerResource::~ContainerResource() {
-	delete d_ptr;
 }
 
 
@@ -56,6 +54,17 @@ bool ContainerResource::addResource(const QString& name, Resource::Base* res, Re
 	if(!handle.isEmpty()) return false;
 	handle.init(res, ownership, Resource::KeepPersistant);
 	d->m_childs << name;
+	return true;
+}
+
+bool ContainerResource::remove(const QString &name) {
+	return keep()->reset(name);
+}
+
+bool ContainerResource::removeAll() {
+	Q_D(ContainerResource);
+	keep()->resetAll();
+	d->m_childs.clear();
 	return true;
 }
 

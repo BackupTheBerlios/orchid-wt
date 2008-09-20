@@ -301,13 +301,13 @@ Handle Keep::tryAcquireHandle(const QString& name) {
 	return Handle(item);
 }
 
-void Keep::reset(const QString &name) {
+bool Keep::reset(const QString &name) {
 	// Secure this operation
 	QMutexLocker locker(&d->mutex);
 	
 	// Find the right item
 	QHash<QString, KeepItem*>::iterator it = d->items.find(name);
-	if(it == d->items.end()) return;
+	if(it == d->items.end()) return false;
 	
 	// Ok we have the item
 	KeepItem *item = it.value();
@@ -323,7 +323,7 @@ void Keep::reset(const QString &name) {
 	
 	if(!item->resource) {
 		// item is not initialized yet so no ned to reset it
-		return;
+		return true;
 	}
 	
 	// Move item out of the keep
@@ -343,6 +343,7 @@ void Keep::reset(const QString &name) {
 		// There are no refs to this item, we can savely delet it
 		delete item;
 	}
+	return true;
 }
 
 void Keep::resetAll() {

@@ -22,6 +22,8 @@ public:
 	~ImageCollection();
 public:
 	bool addResource(const QString &name, Resource::Base *resoure, Resource::Ownership ownership);
+	bool remove(const QString &name);
+	bool removeAll();
 	bool insertImage(const QString &name, ImageResource *resource, Resource::Ownership ownership);
 	bool insertFile(const QString &name, const QString &path);
 	bool insertModification(const QString &name, ImageCollectionMod* mod, Resource::Ownership ownership);

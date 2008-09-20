@@ -138,6 +138,11 @@ void MainWindow::requestFinished(int id, bool error) {
 
 void MainWindow::fileNew() {
 	qDebug() << "fileNew";
+	
+	IContainer *root = cast<IContainer*>(m_root.resource());
+	Q_ASSERT(root);
+	root->removeAll();
+	m_model->update();
 }
 
 void MainWindow::fileOpen() {

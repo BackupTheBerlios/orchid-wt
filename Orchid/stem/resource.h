@@ -48,6 +48,8 @@ public:
 class IContainer : public IDirectory {
 public:
 	virtual bool addResource(const QString& name, Base* res, Ownership ownership = OwnedExternal) = 0;
+	virtual bool remove(const QString &name) = 0;
+	virtual bool removeAll() = 0;
 };
 
 class IRedirecting {
@@ -105,6 +107,8 @@ public:
 	~ContainerResource();
 public:
 	bool addResource(const QString& name, Resource::Base* res, Resource::Ownership ownership = Resource::OwnedExternal);
+	bool remove(const QString &name);
+	bool removeAll();
 	QStringList childs() const;
 	Orchid::Resource::Handle child(const QString& name);
 private:

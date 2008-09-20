@@ -29,7 +29,7 @@ public:
 public:
 	Handle acquireHandle(const QString& name);
 	Handle tryAcquireHandle(const QString& name);
-	void reset(const QString& name);
+	bool reset(const QString& name);
 	void resetAll();
 private:
 	KeepPrivate* d;
