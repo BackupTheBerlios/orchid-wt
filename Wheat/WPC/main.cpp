@@ -25,8 +25,10 @@ void process(const QString& name) {
 	qDebug() << "process" << name;
 	
 	QXmlStreamReader xmlIn(&input);
-	Orchid::XmlFragmentReader reader(&xmlIn);
-	fragment = reader.read();
+	Orchid::FragmentBuilder builder;
+	Orchid::XmlFragmentReader reader(&builder, &xmlIn);
+	reader.readDocument();
+	fragment = builder.fragment();
 	
 	if(!fragment) {
 		qWarning() << "could not read dom";
@@ -54,17 +56,11 @@ void process(const QString& name) {
 	xmlWriter.write(&xml, fragment);
 	xml.writeEndDocument();
 
-	Orchid::FragmentBuilder builder;
-	Orchid::HtmlFragmentWriter buildWriter(&builder);
-	builder.startDocument();
-	buildWriter.write(fragment);
-	builder.endDocument();
-
 	Orchid::XHtml11StreamWriter html(&cout);
 	html.xmlWriter()->setAutoFormatting(true);
 	Orchid::HtmlFragmentWriter htmlWriter(&html);
 	html.startDocument();
-	htmlWriter.write(builder.fragment());
+	htmlWriter.write(fragment);
 	html.endDocument();
 
 	cout.close();

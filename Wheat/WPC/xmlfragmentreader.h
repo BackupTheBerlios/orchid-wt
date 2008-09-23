@@ -4,10 +4,11 @@
 #include <QtCore/QtGlobal>
 
 class QXmlStreamReader;
+class QIODevice;
 
 namespace Orchid {
 
-class DomFragment;
+class DocumentProcessor;
 
 class XmlFragmentReaderPrivate;
 class XmlFragmentReader {
@@ -17,10 +18,19 @@ public:
 		UnallowedElement,
 	};
 public:
-	XmlFragmentReader(QXmlStreamReader* xml);
+	XmlFragmentReader();
+	XmlFragmentReader(DocumentProcessor *dest, QXmlStreamReader* xml = 0);
+	XmlFragmentReader(DocumentProcessor *dest, QIODevice *device);
 	~XmlFragmentReader();
 public:
-	DomFragment* read();
+	DocumentProcessor *destiny() const;
+	void setDestiny(DocumentProcessor *dest);
+	QIODevice *device() const;
+	void setDevice(QIODevice *device);
+	QXmlStreamReader *xml() const;
+	void setXmlStreamReader(QXmlStreamReader *xml);
+	bool readBody();
+	bool readDocument();
 	ErrorCode errorCode() const;
 	QString errorString() const;
 	int errorLine() const;

@@ -83,9 +83,7 @@ Document::Tag XmlFragmentReaderHelper::tag(const QStringRef& name) const {
 
 class XmlFragmentReaderPrivate {
 public:
-	XmlFragmentReaderPrivate(XmlFragmentReader *reader)
-	 : q_ptr (reader), errorCode(XmlFragmentReader::NoError)
-	{ }
+	XmlFragmentReaderPrivate(XmlFragmentReader *reader);
 public:
 	void readInline(Document::Tag tag);
 	void readParagraph();
@@ -94,16 +92,25 @@ public:
 	void readFragment();
 	void error(XmlFragmentReader::ErrorCode code, const QString& text);
 private:
-	QXmlStreamReader* xml;
+	DocumentProcessor *dest;
+	QIODevice *device;
+	QXmlStreamReader *xml;
 	XmlFragmentReader::ErrorCode errorCode;
 	QString errorString;
 	int errorLine;
 	int errorColumn;
-	FragmentBuilder builder;
 private:
 	XmlFragmentReader* q_ptr;
 	Q_DECLARE_PUBLIC(XmlFragmentReader);
 };
+
+XmlFragmentReaderPrivate::XmlFragmentReaderPrivate(XmlFragmentReader *reader)
+	 : q_ptr(reader), errorCode(XmlFragmentReader::NoError)
+{
+	dest = 0;
+	device = 0;
+	xml = 0;
+}
 
 void XmlFragmentReaderPrivate::error(XmlFragmentReader::ErrorCode code, const QString& text) {
 	errorCode = code;
@@ -114,11 +121,11 @@ void XmlFragmentReaderPrivate::error(XmlFragmentReader::ErrorCode code, const QS
 
 void XmlFragmentReaderPrivate::readInline(Document::Tag tag) {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	builder.startElement(tag);
+	dest->startElement(tag);
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isCharacters()) {
-			builder.insertCharacters(xml->text().toString());
+			dest->insertCharacters(xml->text().toString());
 		} else if(xml->isStartElement()) {
 			Document::Tag tag = helper->tag(xml->name());
 			switch(tag) {
@@ -144,16 +151,16 @@ void XmlFragmentReaderPrivate::readInline(Document::Tag tag) {
 			break;
 		}
 	}
-	builder.endElement();
+	dest->endElement();
 }
 
 void XmlFragmentReaderPrivate::readHeading() {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	builder.startElement(Document::TagHeading);
+	dest->startElement(Document::TagHeading);
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isCharacters()) {
-			builder.insertCharacters(xml->text().toString());
+			dest->insertCharacters(xml->text().toString());
 		} else if(xml->isStartElement()) {
 			Document::Tag tag = helper->tag(xml->name());
 			switch(tag) {
@@ -179,16 +186,16 @@ void XmlFragmentReaderPrivate::readHeading() {
 			break;
 		}
 	}
-	builder.endElement();
+	dest->endElement();
 }
 
 void XmlFragmentReaderPrivate::readParagraph() {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	builder.startElement(Document::TagParagraph);
+	dest->startElement(Document::TagParagraph);
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isCharacters()) {
-			builder.insertCharacters(xml->text().toString());
+			dest->insertCharacters(xml->text().toString());
 		} else if(xml->isStartElement()) {
 			Document::Tag tag = helper->tag(xml->name());
 			switch(tag) {
@@ -214,12 +221,12 @@ void XmlFragmentReaderPrivate::readParagraph() {
 			break;
 		}
 	}
-	builder.endElement();
+	dest->endElement();
 }
 
 void XmlFragmentReaderPrivate::readSection() {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	builder.startElement(Document::TagSection);
+	dest->startElement(Document::TagSection);
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isStartElement()) {
@@ -235,13 +242,13 @@ void XmlFragmentReaderPrivate::readSection() {
 			break;
 		}
 	}
-	builder.endElement();
+	dest->endElement();
 }
 
 
 void XmlFragmentReaderPrivate::readFragment() {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	builder.startDocument();
+	dest->startDocument();
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isStartElement()) {
@@ -257,23 +264,73 @@ void XmlFragmentReaderPrivate::readFragment() {
 			break;
 		}
 	}
-	builder.endDocument();
+	dest->endDocument();
 }
 
 
 
-XmlFragmentReader::XmlFragmentReader(QXmlStreamReader* xml) {
+XmlFragmentReader::XmlFragmentReader() {
+	d_ptr = new XmlFragmentReaderPrivate(this);
+}
+
+XmlFragmentReader::XmlFragmentReader(DocumentProcessor *dest, QXmlStreamReader *xml) {
 	d_ptr = new XmlFragmentReaderPrivate(this);
 	Q_D(XmlFragmentReader);
+	d->dest = dest;
 	d->xml = xml;
 }
 
+XmlFragmentReader::XmlFragmentReader(DocumentProcessor *dest, QIODevice *device) {
+	d_ptr = new XmlFragmentReaderPrivate(this);
+	Q_D(XmlFragmentReader);
+	d->dest = dest;
+	d->device = device;
+	d->xml = new QXmlStreamReader(device);
+}
+
 XmlFragmentReader::~XmlFragmentReader() {
+	Q_D(XmlFragmentReader);
+	if(d->device) delete d->xml;
 	delete d_ptr;
 }
 
-DomFragment* XmlFragmentReader::read() {
+DocumentProcessor *XmlFragmentReader::destiny() const {
+	Q_D(const XmlFragmentReader);
+	return d->dest;
+}
+
+void XmlFragmentReader::setDestiny(DocumentProcessor *dest) {
 	Q_D(XmlFragmentReader);
+	d->dest = dest;
+}
+
+QIODevice *XmlFragmentReader::device() const {
+	Q_D(const XmlFragmentReader);
+	return d->device;
+}
+
+void XmlFragmentReader::setDevice(QIODevice *device) {
+	Q_D(XmlFragmentReader);
+	if(d->device) delete d->xml;
+	d->device = device;
+	d->xml = new QXmlStreamReader(device);
+}
+
+QXmlStreamReader *XmlFragmentReader::xml() const {
+	Q_D(const XmlFragmentReader);
+	return d->device ? 0 : d->xml;
+}
+
+void XmlFragmentReader::setXmlStreamReader(QXmlStreamReader *xml) {
+	Q_D(XmlFragmentReader);
+	if(d->device) delete d->xml;
+	d->device = 0;
+	d->xml = xml;
+}
+
+bool XmlFragmentReader::readDocument() {
+	Q_D(XmlFragmentReader);
+	if(!(d->dest && d->xml)) return false;
 	
 	while(!d->xml->atEnd() && !d->errorCode) {
 		d->xml->readNext();
@@ -286,9 +343,15 @@ DomFragment* XmlFragmentReader::read() {
 		}
 	}
 	if(d->errorCode) {
-		delete d->builder.takeFragment();
+		return false;
 	}
-	return d->builder.fragment();
+	return true;
+}
+
+bool XmlFragmentReader::readBody() {
+	// TODO might need to be changed
+// 	d->readFragment();
+	return false;
 }
 
 XmlFragmentReader::ErrorCode XmlFragmentReader::errorCode() const {
