@@ -6,6 +6,7 @@ include_directories(
 set(orchid_wpc_SRC
 	cppfragmentwriter.cpp
 	fragmentdom.cpp
+	fragmentbuilder.cpp
 	htmlfragmentwriter.cpp
 	main.cpp
 	xmlfragmentreader.cpp

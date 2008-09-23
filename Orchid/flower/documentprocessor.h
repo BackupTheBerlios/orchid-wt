@@ -17,6 +17,7 @@ class DocumentProcessorPrivate;
 class DocumentProcessor {
 public:
 	DocumentProcessor();
+	virtual ~DocumentProcessor();
 public:
 	StyleAttributes attributes(const Style* style);
 	void regStyle(const Style* style, const QString& prefix);

@@ -9,6 +9,7 @@
 #include "xmlfragmentreader.h"
 #include "xmlfragmentwriter.h"
 #include "htmlfragmentwriter.h"
+#include "fragmentbuilder.h"
 
 #include <stdio.h>
 #include <QtCore/QDateTime>
@@ -53,11 +54,18 @@ void process(const QString& name) {
 	xmlWriter.write(&xml, fragment);
 	xml.writeEndDocument();
 
+	Orchid::FragmentBuilder builder;
+	Orchid::HtmlFragmentWriter buildWriter(&builder);
+	builder.startDocument();
+	buildWriter.write(fragment);
+	builder.endDocument();
+
 	Orchid::XHtml11StreamWriter html(&cout);
 	html.xmlWriter()->setAutoFormatting(true);
 	Orchid::HtmlFragmentWriter htmlWriter(&html);
-	htmlWriter.write(fragment);
-	html.xmlWriter()->writeEndDocument();
+	html.startDocument();
+	htmlWriter.write(builder.fragment());
+	html.endDocument();
 
 	cout.close();
 }

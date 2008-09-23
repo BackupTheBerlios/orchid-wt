@@ -10,7 +10,7 @@ DocumentProcessorPrivate::DocumentProcessorPrivate(DocumentProcessor* processor)
 	: q_ptr(processor)
 {
 }
-	
+
 DocumentProcessor::DocumentProcessor()
 	: d_ptr(new DocumentProcessorPrivate(this))
 {
@@ -19,6 +19,10 @@ DocumentProcessor::DocumentProcessor()
 DocumentProcessor::DocumentProcessor(DocumentProcessorPrivate* dd)
 	: d_ptr(dd)
 {
+}
+
+DocumentProcessor::~DocumentProcessor() {
+	delete d_ptr;
 }
 
 StyleAttributes DocumentProcessor::attributes(const Style* style) {
