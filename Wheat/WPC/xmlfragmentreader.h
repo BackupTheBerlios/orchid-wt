@@ -23,11 +23,11 @@ public:
 	XmlFragmentReader(DocumentProcessor *dest, QIODevice *device);
 	~XmlFragmentReader();
 public:
-	DocumentProcessor *destiny() const;
-	void setDestiny(DocumentProcessor *dest);
+	DocumentProcessor *processor() const;
+	void setProcessor(DocumentProcessor *processor);
 	QIODevice *device() const;
 	void setDevice(QIODevice *device);
-	QXmlStreamReader *xml() const;
+	QXmlStreamReader *xmlStreamReader() const;
 	void setXmlStreamReader(QXmlStreamReader *xml);
 	bool readBody();
 	bool readDocument();

@@ -8,6 +8,36 @@
 #include <QtCore/QtDebug> // TODO rm this
 
 namespace Orchid {
+	
+/**
+ * \class XmlFragmentReader
+ *
+ * \brief The XmlFragmentReader class provides a reader for
+ * reading xml-formatted fragments into a DocumentProcessor
+ *
+ * The XmlFragmentReader can be used to read xml-formatted fragments
+ * and let them be processed by a DocumentProcessor. This can be
+ * creating a DomFragment by using FragmentBuilder or convert it to
+ * another format.
+ *
+ * \sa DocumentProcessor
+ */
+
+/**
+ * \enum XmlFragmentReader::ErrorCode
+ *
+ * Possible error codes.
+ */
+
+/**
+ *\var XmlFragmentReader::ErrorCode XmlFragmentReader::NoError
+ * No error has occurred.
+ */
+
+/**
+ * \var XmlFragmentReader::ErrorCode XmlFragmentReader::UnallowedElement
+ * An element with the used tag wasn't allowed there.
+ */
 
 class XmlFragmentReaderHelper {
 private:
@@ -268,47 +298,74 @@ void XmlFragmentReaderPrivate::readFragment() {
 }
 
 
-
+/**
+ * Constructs a fragment reader.
+ */
 XmlFragmentReader::XmlFragmentReader() {
 	d_ptr = new XmlFragmentReaderPrivate(this);
 }
 
-XmlFragmentReader::XmlFragmentReader(DocumentProcessor *dest, QXmlStreamReader *xml) {
+/**
+ * Constructs a fragment reader that reads from \a xml into \a processor.
+ */
+XmlFragmentReader::XmlFragmentReader(DocumentProcessor *processor, QXmlStreamReader *xml) {
 	d_ptr = new XmlFragmentReaderPrivate(this);
 	Q_D(XmlFragmentReader);
-	d->dest = dest;
+	d->dest = processor;
 	d->xml = xml;
 }
 
-XmlFragmentReader::XmlFragmentReader(DocumentProcessor *dest, QIODevice *device) {
+/**
+ * Constructs a fragment reader that reads from \a device into \a processor.
+ */
+XmlFragmentReader::XmlFragmentReader(DocumentProcessor *processor, QIODevice *device) {
 	d_ptr = new XmlFragmentReaderPrivate(this);
 	Q_D(XmlFragmentReader);
-	d->dest = dest;
+	d->dest = processor;
 	d->device = device;
 	d->xml = new QXmlStreamReader(device);
 }
 
+/**
+ * Destructs the reader.
+ */
 XmlFragmentReader::~XmlFragmentReader() {
 	Q_D(XmlFragmentReader);
 	if(d->device) delete d->xml;
 	delete d_ptr;
 }
 
-DocumentProcessor *XmlFragmentReader::destiny() const {
+/**
+ * Returns the processor used by the reader for further processing.
+ */
+DocumentProcessor *XmlFragmentReader::processor() const {
 	Q_D(const XmlFragmentReader);
 	return d->dest;
 }
 
-void XmlFragmentReader::setDestiny(DocumentProcessor *dest) {
+/**
+ * Sets the processor for for further processing to \a processor.
+ */
+void XmlFragmentReader::setProcessor(DocumentProcessor *processor) {
 	Q_D(XmlFragmentReader);
-	d->dest = dest;
+	d->dest = processor;
 }
 
+/**
+ * Returns the device used for reading from, or 0 if no device was set.
+ *
+ * \sa setDevice(), xmlStreamReader()
+ */
 QIODevice *XmlFragmentReader::device() const {
 	Q_D(const XmlFragmentReader);
 	return d->device;
 }
 
+/**
+ * Sets the device used for reading from to \a device.
+ *
+ * \sa device(), setXmlStreamReader()
+ */
 void XmlFragmentReader::setDevice(QIODevice *device) {
 	Q_D(XmlFragmentReader);
 	if(d->device) delete d->xml;
@@ -316,11 +373,21 @@ void XmlFragmentReader::setDevice(QIODevice *device) {
 	d->xml = new QXmlStreamReader(device);
 }
 
-QXmlStreamReader *XmlFragmentReader::xml() const {
+/**
+ * Returns the stream reader used for reading from, or 0 if none was set.
+ *
+ * \sa setXmlStreamReader(), device()
+ */
+QXmlStreamReader *XmlFragmentReader::xmlStreamReader() const {
 	Q_D(const XmlFragmentReader);
 	return d->device ? 0 : d->xml;
 }
 
+/**
+ * Sets the stream reader used for reading from to \a xml.
+ *
+ * \sa xmlStreamReader(), setDevice()
+ */
 void XmlFragmentReader::setXmlStreamReader(QXmlStreamReader *xml) {
 	Q_D(XmlFragmentReader);
 	if(d->device) delete d->xml;
@@ -328,6 +395,11 @@ void XmlFragmentReader::setXmlStreamReader(QXmlStreamReader *xml) {
 	d->xml = xml;
 }
 
+/**
+ * Reads a full document and returns it to the processor.
+ *
+ * \sa readBody()
+ */
 bool XmlFragmentReader::readDocument() {
 	Q_D(XmlFragmentReader);
 	if(!(d->dest && d->xml)) return false;
@@ -348,27 +420,55 @@ bool XmlFragmentReader::readDocument() {
 	return true;
 }
 
+/**
+ * Reads the body of a document and returns it to the processor.
+ *
+ * \note not implemented yet
+ *
+ * \sa readDocument()
+ */
 bool XmlFragmentReader::readBody() {
 	// TODO might need to be changed
 // 	d->readFragment();
 	return false;
 }
 
+/**
+ * Returns the code of the last error or XmlFragmentReader::NoError
+ * if no error occured.
+ *
+ * \sa errorString(), errorLine(), errorColumn()
+ */
 XmlFragmentReader::ErrorCode XmlFragmentReader::errorCode() const {
 	Q_D(const XmlFragmentReader);
 	return d->errorCode;
 }
 
+/**
+ * Returns the message of the last error.
+ *
+ * \sa errorCode(), errorLine(), errorColumn()
+ */
 QString XmlFragmentReader::errorString() const {
 	Q_D(const XmlFragmentReader);
 	return d->errorString;
 }
 
+/**
+ * Returns the line where the last error occured, starting with 1.
+ *
+ * \sa errorCode(), errorString(), errorColumn()
+ */
 int XmlFragmentReader::errorLine() const {
 	Q_D(const XmlFragmentReader);
 	return d->errorLine;
 }
 
+/**
+ * Returns the column where the last error occured, starting with 0.
+ *
+ * \sa errorCode(), errorString(), errorLine()
+ */
 int XmlFragmentReader::errorColumn() const {
 	Q_D(const XmlFragmentReader);
 	return d->errorColumn;
