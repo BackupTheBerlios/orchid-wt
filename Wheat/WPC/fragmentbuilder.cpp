@@ -97,4 +97,10 @@ DomFragment *FragmentBuilder::fragment() const {
 	return d->fragment;
 }
 
+DomFragment *FragmentBuilder::takeFragment() {
+	Q_D(FragmentBuilder);
+	DomFragment *fragment = d->fragment;
+	return fragment;
+}
+
 }

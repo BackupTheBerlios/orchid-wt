@@ -3,6 +3,7 @@
 #include <QtCore/QHash>
 #include <QtXml/QXmlStreamReader>
 #include "fragmentdom.h"
+#include "fragmentbuilder.h"
 
 #include <QtCore/QtDebug> // TODO rm this
 
@@ -86,11 +87,11 @@ public:
 	 : q_ptr (reader), errorCode(XmlFragmentReader::NoError)
 	{ }
 public:
-	DomTextElement* readInline(Document::Tag tag);
-	DomParagraph* readParagraph();
-	DomHeading* readHeading();
-	DomSection* readSection();
-	DomFragment* readFragment();
+	void readInline(Document::Tag tag);
+	void readParagraph();
+	void readHeading();
+	void readSection();
+	void readFragment();
 	void error(XmlFragmentReader::ErrorCode code, const QString& text);
 private:
 	QXmlStreamReader* xml;
@@ -98,6 +99,7 @@ private:
 	QString errorString;
 	int errorLine;
 	int errorColumn;
+	FragmentBuilder builder;
 private:
 	XmlFragmentReader* q_ptr;
 	Q_DECLARE_PUBLIC(XmlFragmentReader);
@@ -110,15 +112,13 @@ void XmlFragmentReaderPrivate::error(XmlFragmentReader::ErrorCode code, const QS
 	errorColumn = xml->columnNumber();
 }
 
-DomTextElement* XmlFragmentReaderPrivate::readInline(Document::Tag tag) {
+void XmlFragmentReaderPrivate::readInline(Document::Tag tag) {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	DomTextElement* element = new DomTextElement(tag);
+	builder.startElement(tag);
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isCharacters()) {
-			DomCharacters* chars = new DomCharacters();
-			chars->setText(xml->text().toString());
-			element->append(chars);
+			builder.insertCharacters(xml->text().toString());
 		} else if(xml->isStartElement()) {
 			Document::Tag tag = helper->tag(xml->name());
 			switch(tag) {
@@ -134,29 +134,26 @@ DomTextElement* XmlFragmentReaderPrivate::readInline(Document::Tag tag) {
 				case Document::TagTextSubscript:
 				case Document::TagTextSuperscript:
 				case Document::TagTextVariable:
-					element->append(readInline(tag));
+					readInline(tag);
 					break;
 				default:
 					error(XmlFragmentReader::UnallowedElement, QString("'%1' not allowed here").arg(xml->name().toString()));
 					break;
 			}
 		} else  if(xml->isEndElement()) {
-			return element;
+			break;
 		}
 	}
-	delete element;
-	return 0;
+	builder.endElement();
 }
 
-DomHeading* XmlFragmentReaderPrivate::readHeading() {
+void XmlFragmentReaderPrivate::readHeading() {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	DomHeading* heading = new DomHeading();
+	builder.startElement(Document::TagHeading);
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isCharacters()) {
-			DomCharacters* chars = new DomCharacters();
-			chars->setText(xml->text().toString());
-			heading->append(chars);
+			builder.insertCharacters(xml->text().toString());
 		} else if(xml->isStartElement()) {
 			Document::Tag tag = helper->tag(xml->name());
 			switch(tag) {
@@ -172,29 +169,26 @@ DomHeading* XmlFragmentReaderPrivate::readHeading() {
 				case Document::TagTextSubscript:
 				case Document::TagTextSuperscript:
 				case Document::TagTextVariable:
-					heading->append(readInline(tag));
+					readInline(tag);
 					break;
 				default:
 					error(XmlFragmentReader::UnallowedElement, QString("'%1' not allowed here").arg(xml->name().toString()));
 					break;
 			}
 		} else if(xml->isEndElement()) {
-			return heading;
+			break;
 		}
 	}
-	delete heading;
-	return 0;
+	builder.endElement();
 }
 
-DomParagraph* XmlFragmentReaderPrivate::readParagraph() {
+void XmlFragmentReaderPrivate::readParagraph() {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	DomParagraph* paragraph = new DomParagraph();
+	builder.startElement(Document::TagParagraph);
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isCharacters()) {
-			DomCharacters* chars = new DomCharacters();
-			chars->setText(xml->text().toString());
-			paragraph->append(chars);
+			builder.insertCharacters(xml->text().toString());
 		} else if(xml->isStartElement()) {
 			Document::Tag tag = helper->tag(xml->name());
 			switch(tag) {
@@ -210,63 +204,60 @@ DomParagraph* XmlFragmentReaderPrivate::readParagraph() {
 				case Document::TagTextSubscript:
 				case Document::TagTextSuperscript:
 				case Document::TagTextVariable:
-					paragraph->append(readInline(tag));
+					readInline(tag);
 					break;
 				default:
 					error(XmlFragmentReader::UnallowedElement, QString("'%1' not allowed here").arg(xml->name().toString()));
 					break;
 			}
 		} else  if(xml->isEndElement()) {
-			return paragraph;
+			break;
 		}
 	}
-	delete paragraph;
-	return 0;
+	builder.endElement();
 }
 
-DomSection*  XmlFragmentReaderPrivate::readSection() {
+void XmlFragmentReaderPrivate::readSection() {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	DomSection* section = new DomSection();
+	builder.startElement(Document::TagSection);
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isStartElement()) {
 			switch(helper->tag(xml->name())) {
-				case Document::TagSection: section->append(readSection()); break;
-				case Document::TagHeading: section->append(readHeading()); break;
-				case Document::TagParagraph: section->append(readParagraph()); break;
+				case Document::TagSection: readSection(); break;
+				case Document::TagHeading: readHeading(); break;
+				case Document::TagParagraph: readParagraph(); break;
 				default:
 					error(XmlFragmentReader::UnallowedElement, QString("'%1' not allowed here").arg(xml->name().toString()));
 					break;
 			}
 		} else if(xml->isEndElement()) {
-			return section;
+			break;
 		}
 	}
-	delete section;
-	return 0;
+	builder.endElement();
 }
 
 
-DomFragment* XmlFragmentReaderPrivate::readFragment() {
+void XmlFragmentReaderPrivate::readFragment() {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	DomFragment* fragment = new DomFragment();
+	builder.startDocument();
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isStartElement()) {
 			switch(helper->tag(xml->name())) {
-				case Document::TagSection: fragment->append(readSection()); break;
-				case Document::TagHeading: fragment->append(readHeading()); break;
-				case Document::TagParagraph: fragment->append(readParagraph()); break;
+				case Document::TagSection: readSection(); break;
+				case Document::TagHeading: readHeading(); break;
+				case Document::TagParagraph: readParagraph(); break;
 				default:
 					error(XmlFragmentReader::UnallowedElement, QString("'%1' not allowed here").arg(xml->name().toString()));
 					break;
 			}
 		} else if(xml->isEndElement()) {
-			return fragment;
+			break;
 		}
 	}
-	delete fragment;
-	return 0;
+	builder.endDocument();
 }
 
 
@@ -283,23 +274,21 @@ XmlFragmentReader::~XmlFragmentReader() {
 
 DomFragment* XmlFragmentReader::read() {
 	Q_D(XmlFragmentReader);
-	DomFragment* fragment = 0;
 	
 	while(!d->xml->atEnd() && !d->errorCode) {
 		d->xml->readNext();
 		if(d->xml->isStartElement()) {
 			if(d->xml->name() == "fragment") {
-				fragment = d->readFragment();
+				d->readFragment();
 			} else {
 				d->error(UnallowedElement, QString("'%1' not allowed here").arg(d->xml->name().toString()));
 			}
 		}
 	}
 	if(d->errorCode) {
-		delete fragment;
-		fragment = 0;
+		delete d->builder.takeFragment();
 	}
-	return fragment;
+	return d->builder.fragment();
 }
 
 XmlFragmentReader::ErrorCode XmlFragmentReader::errorCode() const {

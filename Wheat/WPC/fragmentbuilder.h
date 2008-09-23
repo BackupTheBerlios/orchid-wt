@@ -21,6 +21,7 @@ public:
 	void setAttribute(Document::Attribute attr, const QVariant &val);
 public:
 	DomFragment *fragment() const;
+	DomFragment *takeFragment();
 private:
 	Q_DECLARE_PRIVATE(FragmentBuilder)
 };
