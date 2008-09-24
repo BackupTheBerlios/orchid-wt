@@ -18,6 +18,7 @@ public:
 	static CppFragmentWriterHelper* inst();
 public:
 	QString enumName(Document::Tag tag);
+	static QString escapeCString(const QString& str);
 private:
 	QVector<QString> m_lookup;
 };
@@ -50,6 +51,31 @@ QString CppFragmentWriterHelper::enumName(Document::Tag tag) {
 	return m_lookup[tag];
 }
 
+QString CppFragmentWriterHelper::escapeCString(const QString& str) {
+	QString newStr;
+	
+	QByteArray bytes = str.toUtf8();
+	// the new string requires at least bytes.size() bytes
+	newStr.reserve((bytes.size()));
+	
+	for(int i = 0; i < bytes.size(); ++i) {
+		switch((unsigned char)bytes[i]) {
+			case '\\': newStr += "\\\\"; break;
+			case '\"': newStr += "\\\""; break;
+			case '\t': newStr += "\\t"; break;
+			case '\n': newStr += "\\n"; break;
+			case 1 ... 8:
+			case 11 ... 31:
+			case 128 ... 255:
+				(newStr += "\\x") += QString::number((unsigned char)bytes[i], 16);
+				break;
+			default: newStr += bytes.at(i); break;
+		}
+	}
+	return newStr;
+}
+
+
 class CppFragmentWriterPrivate {
 public:
 	CppFragmentWriterPrivate(CppFragmentWriter* writer);
@@ -77,7 +103,8 @@ void CppFragmentWriterPrivate::writeElement(DomElement* element) {
 			case DomUnknownType: break;
 			case DomPCDATAType: {
 				DomCharacters* chars = static_cast<DomCharacters*>(child);
-				*stream << "\t\twriter->insertCharacters(\""<< chars->text()<<"\");\n";
+				QString escaped = CppFragmentWriterHelper::escapeCString(chars->text());
+				*stream << "\t\twriter->insertCharacters(QString::fromUtf8(\"" << escaped << "\"));\n";
 			} break;
 			default: {
 				DomElement* childElement = dynamic_cast<DomElement*>(child);
@@ -117,7 +144,8 @@ void CppFragmentWriter::write(DomFragment* fragment) {
 			case DomUnknownType: break;
 			case DomPCDATAType: {
 				DomCharacters* chars = static_cast<DomCharacters*>(child);
-				*d->stream << "\t\twriter->insertCharacters("<< chars->text()<<");\n";
+				QString escaped = CppFragmentWriterHelper::escapeCString(chars->text());
+				*d->stream << "\t\twriter->insertCharacters(QString::fromUtf8(\"" << escaped << "\"));\n";
 			} break;
 			default: {
 				DomElement* childElement = dynamic_cast<DomElement*>(child);

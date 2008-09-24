@@ -11,18 +11,15 @@
 #include "htmlfragmentwriter.h"
 #include "fragmentbuilder.h"
 
-#include <stdio.h>
-#include <QtCore/QDateTime>
+#include <QtCore/QStringList>
 
 #include <globals.h>
 
-void process(const QString& name) {
-	QFile input(name);
+int process(const QString outFile, const QString &inFile) {
+	QFile input(inFile);
 	input.open(QIODevice::ReadOnly);
 
 	Orchid::DomFragment* fragment;
-	
-	qDebug() << "process" << name;
 	
 	QXmlStreamReader xmlIn(&input);
 	Orchid::FragmentBuilder builder;
@@ -33,50 +30,85 @@ void process(const QString& name) {
 	if(!fragment) {
 		qWarning() << "could not read dom";
 		qDebug() << reader.errorLine() << reader.errorColumn() << reader.errorCode() << reader.errorString();
-		return;
+		return 4;
 	}
 	
-	qDebug() << "output dom";
+	QFile out;
+	if(outFile.isEmpty()) {
+		out.open(stdout, QIODevice::WriteOnly);
+	} else {
+		out.setFileName(outFile);
+		out.open(QIODevice::WriteOnly);
+	}
 	
-
-	QFile cout;
-	cout.open(stdout, QIODevice::WriteOnly);
-	
-	QTextStream s(&cout);
+	QTextStream s(&out);
 	Orchid::CppHeaderWriter cppWriter(&s);
 	cppWriter.addFragment(fragment);
 	cppWriter.write();
 	s << endl << endl;
 	s.flush();
 
-	Orchid::XmlFragmentWriter xmlWriter;
-	QXmlStreamWriter xml(&cout);
-	xml.setAutoFormatting(true);
-	xml.writeStartDocument();
-	xmlWriter.write(&xml, fragment);
-	xml.writeEndDocument();
+// 	Orchid::XmlFragmentWriter xmlWriter;
+// 	QXmlStreamWriter xml(&out);
+// 	xml.setAutoFormatting(true);
+// 	xml.writeStartDocument();
+// 	xmlWriter.write(&xml, fragment);
+// 	xml.writeEndDocument();
 
-	Orchid::XHtml11StreamWriter html(&cout);
-	html.xmlWriter()->setAutoFormatting(true);
-	Orchid::HtmlFragmentWriter htmlWriter(&html);
-	html.startDocument();
-	htmlWriter.write(fragment);
-	html.endDocument();
+// 	Orchid::XHtml11StreamWriter html(&out);
+// 	html.xmlWriter()->setAutoFormatting(true);
+// 	Orchid::HtmlFragmentWriter htmlWriter(&html);
+// 	html.startDocument();
+// 	htmlWriter.write(fragment);
+// 	html.endDocument();
 
-	cout.close();
+	out.close();
+	return 0;
 }
 
+void printUsage(const QString &appname) {
+	QFile cout;
+	cout.open(stdout, QIODevice::WriteOnly);
+	QTextStream usage(&cout);
+	usage << "Usage: " << appname << " [-o outfile] infile\n";
+	cout.close();
+}
 
 int main(int argc, char **argv) {
 	QCoreApplication app(argc, argv);
 
-	// skip programm name
-	++argv;
-	for(; argc != 0; --argc) {
-		QString name(*(argv++));
-		if(name.isEmpty()) continue;
-		process(name);
+	int result = 0;
+	QString outFile;
+	QString inFile;
+	QStringList args = app.arguments();
+	QString appname = args[0];
+	for(QStringList::iterator it = ++args.begin(); it != args.end(); ++it) {
+		if(*it == "-o" || *it == "--output") {
+			if(++it == args.end()) {
+				printUsage(appname);
+				result = 1;
+				break;
+			}
+			outFile = *it;
+		} else {
+			if(!inFile.isEmpty()) {
+				printUsage(appname);
+				result = 2;
+				break;
+			} else {
+				inFile = *it;
+			}
+		}
+	}
+	
+	if(inFile.isEmpty()) {
+		printUsage(appname);
+		result = 3;
+	}
+	
+	if(!result) {
+		result = process(outFile, inFile);
 	}
 
-	return 0;
+	return result;
 }
