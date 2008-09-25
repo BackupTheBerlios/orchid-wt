@@ -8,37 +8,19 @@
 
 using namespace Orchid;
 
-class ImageResourceFactory : public ResourceFactoryHelper {
-	QStringList keys() const {
-		QStringList list;
-		list << "Image";
-		list << "ImageCollection";
-		list << "ImageCollectionScaling";
-		return list;
-	}
-	Resource::Base *create(const QString &key) {
-		Resource::Base *res = 0;
-		if(key == "Image") {
-			res = new ImageResource();
-		} else if(key == "ImageCollection") {
-			res = new ImageCollection();
-		} else if(key == "ImageCollectionScaling") {
-			res = new ImageCollectionScaling();
-		}
-		return res;
-	}
-};
-
 ImagePlugin::ImagePlugin() {
-	factory = new ImageResourceFactory();
+	m_helpers << new ResourceFactoryHelper<ImageResource>();
+	m_helpers << new ResourceFactoryHelper<ImageCollection>();
+	m_helpers << new ResourceFactoryHelper<ImageCollectionScaling>();
 }
 
 ImagePlugin::~ImagePlugin() {
-	delete factory;
+	foreach(FactoryHelper *helper, m_helpers)
+		delete helper;
 }
 
 QList<FactoryHelper*> ImagePlugin::helpers() const {
-	return QList<FactoryHelper*>() << factory;
+	return m_helpers;
 }
 
 Q_EXPORT_PLUGIN2(orchid_imageres_extension, ImagePlugin)

@@ -7,34 +7,18 @@
 
 using namespace Orchid;
 
-class ModelResourceFactory : public ResourceFactoryHelper {
-	QStringList keys() const {
-		QStringList list;
-		list << "Model";
-		list << "XmlModel";
-		return list;
-	}
-	Resource::Base *create(const QString &key) {
-		Resource::Base *res = 0;
-		if(key == "Model") {
-			res = new ModelResource();
-		} else if(key == "XmlModel") {
-			res = new XmlModelResource();
-		}
-		return res;
-	}
-};
-
 ModelPlugin::ModelPlugin() {
-	factory = new ModelResourceFactory();
+	m_helpers << new ResourceFactoryHelper<ModelResource>();
+	m_helpers << new ResourceFactoryHelper<XmlModelResource>();
 }
 
 ModelPlugin::~ModelPlugin() {
-	delete factory;
+	foreach(FactoryHelper *helper, m_helpers)
+		delete helper;
 }
 
 QList<FactoryHelper*> ModelPlugin::helpers() const {
-	return QList<FactoryHelper*>() << factory;
+	return m_helpers;
 }
 
 Q_EXPORT_PLUGIN2(orchid_modelres_extension, ModelPlugin)

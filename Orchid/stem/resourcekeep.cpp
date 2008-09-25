@@ -6,6 +6,7 @@
 
 #include "resource.h"
 
+#include <QtDebug> // TODO remove
 
 // TODO make theoretical proof of the keep being thread-safe
 
@@ -35,6 +36,7 @@ struct KeepItem {
 	Keep* keep;
 	QString name;
 	Base* resource;
+	Ownership ownership;
 	
 	QMutex notFreeMutex; // locked when no new acquire is allowed because of not null handleRefs
 	                     // this i case when the item is not initialized
@@ -45,12 +47,18 @@ struct KeepItem {
 	KeepingFlags flags;
 };
 
+int keepItemCount = 0;
+
 KeepItem::KeepItem(Keep* keep, const QString& name)
 	: keep(keep), name(name), resource(0), handleRefs(0), waitRefs(0), flags()
 {
+	keepItemCount++;
+	qDebug() << "new keepitem" << name << "(count:"<<keepItemCount<<")";
 }
 
 KeepItem::~KeepItem() {
+	keepItemCount--;
+	qDebug() << "del keepitem" << name << "(count:"<<keepItemCount<<")";
 	delete resource;
 }
 
@@ -62,29 +70,71 @@ public:
 public:
 	// methods to be used by the keep internaly
 	void setHandle(KeepItem *item);
+	void refItemsWithHandle();
+	KeepItem *derefItemsWithHandle();
 public:
 	// methods to be used by the handles
 	void initItem(KeepItem *item, Base *resource, KeepingFlags flags);
-	void releaseItem(KeepItem* item);
+	KeepItem *releaseItem(KeepItem* item);
 private:
 	Keep *q;
 	KeepItem *handle;
-	int referencedItems;
 	QHash<QString, KeepItem*> items;
 	QMutex mutex;
+	QAtomicInt itemsWithHandle;
 };
 
 KeepPrivate::KeepPrivate(Keep *keep) {
 	q = keep;
 	handle = 0;
-	referencedItems = 0;
+	itemsWithHandle = 0;
 }
 
 void KeepPrivate::setHandle(KeepItem *item) {
 	handle = item;
 	
-	if(referencedItems)
+	if(itemsWithHandle != 0) {
+		// this keep has items with handles, create a handle for it
 		handle->handleRefs.ref();
+	}
+}
+
+void KeepPrivate::refItemsWithHandle() {
+	// this will only occur when a handle to the resource holding this keep
+	// so we don't need to test for other threads releasing this keep
+	// or for its keep to not have the reference for it
+	
+	if(itemsWithHandle == 0) {
+		// the first item got a new handle
+		if(handle != 0) {
+			// this keep belongs to a resource with a handle
+			// let keep act like a handle for it
+			handle->handleRefs.ref();
+		}
+	}
+	itemsWithHandle.ref();
+}
+
+// returns another keep item, that needs to be deleted
+KeepItem *KeepPrivate::derefItemsWithHandle() {
+	// NOTE you have to manually make sure that this is not the case
+	// during a setHandle
+	// so use keeps only from multiple threads after you initialized
+	// the handle for its owning resource
+
+	if(!itemsWithHandle.deref()) {
+		// the keep lost the last handle refering to its item
+		// it is no longer needed
+		if(handle != 0) {
+			// this keep belongs to a resource with a handle
+			// stop acting like a handle for it
+			if(!handle->handleRefs.deref()) {
+				// no handles left, return it to be removed
+				return handle;
+			}
+		}
+	}
+	return 0;
 }
 
 void KeepPrivate::initItem(KeepItem* item, Base* resource, KeepingFlags flags) {
@@ -111,11 +161,16 @@ void KeepPrivate::initItem(KeepItem* item, Base* resource, KeepingFlags flags) {
 	item->notFreeMutex.unlock();
 }
 
-void KeepPrivate::releaseItem(KeepItem* item) {
+KeepItem *KeepPrivate::releaseItem(KeepItem* item) {
+// 	qDebug() << "release item" << item->name;
+	KeepItem *nextToBeRemoved = 0;
+	
 	// Secure this operation
 	QMutexLocker locker(&mutex);
 	
-	// This method is called as item has no more Handles
+	// This method is called when item has no more Handles
+	// dereference it for in the keep
+	nextToBeRemoved = derefItemsWithHandle();
 	
 	if(!item->resource) {
 		// the item is still uninitialised
@@ -144,6 +199,9 @@ void KeepPrivate::releaseItem(KeepItem* item) {
 	}
 	// if item was not deleted yet it is either about to be aquired from another thread
 	// ot it is longlifed and therefore will not be released until death of keep
+
+	// if the parent of item is not needed anymore return it, that it can be removed too
+	return nextToBeRemoved;
 }
 
 
@@ -209,6 +267,11 @@ Handle Keep::acquireHandle(const QString& name) {
 			}
 		}
 	}
+	if(item && item->handleRefs == 0) {
+		// we return the first handle for this item
+		// add reference for it to the keep
+		d->refItemsWithHandle();
+	}
 	return Handle(item);
 }
 
@@ -230,23 +293,37 @@ Handle Keep::tryAcquireHandle(const QString& name) {
 			item = 0;
 		}
 	}
+	if(item && item->handleRefs == 0) {
+		// we return the first handle for this item
+		// add reference for it to the keep
+		d->refItemsWithHandle();
+	}
 	return Handle(item);
 }
 
-void Keep::reset(const QString &name) {
+bool Keep::reset(const QString &name) {
 	// Secure this operation
 	QMutexLocker locker(&d->mutex);
 	
 	// Find the right item
 	QHash<QString, KeepItem*>::iterator it = d->items.find(name);
-	if(it == d->items.end()) return;
+	if(it == d->items.end()) return false;
 	
 	// Ok we have the item
 	KeepItem *item = it.value();
 	
+	if(item->handleRefs != 0) {
+		// this item had handleRefs, so it was referenced in the keeps
+		// item with handle count
+		// release this reference
+		d->derefItemsWithHandle();
+		// this reset is called from a place with a handle to this keeps resource
+		// no need to release this keeps resource
+	}
+	
 	if(!item->resource) {
 		// item is not initialized yet so no ned to reset it
-		return;
+		return true;
 	}
 	
 	// Move item out of the keep
@@ -255,24 +332,36 @@ void Keep::reset(const QString &name) {
 	
 	// notFreeMutex is only locked for not initialized items
 	// which is never the case here, so ignore it
-
+	
 	if(item->flags.testFlag(KeepPersistant)) {
 		// item is persistant, we need to manually remove its persistants reference
 		item->handleRefs.deref();
 	}
-
+	
 	// Check whether this item is used somewhere else
 	if(!(item->handleRefs || item->waitRefs)) {
 		// There are no refs to this item, we can savely delet it
 		delete item;
 	}
+	return true;
 }
 
 void Keep::resetAll() {
+	// Secure this operation
 	QMutexLocker locker(&d->mutex);
 	QHash<QString, KeepItem*>::iterator it;
 	for(it = d->items.begin(); it != d->items.end(); ++it) {
 		KeepItem *item = it.value();
+		
+		if(item->handleRefs != 0) {
+			// this item had handleRefs, so it was referenced in the keeps
+			// item with handle count
+			// release this reference
+			d->derefItemsWithHandle();
+			// this reset is called either from the destructor or from a place
+			// with a handle to this keeps resource
+			// no need to release this keeps resource
+		}
 		
 		if(!item->resource) {
 			// item is not initialized yet so no ned to reset it
@@ -284,7 +373,7 @@ void Keep::resetAll() {
 		
 		// notFreeMutex is only locked for not initialized items
 		// which is never the case here, so ignore it
-
+	
 		if(item->flags.testFlag(KeepPersistant)) {
 			// item is persistant, we need to manually remove its persistants reference
 			item->handleRefs.deref();
@@ -315,13 +404,17 @@ Handle::Handle(KeepItem* item) : m_item(item) {
 
 Handle::~Handle() {
 	if(m_item && !m_item->handleRefs.deref()) {
-		// no other handles exist for this item
-		if(m_item->keep) {
-			// item is keeped, let the keep release it
-			m_item->keep->d->releaseItem(m_item);
-		} else {
-			// item is not keeped, delete it
-			delete m_item;
+		KeepItem *toBeRemoved = m_item;
+		while(toBeRemoved) {
+			// no other handles exist for this item
+			if(toBeRemoved->keep) {
+				// item is keeped, let the keep release it
+				toBeRemoved = toBeRemoved->keep->d->releaseItem(toBeRemoved);
+			} else {
+				// item is not keeped, delete it
+				delete toBeRemoved;
+				toBeRemoved = 0;
+			}
 		}
 	}
 }
@@ -335,12 +428,23 @@ bool Handle::isEmpty() const {
 	return !m_item->resource;
 }
 
+Ownership Handle::ownership() const {
+	if(!m_item) return OwnedPrivate;
+	return m_item->ownership;
+}
+
 Base* Handle::resource() const {
 	if(!m_item) return 0;
 	return m_item->resource;
 }
 
-void Handle::init(Base* resource, KeepingFlags flags) {
+/**
+ * \warning Using resources from different threads BEFORE having initialized
+ * its handle might not be thread-safe. Allways initialize the handle for
+ * resource before you use the resource in other threads than the one where
+ * you will call init().
+ */
+bool Handle::init(Base* resource, Ownership ownership, KeepingFlags flags) {
 	if(!m_item) {
 		// this handle doesn't is not bound to an keep
 		
@@ -349,6 +453,7 @@ void Handle::init(Base* resource, KeepingFlags flags) {
 
 		m_item = new KeepItem(0, QString());
 		m_item->resource = resource;
+		m_item->ownership = ownership;
 		m_item->handleRefs.ref();
 	} else {
 		// calling init for initialized items is not allowed
@@ -359,6 +464,7 @@ void Handle::init(Base* resource, KeepingFlags flags) {
 
 		// let the keep initialize the item
 		m_item->keep->d->initItem(m_item, resource, flags);
+		m_item->ownership = ownership;
 	}
 }
 

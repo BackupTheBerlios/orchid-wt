@@ -19,7 +19,8 @@ public:
 public:
 	void resetFiles();
 private:
-	QStringList namelist;
+	QStringList imageList;
+	QStringList fileList;
 	QHash<QString,QString> files;
 	QSet<QString> mods;
 };

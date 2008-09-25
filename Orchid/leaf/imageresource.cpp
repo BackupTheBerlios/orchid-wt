@@ -146,4 +146,17 @@ bool ImageResource::setOption(const QString &option, const QVariant &value) {
 	return result;
 }
 
+ImageResource *ImageResource::clone() const {
+	Q_D(const ImageResource);
+	ImageResource *res = new ImageResource();
+	ImageResourcePrivate *resd = static_cast<ImageResourcePrivate*>(res->d_ptr);
+	resd->path = d->path;
+	resd->image = d->image;
+	resd->path = d->path;
+	resd->useScaling = d->useScaling;
+	resd->sizeX = d->sizeX;
+	resd->sizeY = d->sizeY;
+	return res;
+}
+
 }

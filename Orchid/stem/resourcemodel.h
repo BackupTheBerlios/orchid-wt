@@ -13,7 +13,7 @@ class ResourceModelPrivate;
 class ResourceModel : public QAbstractItemModel {
 	Q_OBJECT
 public:
-	ResourceModel(Resource::Base* resource, QObject* parent = 0);
+	ResourceModel(Resource::Handle root, QObject* parent = 0);
 	~ResourceModel();
 public:
 	QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
@@ -23,8 +23,14 @@ public:
 	QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 	
 	QString path(const QModelIndex &index) const;
+	QString name(const QModelIndex &index) const;
+	QString info(const QModelIndex &index) const;
+	Resource::Ownership ownership(const QModelIndex &index) const;
 	
 	Resource::Handle resource(const QModelIndex &index) const;
+public slots:
+	void update(const QModelIndex &index);
+	void update();
 protected:
 	ResourceModelPrivate* d_ptr;
 private:

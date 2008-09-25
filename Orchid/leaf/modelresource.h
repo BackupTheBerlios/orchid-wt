@@ -14,6 +14,7 @@ class ModelResource :
 	public Resource::IDirectory,
 	public Resource::IConfigurable
 {
+	ORCHID_RESOURCE("Model")
 public:
 	ModelResource(QAbstractItemModel* model = 0);
 	~ModelResource();

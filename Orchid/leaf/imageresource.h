@@ -15,6 +15,7 @@ class ImageResource :
 	public Resource::IQueryable,
 	public Resource::IConfigurable
 {
+	ORCHID_RESOURCE("Image")
 public:
 	ImageResource();
 	ImageResource(const QString& path);
@@ -30,6 +31,7 @@ public:
 	QList<Option> optionList() const;
 	QVariant option(const QString&) const;
 	bool setOption(const QString&, const QVariant&);
+	virtual ImageResource *clone() const;
 private:
 	Q_DECLARE_PRIVATE(ImageResource)
 };

@@ -34,38 +34,51 @@ class ContainerResourcePrivate : public Resource::BasePrivate {
 public:
 	ContainerResourcePrivate(ContainerResource* resource);
 private:
-	QHash<QString, Orchid::Resource::Handle> m_childs;
+	QStringList m_childs;
 };
 
 ContainerResourcePrivate::ContainerResourcePrivate(ContainerResource* resource) 
 	: BasePrivate(resource)
 { }
 
-ContainerResource::ContainerResource() {
-	d_ptr = new ContainerResourcePrivate(this);
+ContainerResource::ContainerResource() : Base(new ContainerResourcePrivate(this)) {
 }
 
 ContainerResource::~ContainerResource() {
-	delete d_ptr;
 }
 
 
-bool ContainerResource::addResource(const QString& name, Resource::Base* res) {
+bool ContainerResource::addResource(const QString& name, Resource::Base* res, Resource::Ownership ownership) {
 	Q_D(ContainerResource);
 	Resource::Handle handle = keep()->acquireHandle(name);
-	handle.init(res, Orchid::Resource::KeepPersistant);
-	d->m_childs.insert(name, handle);
+	if(!handle.isEmpty()) return false;
+	handle.init(res, ownership, Resource::KeepPersistant);
+	d->m_childs << name;
+	return true;
+}
+
+bool ContainerResource::remove(const QString &name) {
+	return keep()->reset(name);
+}
+
+bool ContainerResource::removeAll() {
+	Q_D(ContainerResource);
+	keep()->resetAll();
+	d->m_childs.clear();
 	return true;
 }
 
 QStringList ContainerResource::childs() const {
 	Q_D(const ContainerResource);
-	return d->m_childs.keys();
+	return d->m_childs;
 }
 
 Orchid::Resource::Handle ContainerResource::child(const QString& name) {
 	Q_D(ContainerResource);
-	return d->m_childs.value(name);
+	Resource::Handle handle = keep()->acquireHandle(name);
+	if(handle.isEmpty())
+		return Resource::Handle();
+	return handle;
 }
 
 }

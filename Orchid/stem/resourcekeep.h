@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+#include "resourceglobals.h"
+
 namespace Orchid {
 namespace Resource {
 
@@ -27,7 +29,7 @@ public:
 public:
 	Handle acquireHandle(const QString& name);
 	Handle tryAcquireHandle(const QString& name);
-	void reset(const QString& name);
+	bool reset(const QString& name);
 	void resetAll();
 private:
 	KeepPrivate* d;
@@ -42,8 +44,9 @@ public:
 public:
 	bool isNull() const;
 	bool isEmpty() const;
+	Ownership ownership() const;
 	Base* resource() const;
-	void init(Base* resource, KeepingFlags flags = KeepingFlags());
+	bool init(Base* resource, Ownership ownership = OwnedPrivate, KeepingFlags flags = KeepingFlags());
 	QString name() const;
 	Handle& operator=(const Handle& other);
 	bool operator==(const Handle& other) const;

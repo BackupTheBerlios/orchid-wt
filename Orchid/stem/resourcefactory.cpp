@@ -6,21 +6,21 @@ namespace Orchid {
 	
 QStringList ResourceFactory::keys() {
 	QStringList list;
+	list << ContainerResource::staticTypeName();
 	list << ExtensionManager::keys("resource");
-	list << "Container";
 	return list;
 }
 
 Resource::Base *ResourceFactory::create(const QString &key) {
 	Resource::Base *res = 0;
-	if(key == "Container") {
+	if(key == ContainerResource::staticTypeName()) {
 		res = new ContainerResource();
 	}
 	if(!res) {
 		FactoryHelper* helper = ExtensionManager::helper("resource", key);
-		ResourceFactoryHelper *resHelper = dynamic_cast<ResourceFactoryHelper*>(helper);
+		ResourceFactoryHelperBase *resHelper = dynamic_cast<ResourceFactoryHelperBase*>(helper);
 		if(helper)
-			res = resHelper->create(key);
+			res = resHelper->create();
 	}
 	return res;
 }

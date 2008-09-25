@@ -5,6 +5,8 @@
 #include <QStringList>
 #include <QUrl>
 
+#include "resourceglobals.h"
+
 #include "resourcebase.h"
 
 namespace Orchid {
@@ -45,7 +47,9 @@ public:
 
 class IContainer : public IDirectory {
 public:
-	virtual bool addResource(const QString& name, Resource::Base* res) = 0;
+	virtual bool addResource(const QString& name, Base* res, Ownership ownership = OwnedExternal) = 0;
+	virtual bool remove(const QString &name) = 0;
+	virtual bool removeAll() = 0;
 };
 
 class IRedirecting {
@@ -97,11 +101,14 @@ inline T cast(Base* res) {
 
 class ContainerResourcePrivate;
 class ContainerResource : public Resource::Base, public Resource::IContainer {
+	ORCHID_RESOURCE("Container")
 public:
 	ContainerResource();
 	~ContainerResource();
 public:
-	bool addResource(const QString& name, Resource::Base* res);
+	bool addResource(const QString& name, Resource::Base* res, Resource::Ownership ownership = Resource::OwnedExternal);
+	bool remove(const QString &name);
+	bool removeAll();
 	QStringList childs() const;
 	Orchid::Resource::Handle child(const QString& name);
 private:

@@ -12,7 +12,7 @@ class FactoryHelper {
 public:
 	virtual ~FactoryHelper() {}
 public:
-	virtual QStringList keys() const = 0;
+	virtual QString key() const = 0;
 };
 
 class ExtensionManager {
