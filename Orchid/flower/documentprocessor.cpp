@@ -19,7 +19,7 @@ namespace Orchid {
  * A document source sends its processor to the processed by ...
  * TODO finish documentation
  *
- * \sa XHtml11StreamWriter
+ * \sa XHtml11StreamWriter, Tag
  */
 
 /**

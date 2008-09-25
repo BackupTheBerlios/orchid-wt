@@ -16,6 +16,17 @@ namespace Orchid {
 // Block -> - a div  a+div  p a+p p    a+p
 // 
 
+/**
+ * \class XHtml11StreamWriter
+ *
+ * \brief XHtml11StreamWriter provides an implementation of DocumentProcessor
+ * for generating XHtml 1.1.
+ *
+ * XHtml11StreamWriter is an implementation of DocumentProcessor which
+ * writes an XHtml 1.1 representation of the document to a device.
+ *
+ * \sa DocumentProcessor
+ */
 
 class XHtml11StreamWriterPrivate : public DocumentProcessorPrivate {
 	Q_DECLARE_PUBLIC(XHtml11StreamWriter)
@@ -40,6 +51,9 @@ public:
 	QHash<Document::Attribute, QVariant> attributes;
 };
 
+/**
+ * Constructs a stream writer which outputs to \a device.
+ */
 XHtml11StreamWriter::XHtml11StreamWriter(QIODevice* device)
 	: DocumentProcessor(new XHtml11StreamWriterPrivate(this))
 {
@@ -48,12 +62,21 @@ XHtml11StreamWriter::XHtml11StreamWriter(QIODevice* device)
 	d->xml.setDevice(device);
 }
 
+/**
+ * Sets the output device to \a device.
+ */
 void XHtml11StreamWriter::setDevice(QIODevice* device) {
 	Q_D(XHtml11StreamWriter);
 	d->device = device;
 	d->xml.setDevice(device);
 }
 
+/**
+ * Returns the xml stream used by the writer.
+ *
+ * \deprecated Use the interface of DocumentProcessor instead.
+ */
+// TODO remove
 QXmlStreamWriter* XHtml11StreamWriter::xmlWriter() {
 	Q_D(XHtml11StreamWriter);
 	return &d->xml;
