@@ -9,95 +9,95 @@ namespace Orchid {
 
 namespace Document {
 
-class role;
-class id;
-class classname;
-class language;
+class RoleManip;
+class IdManip;
+class ClassnameManip;
+class LanguageManip;
 
-class heading;
-class paragraph;
+class HeadingManip;
+class ParagraphManip;
 
-class abbreviation;
+class AbbreviationManip;
 
 class InlineStream;
 class BlockStream {
 public:
-	inline BlockStream(DocumentProcessor* writer);
+	inline BlockStream(DocumentProcessor* processor);
 public:
-	inline DocumentProcessor* writer() const;
+	inline DocumentProcessor* processor() const;
 	inline BlockStream& operator<<(BlockStream&(*)(BlockStream&));
 	inline InlineStream heading();
 	inline InlineStream paragraph();
 	inline InlineStream text();
-	inline BlockStream& operator<<(const ::Orchid::Document::heading& obj);
-	inline BlockStream& operator<<(const ::Orchid::Document::paragraph& obj);
-	inline BlockStream& operator<<(const role& role);
-	inline BlockStream& operator<<(const id& id);
-	inline BlockStream& operator<<(const classname& name);
-	inline BlockStream& operator<<(const language& lang);
+	inline BlockStream& operator<<(const HeadingManip& obj);
+	inline BlockStream& operator<<(const ParagraphManip& obj);
+	inline BlockStream& operator<<(const RoleManip& role);
+	inline BlockStream& operator<<(const IdManip& id);
+	inline BlockStream& operator<<(const ClassnameManip& name);
+	inline BlockStream& operator<<(const LanguageManip& lang);
 private:
-	DocumentProcessor* m_writer;
+	DocumentProcessor* m_processor;
 };
 
-inline BlockStream::BlockStream(DocumentProcessor* writer)
-	: m_writer(writer) {}
+inline BlockStream::BlockStream(DocumentProcessor* processor)
+	: m_processor(processor) {}
 
-inline DocumentProcessor* BlockStream::writer() const { return m_writer; }
+inline DocumentProcessor* BlockStream::processor() const { return m_processor; }
 inline BlockStream& BlockStream::operator<<(BlockStream&(*fp)(BlockStream&))
 { return fp(*this); }
 
 
-class TextManip;
+// class TextManip;
 class InlineStream {
 	friend class BlockStream;
 public:
-	inline InlineStream(DocumentProcessor* writer);
+	inline InlineStream(DocumentProcessor* processor);
 	inline InlineStream(InlineStream& other);
 	inline ~InlineStream();
 public:
-	inline DocumentProcessor* writer() const;
+	inline DocumentProcessor* processor() const;
 	inline InlineStream& operator<<(InlineStream&(*)(InlineStream&));
 	inline InlineStream& operator<<(QChar c);
 	inline InlineStream& operator<<(const QString& str);
-	inline InlineStream& operator<<(const TextManip&);
-	inline InlineStream& operator<<(const role& role);
-	inline InlineStream& operator<<(const id& id);
-	inline InlineStream& operator<<(const abbreviation& abbr);
-	inline InlineStream& operator<<(const classname& name);
-	inline InlineStream& operator<<(const language& lang);
+// 	inline InlineStream& operator<<(const TextManip&);
+	inline InlineStream& operator<<(const RoleManip& role);
+	inline InlineStream& operator<<(const IdManip& id);
+	inline InlineStream& operator<<(const AbbreviationManip& abbr);
+	inline InlineStream& operator<<(const ClassnameManip& name);
+	inline InlineStream& operator<<(const LanguageManip& lang);
 private:
 	inline InlineStream(BlockStream& block);
 	Q_DISABLE_COPY(InlineStream);
 // 	InlineStream& operator=(const InlineStream& other); 
 private:
-	DocumentProcessor* m_writer;
+	DocumentProcessor* m_processor;
 	bool m_inBlock;
 };
 
-inline InlineStream::InlineStream(DocumentProcessor* writer)
-	: m_writer(writer), m_inBlock(false) { }
+inline InlineStream::InlineStream(DocumentProcessor* processor)
+	: m_processor(processor), m_inBlock(false) { }
 inline InlineStream::InlineStream(InlineStream& other)
-	: m_writer(other.writer()), m_inBlock(other.m_inBlock)
+	: m_processor(other.processor()), m_inBlock(other.m_inBlock)
 { other.m_inBlock = false; }
 inline InlineStream::InlineStream(BlockStream& block)
-	: m_writer(block.writer()), m_inBlock(true) { }
+	: m_processor(block.processor()), m_inBlock(true) { }
 inline InlineStream::~InlineStream() 
-{ if(m_inBlock) m_writer->endElement(); }
+{ if(m_inBlock) m_processor->endElement(); }
 	
-inline DocumentProcessor* InlineStream::writer() const { return m_writer; }
+inline DocumentProcessor* InlineStream::processor() const { return m_processor; }
 inline InlineStream& InlineStream::operator<<(QChar c)
-{ m_writer->insertCharacters(c); return *this; }
+{ m_processor->insertCharacters(c); return *this; }
 inline InlineStream& InlineStream::operator<<(const QString& str)
-{ m_writer->insertCharacters(str); return *this; }
+{ m_processor->insertCharacters(str); return *this; }
 inline InlineStream& InlineStream::operator<<(InlineStream&(*fp)(InlineStream&))
 { return fp(*this); }
 
 inline InlineStream BlockStream::heading()
-{ m_writer->startElement(TagHeading); return InlineStream(*this); }
+{ m_processor->startElement(TagHeading); return InlineStream(*this); }
 inline InlineStream BlockStream::paragraph()
-{ m_writer->startElement(TagParagraph); return InlineStream(*this); }
+{ m_processor->startElement(TagParagraph); return InlineStream(*this); }
 inline InlineStream BlockStream::text()
-{ return InlineStream(m_writer); }
+{ return InlineStream(m_processor); }
 
 
 // tags
@@ -125,103 +125,110 @@ InlineStream& end(InlineStream& s);
 // 	virtual InlineStream& apply(InlineStream&) = 0;
 // };
 
-class role {
+class RoleManip {
 public:
-	inline role(Role val) { this->val = val; }
+	inline RoleManip(Role val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->setAttribute(AttributeRole, val);
+		s.processor()->setAttribute(AttributeRole, val);
 		return s;
 	}
 	inline InlineStream& apply(InlineStream& s) const {
-		s.writer()->setAttribute(AttributeRole, val);
+		s.processor()->setAttribute(AttributeRole, val);
 		return s;
 	}
 private:
 	Role val;
 };
+inline RoleManip role(Role val) { return RoleManip(val); }
 
-class id {
+class IdManip {
 public:
-	inline id(const QString val) { this->val = val; }
+	inline IdManip(const QString &val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->setAttribute(AttributeId, val);
+		s.processor()->setAttribute(AttributeId, val);
 		return s;
 	}
 	inline InlineStream& apply(InlineStream& s) const {
-		s.writer()->setAttribute(AttributeId, val);
+		s.processor()->setAttribute(AttributeId, val);
 		return s;
 	}
 private:
 	QString val;
 };
+inline IdManip id(const QString &val) { return IdManip(val); }
 
-class classname {
+class ClassnameManip {
 public:
-	inline classname(const QString val) { this->val = val; }
+	inline ClassnameManip(const QString &val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->setAttribute(AttributeClassname, val);
+		s.processor()->setAttribute(AttributeClassname, val);
 		return s;
 	}
 	inline InlineStream& apply(InlineStream& s) const {
-		s.writer()->setAttribute(AttributeClassname, val);
+		s.processor()->setAttribute(AttributeClassname, val);
 		return s;
 	}
 private:
 	QString val;
 };
+inline ClassnameManip classname(const QString &val) { return ClassnameManip(val); }
 
-class language {
+class LanguageManip {
 public:
-	inline language(const QString val) { this->val = val; }
+	inline LanguageManip(const QString &val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->setAttribute(AttributeLanguage, val);
+		s.processor()->setAttribute(AttributeLanguage, val);
 		return s;
 	}
 	inline InlineStream& apply(InlineStream& s) const {
-		s.writer()->setAttribute(AttributeLanguage, val);
+		s.processor()->setAttribute(AttributeLanguage, val);
 		return s;
 	}
 private:
 	QString val;
 };
+inline LanguageManip language(const QString &val) { return LanguageManip(val); }
 
-class heading {
+class HeadingManip {
 public:
-	inline heading(const QString& text) {  this->text = text; }
+	inline HeadingManip(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->startElement(TagHeading);
-		s.writer()->insertCharacters(text);
-		s.writer()->endElement();
+		s.processor()->startElement(TagHeading);
+		s.processor()->insertCharacters(text);
+		s.processor()->endElement();
 		return s;
 	}
 private:
 	QString text;
 };
+inline HeadingManip heading(const QString &text) { return HeadingManip(text); }
 
-class paragraph {
+class ParagraphManip {
 public:
-	inline paragraph(const QString& text) {  this->text = text; }
+	inline ParagraphManip(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
-		s.writer()->startElement(TagParagraph);
-		s.writer()->insertCharacters(text);
-		s.writer()->endElement();
+		s.processor()->startElement(TagParagraph);
+		s.processor()->insertCharacters(text);
+		s.processor()->endElement();
 		return s;
 	}
 private:
 	QString text;
 };
+inline ParagraphManip paragraph(const QString &text) { return ParagraphManip(text); }
 
-class abbreviation {
+class AbbreviationManip {
 public:
-	inline abbreviation(const QString& full) { this->full = full; }
+	inline AbbreviationManip(const QString& full) { this->full = full; }
 	inline InlineStream& apply(InlineStream& s) const {
-		s.writer()->setAttribute(AttributeInlineFullText, QVariant(full));
-		s.writer()->startElement(TagTextAbbreviation);
+		s.processor()->setAttribute(AttributeInlineFullText, QVariant(full));
+		s.processor()->startElement(TagTextAbbreviation);
 		return s;
 	}
 private:
 	QString full;
 };
+inline AbbreviationManip abbreviation(const QString &full) { return AbbreviationManip(full); }
 
 // TODO improve marks
 // class quote {
@@ -231,35 +238,35 @@ private:
 // 		this->mark1 = mark1; this->mark2 = mark2;
 // 	}
 // 	inline InlineStream& apply(InlineStream& s) const {
-// 		s.writer()->setAttribute(AttributeQuoteStartMark, mark1);
-// 		s.writer()->setAttribute(AttributeQuoteEndMark, mark2);
-// 		s.writer()->writeBeginTag(SpecialTestAbbreviation);
+// 		s.processor()->setAttribute(AttributeQuoteStartMark, mark1);
+// 		s.processor()->setAttribute(AttributeQuoteEndMark, mark2);
+// 		s.processor()->writeBeginTag(SpecialTestAbbreviation);
 // 		return s;
 // 	}
 // }
 
 
-inline BlockStream& BlockStream::operator<<(const Document::heading& h)
+inline BlockStream& BlockStream::operator<<(const HeadingManip& h)
 { return h.apply(*this); }
-inline BlockStream& BlockStream::operator<<(const Document::paragraph& p)
+inline BlockStream& BlockStream::operator<<(const ParagraphManip& p)
 { return p.apply(*this); }
-inline BlockStream& BlockStream::operator<<(const role& role)
+inline BlockStream& BlockStream::operator<<(const RoleManip& role)
 { return role.apply(*this); }
-inline BlockStream& BlockStream::operator<<(const id& id)
+inline BlockStream& BlockStream::operator<<(const IdManip& id)
 { return id.apply(*this); }
-inline BlockStream& BlockStream::operator<<(const classname& name)
+inline BlockStream& BlockStream::operator<<(const ClassnameManip& name)
 { return name.apply(*this); }
-inline BlockStream& BlockStream::operator<<(const language& lang)
+inline BlockStream& BlockStream::operator<<(const LanguageManip& lang)
 { return lang.apply(*this); }
-inline InlineStream& InlineStream::operator<<(const abbreviation& abbr)
+inline InlineStream& InlineStream::operator<<(const AbbreviationManip& abbr)
 { return abbr.apply(*this); }
-inline InlineStream& InlineStream::operator<<(const role& role)
+inline InlineStream& InlineStream::operator<<(const RoleManip& role)
 { return role.apply(*this); }
-inline InlineStream& InlineStream::operator<<(const id& id)
+inline InlineStream& InlineStream::operator<<(const IdManip& id)
 { return id.apply(*this); }
-inline InlineStream& InlineStream::operator<<(const classname& name)
+inline InlineStream& InlineStream::operator<<(const ClassnameManip& name)
 { return name.apply(*this); }
-inline InlineStream& InlineStream::operator<<(const language& lang)
+inline InlineStream& InlineStream::operator<<(const LanguageManip& lang)
 { return lang.apply(*this); }
 
 }

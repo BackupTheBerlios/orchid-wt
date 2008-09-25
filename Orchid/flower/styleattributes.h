@@ -4,6 +4,8 @@
 #include <QSharedData>
 #include <QString>
 
+// TODO rename to StyleBinding
+
 namespace Orchid {
 
 class StyleAttributes;
