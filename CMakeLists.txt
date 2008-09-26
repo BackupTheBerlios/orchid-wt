@@ -5,6 +5,7 @@ ADD_DEFINITIONS(-DDEBUG -ggdb)
 
 set(QT_USE_QTXML true)
 set(QT_USE_QTWEBKIT true)
+set(QT_USE_QTSCRIPT true)
 
 find_package(Qt4 REQUIRED)
 

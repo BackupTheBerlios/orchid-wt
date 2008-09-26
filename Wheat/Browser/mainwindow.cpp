@@ -27,6 +27,10 @@
 #include <stem/resourcemodel.h>
 #include <stem/location.h>
 
+#include <leaf/scriptedresource.h>
+
+#include <QFile>
+
 #include <stem/resourcefactory.h>
 
 #include "newresourcedialog.h"
@@ -58,15 +62,22 @@ MainWindow::MainWindow() : m_service(8000) {
 	config->setOption("model", qVariantFromValue<QObject*>(m_model));
 	res->addResource("resource.model", xmlres);
 	
-	Base *imgres = ResourceFactory::create("Image");
-	config = cast<IConfigurable*>(imgres);
-	config->setOption("path", ":/flower2.jpg");
-	res->addResource("image.jpg", imgres);
-	
 	res->addResource("testcontainer", ResourceFactory::create("Container"));
 	
 	Base *demo = ResourceFactory::create("Hardcoded-Gallery-Demo");
 	res->addResource("demo", demo);
+
+	Base *imgres = ResourceFactory::create("Image");
+	config = cast<IConfigurable*>(imgres);
+	config->setOption("path", ":/flower2.jpg");
+	res->addResource("image.jpg", imgres);
+
+	QFile scriptFile(":/test.js");
+	scriptFile.open(QIODevice::ReadOnly);
+	QString program(scriptFile.readAll());
+	scriptFile.close();
+
+	res->addResource("scripted", new Orchid::ScriptedResource(program, "MyResource"));
 
 	treeView->setModel(m_model);
 	connect(treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activateResource(const QModelIndex&)));
