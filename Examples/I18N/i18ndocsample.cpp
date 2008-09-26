@@ -30,97 +30,63 @@
 
 #include <QtXml/QXmlStreamWriter>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QTime>
+#include <QtCore/QTranslator>
+#include <QtCore/QtDebug>
 
 using namespace Orchid;
 
 class I18nDocSampleFragment : public Fragment {
 public:
 	void build(Orchid::DocumentProcessor* processor);
+public:
+	QString language;
 };
+
+#define TR(x) (useTranslator ? translator.translate("I18n-Sample", x) : x)
 
 void I18nDocSampleFragment::build(DocumentProcessor* processor) {
 	using namespace Orchid::Document;
+	
+	bool useTranslator = true;
+	QTranslator translator;
+	if(!translator.load("Examples/I18N/i18n_"+language)) {
+		qWarning() << "Couldn't find tranlation for language" << language;
+		useTranslator = false;
+	}
 
 	XmlFragmentReader reader(processor);
 
 	BlockStream blocks(processor);
 
-	blocks << heading(QCoreApplication::translate("Test", "Top"))
-	       << section << heading(QCoreApplication::translate("Test", "Sub"));
+	blocks << heading(TR("Internationalization Example"))
+	       << paragraph(TR("This example resource demonstrates how to internationalice resources."));
 
 	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "The Pascal statement <code>i := 1;</code> assigns the literal value one to the variable <var>i</var>."));
-	reader.readInline();
-	processor->endElement();
-	
-	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "An <dfn>acronym</dfn> is a word formed from the initial letters or groups of letters of words in a set phrase or series of words."));
+	reader.setInlineString(TR("Use the <em>Configuration</em> to change the language. (Only \"en\" and \"de\" are supported at moment.)"));
 	reader.readInline();
 	processor->endElement();
 
 	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "Do <em>not</em> phone before 9 a.m."));
-	reader.readInline();
-	processor->endElement();
-	
-	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "To exit, type <kbd>QUIT</kbd>."));
-	reader.readInline();
-	processor->endElement();
-	
-	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "I'm currently at Akademy an event of the <abbr>KDE.</abbr>"));
+	reader.setInlineString(TR("By using the <var>XmlFragmentReader</var> you can translate markup code and insert the result into the processor. This works perfectly even if you output the result to different backend."));
 	reader.readInline();
 	processor->endElement();
 
-// 	blocks.blockcode() << styleclass("program") << line << "program p(input, output);"<<end<<line<<"begin"<<end<<line<<"   writeln(\"Hello world\");"<<end<<line<<"end."<<end;
-
+	blocks << section
+	       << heading(TR("Demonstration"));
+	
 	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "John said, <q>\"I saw Lucy at lunch, she told me <q>'Mary wants you to get some ice cream on your way home.'</q> I think I will get some at Jen and Berry's, on Gloucester Road.\"</q>"));
+	reader.setInlineString(TR("The current time is <strong>%1</strong>.").arg(QTime::currentTime().toString()));
 	reader.readInline();
 	processor->endElement();
 	
-	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "On starting, you will see the prompt <samp>$ </samp>."));
-	reader.readInline();
-	processor->endElement();
-	
-	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "This operation is called the <span>transpose</span> or <span>inverse</span>."));
-	reader.readInline();
-	processor->endElement();
-	
-	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "On <strong>Monday</strong> please put the rubbish out, but <em>not</em> before nightfall!"));
-	reader.readInline();
-	processor->endElement();
-	
-	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "H<sub>2</sub>O"));
-	reader.readInline();
-	processor->endElement();
-	
-	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "E = mc<sup>2</sup>"));
-	reader.readInline();
-	processor->endElement();
-	
-	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "<span>M<sup>lle</sup> Dupont</span>"));
-	reader.readInline();
-	processor->endElement();
-	
-	processor->startElement(TagParagraph);
-	reader.setInlineString(QCoreApplication::translate("Test", "The parameter <var>ncols</var> represents the number of colors to use."));
-	reader.readInline();
-	processor->endElement();
-
 	blocks << end;
 };
 
 
 I18nDocSample::I18nDocSample() {
 	m_body = new I18nDocSampleFragment();
+	m_body->language = "en";
 }
 
 I18nDocSample::~I18nDocSample() {
@@ -141,4 +107,25 @@ void I18nDocSample::query(Orchid::Request* request) {
 	writer.startDocument(m_head);
 	m_body->build(&writer);
 	writer.endDocument();
+}
+
+QList<Orchid::Resource::IConfigurable::Option> I18nDocSample::optionList() const {
+	QList<Option> list;
+	list << Option("language", qMetaTypeId<QString>());
+	return list;
+}
+
+QVariant I18nDocSample::option(const QString &option) const {
+	if(option == "language") {
+		return m_body->language;
+	}
+	return QVariant();
+}
+
+bool I18nDocSample::setOption(const QString &option, const QVariant &val) {
+	if(option == "language") {
+		m_body->language = val.toString();
+		return true;
+	}
+	return false;
 }

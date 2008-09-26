@@ -28,16 +28,24 @@ namespace Orchid {
 class Fragment;
 }
 
-class I18nDocSample : public Orchid::Resource::Base, public Orchid::Resource::IQueryable {
+class I18nDocSampleFragment;
+class I18nDocSample :
+	public Orchid::Resource::Base,
+	public Orchid::Resource::IQueryable,
+	public Orchid::Resource::IConfigurable
+{
 	ORCHID_RESOURCE("I18N-Document-Sample")
 public:
 	I18nDocSample();
 	~I18nDocSample();
 public:
 	void query(Orchid::Request* request);
+	QList<Orchid::Resource::IConfigurable::Option> optionList() const;
+	QVariant option(const QString &option) const;
+	bool setOption(const QString &option, const QVariant &val);
 private:
 	Orchid::DocumentHead m_head;
-	Orchid::Fragment* m_body;
+	I18nDocSampleFragment *m_body;
 };
 
 #endif
