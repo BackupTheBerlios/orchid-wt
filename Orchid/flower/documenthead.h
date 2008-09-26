@@ -35,7 +35,7 @@ class DocumentHeadPrivate;
 class DocumentHead {
 public:
 	DocumentHead();
-	DocumentHead(const DocumentHead &head);
+	DocumentHead(const DocumentHead &other);
 	~DocumentHead();
 public:
 	QString title() const;

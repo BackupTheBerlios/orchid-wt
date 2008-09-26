@@ -26,6 +26,8 @@
 
 namespace Orchid {
 
+// TODO refactor this and add documentation
+
 class HtmlFragmentWriterPrivate {
 public:
 	HtmlFragmentWriterPrivate(HtmlFragmentWriter* writer);

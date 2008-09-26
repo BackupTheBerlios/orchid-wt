@@ -86,6 +86,11 @@ namespace Document {
  *
  * Their documentation can be found in the documentation of InlineStream.
  *
+ * \note Not all valid documents can be created by
+ * using this class. If a feature of documents can
+ * not be created with this interface use
+ * DocumentProcessor directly.
+ *
  * \sa DocumentProcessor, InlineStream
  */
 
@@ -137,6 +142,11 @@ BlockStream& end(BlockStream& s) {
  *
  * It represents the inline level of a document which might be a paragraph
  * or some text without special markup.
+ *
+ * \note Not all valid documents can be created by
+ * using this class. If a feature of documents can
+ * not be created with this interface use
+ * DocumentProcessor directly.
  *
  * \sa DocumentProcessor, BlockStream
  */

@@ -60,7 +60,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	
 	Base *imgres = ResourceFactory::create("Image");
 	config = cast<IConfigurable*>(imgres);
-	config->setOption("path", "test.jpg");
+	config->setOption("path", ":/flower2.jpg");
 	res->addResource("image.jpg", imgres);
 	
 	res->addResource("testcontainer", ResourceFactory::create("Container"));

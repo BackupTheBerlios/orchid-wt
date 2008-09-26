@@ -27,6 +27,14 @@
 
 namespace Orchid {
 
+/**
+ * \class XmlFragmentWriter
+ *
+ * \brief Writes an xml representation of an DOM.
+ *
+ * \deprecated An newer writer based on DocumentProcessor is needed
+ */
+
 class XmlFragmentWriterHelper {
 private:
 	XmlFragmentWriterHelper();

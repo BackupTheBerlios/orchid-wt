@@ -24,6 +24,12 @@
 
 namespace Orchid {
 
+/**
+ * \class StyleAttributes
+ *
+ * \note This class is currently unmaintained
+ */
+
 StyleAttributes::StyleAttributes() {
 	d = new StyleAttributesData;
 }

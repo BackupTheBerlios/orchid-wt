@@ -30,12 +30,25 @@ namespace Orchid {
 
 using namespace Document;
 
+/**
+ * \class FragmentBuilder
+ *
+ * \brief FragmentBuilder provides an implementation of DocumentProcessor
+ * for building a DOM of an document.
+ *
+ * FragmentBuilder builds an DomFragment for an document that can be used for
+ * further processing.
+ *
+ * \sa DocumentProcessor
+ */
+
 class FragmentBuilderPrivate : public DocumentProcessorPrivate {
 public:
 	FragmentBuilderPrivate(FragmentBuilder *qq);
 private:
 	QStack<DomElement*> stack;
 	DomFragment *fragment;
+	bool finished;
 	Q_DECLARE_PUBLIC(FragmentBuilder)
 };
 
@@ -43,6 +56,7 @@ FragmentBuilderPrivate::FragmentBuilderPrivate(FragmentBuilder *qq)
 	: DocumentProcessorPrivate(qq)
 {
 	fragment = 0;
+	finished = true;
 }
 
 FragmentBuilder::FragmentBuilder()
@@ -55,13 +69,15 @@ FragmentBuilder::~FragmentBuilder() {
 void FragmentBuilder::startDocument(const DocumentHead &head) {
 	Q_D(FragmentBuilder);
 	Q_ASSERT(!d->fragment);
+	d->finished = false;
 	d->fragment = new DomFragment();
 	d->stack << d->fragment;
 }
 
 void FragmentBuilder::endDocument() {
 	Q_D(FragmentBuilder);
-	d->stack.pop();
+	d->finished = true;
+	d->stack.clear();
 }
 
 void FragmentBuilder::startElement(Document::Tag tag) {
@@ -112,14 +128,26 @@ void FragmentBuilder::setAttribute(Attribute attr, const QVariant &val) {
 	// TODO not used yet
 }
 
+/**
+ * Returns the fragment constructed by the builder or 0 if no fragment
+ * was constructed yet or a construction is under process.
+ */
 DomFragment *FragmentBuilder::fragment() const {
 	Q_D(const FragmentBuilder);
+	if(!d->finished) return 0;
 	return d->fragment;
 }
 
+/**
+ * Returns the fragment constructed by the builder and sets it to 0. If no
+ * fragment was constructed yet or a construction is under process this
+ * function returns 0.
+ */
 DomFragment *FragmentBuilder::takeFragment() {
 	Q_D(FragmentBuilder);
+	if(!d->finished) return 0;
 	DomFragment *fragment = d->fragment;
+	d->fragment = 0;
 	return fragment;
 }
 

@@ -26,6 +26,12 @@
 
 namespace Orchid {
 
+/**
+ * \class Style
+ *
+ * \note This class is currently unmaintained
+ */
+
 QString Style::content() const {
 	return QString();
 }
