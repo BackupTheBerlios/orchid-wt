@@ -44,12 +44,14 @@ MainWindow::MainWindow() : m_service(8000) {
 	ExtensionManager::loadExtension("Orchid/leaf/libmodelplugin.so");
 	ExtensionManager::loadExtension("Examples/Gallery/libgalleryplugin.so");
 	ExtensionManager::loadExtension("Examples/DocStreams/libdocstreamsplugin.so");
+	ExtensionManager::loadExtension("Examples/I18N/libi18ndocplugin.so");
 	
 	m_root.init(res);
 	m_service.setRoot(m_root);
 	m_model = new ResourceModel(m_root, this);
 	
 	res->addResource("sample.html", ResourceFactory::create("Document-Streams-Sample"));
+	res->addResource("i18n.html", ResourceFactory::create("I18N-Document-Sample"));
 
 	Base *xmlres = ResourceFactory::create("XmlModel");
 	IConfigurable *config = cast<IConfigurable*>(xmlres);

@@ -24,12 +24,12 @@
 #include <QtXml/QXmlStreamReader>
 
 #include <flower/xhtmlstreamwriter.h>
+#include <flower/xmlfragmentreader.h>
+#include <flower/xmlfragmentwriter.h>
+#include <flower/htmlfragmentwriter.h>
+#include <flower/fragmentbuilder.h>
 
 #include "cppfragmentwriter.h"
-#include "xmlfragmentreader.h"
-#include "xmlfragmentwriter.h"
-#include "htmlfragmentwriter.h"
-#include "fragmentbuilder.h"
 
 #include <QtCore/QStringList>
 

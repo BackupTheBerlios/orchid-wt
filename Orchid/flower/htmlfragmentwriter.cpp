@@ -20,7 +20,7 @@
 
 #include "htmlfragmentwriter.h"
 
-#include <flower/documentprocessor.h>
+#include "documentprocessor.h"
 
 #include "fragmentdom.h"
 

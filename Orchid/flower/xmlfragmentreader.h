@@ -41,15 +41,21 @@ public:
 	XmlFragmentReader();
 	XmlFragmentReader(DocumentProcessor *dest, QXmlStreamReader* xml = 0);
 	XmlFragmentReader(DocumentProcessor *dest, QIODevice *device);
+	XmlFragmentReader(DocumentProcessor *dest, const QString &str);
 	~XmlFragmentReader();
 public:
 	DocumentProcessor *processor() const;
 	void setProcessor(DocumentProcessor *processor);
 	QIODevice *device() const;
 	void setDevice(QIODevice *device);
+	QString string() const;
+	void setString(const QString &str);
+	void setBodyString(const QString &str);
+	void setInlineString(const QString &str);
 	QXmlStreamReader *xmlStreamReader() const;
 	void setXmlStreamReader(QXmlStreamReader *xml);
 	bool readBody();
+	bool readInline();
 	bool readDocument();
 	ErrorCode errorCode() const;
 	QString errorString() const;

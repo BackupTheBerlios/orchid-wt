@@ -25,7 +25,7 @@
 #include <QtCore/QVector>
 #include <QtCore/QString>
 
-#include <flower/documentenums.h>
+#include "documentenums.h"
 
 namespace Orchid {
 

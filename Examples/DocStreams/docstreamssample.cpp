@@ -33,15 +33,15 @@ using namespace Orchid;
 
 class DocStreamsSampleFragment : public Fragment {
 public:
-	void build(Orchid::DocumentProcessor* writer);
+	void build(Orchid::DocumentProcessor* processor);
 public:
 	Style* style;
 };
 
-void DocStreamsSampleFragment::build(DocumentProcessor* writer) {
+void DocStreamsSampleFragment::build(DocumentProcessor* processor) {
 	using namespace Orchid::Document;
 
-	BlockStream blocks(writer);
+	BlockStream blocks(processor);
 
 	blocks << heading("Top") << section << heading("Sub");
 

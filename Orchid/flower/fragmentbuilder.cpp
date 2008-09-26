@@ -20,8 +20,8 @@
 
 #include "fragmentbuilder.h"
 
-#include <flower/documentprocessor_p.h>
-#include <flower/styleattributes.h>
+#include "documentprocessor_p.h"
+#include "styleattributes.h"
 #include <QtCore/QStack>
 
 #include "fragmentdom.h"

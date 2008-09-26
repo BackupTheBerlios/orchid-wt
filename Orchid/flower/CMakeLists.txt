@@ -7,10 +7,15 @@ set(orchid_flower_SRC
 	documenthead.cpp
 	documentprocessor.cpp
 	documentstreams.cpp
+	fragmentbuilder.cpp
 	fragment.cpp
+	fragmentdom.cpp
+	htmlfragmentwriter.cpp
 	styleattributes.cpp
 	style.cpp
 	xhtmlstreamwriter.cpp
+	xmlfragmentreader.cpp
+	xmlfragmentwriter.cpp
 )
 
 qt4_automoc(${orchid_flower_SRC})

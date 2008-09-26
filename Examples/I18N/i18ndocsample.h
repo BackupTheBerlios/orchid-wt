@@ -1,5 +1,5 @@
 /*
- * This file is part of the Orchid libraries
+ * This file is part of the Orchid example plugins
  *
  * Copyright (C) 2008 Johannes Bergmeier
  *
@@ -18,34 +18,26 @@
  */
 
 
-#ifndef _ORCHID_FRAGMENTBUILDER_H_
-#define _ORCHID_FRAGMENTBUILDER_H_
+#ifndef _ORCHID_I18NDOCSAMPLE_H_
+#define _ORCHID_I18NDOCSAMPLE_H_
 
-#include <flower/documentprocessor.h>
+#include <stem/resource.h>
+#include <flower/documenthead.h>
 
 namespace Orchid {
-
-class DomFragment;
-
-class FragmentBuilderPrivate;
-class FragmentBuilder : public DocumentProcessor {
-public:
-	FragmentBuilder();
-	~FragmentBuilder();
-public:
-	void startDocument(const DocumentHead &head = DocumentHead());
-	void endDocument();
-	void startElement(Document::Tag tag);
-	void endElement();
-	void insertCharacters(const QString &str);
-	void setAttribute(Document::Attribute attr, const QVariant &val);
-public:
-	DomFragment *fragment() const;
-	DomFragment *takeFragment();
-private:
-	Q_DECLARE_PRIVATE(FragmentBuilder)
-};
-
+class Fragment;
 }
+
+class I18nDocSample : public Orchid::Resource::Base, public Orchid::Resource::IQueryable {
+	ORCHID_RESOURCE("I18N-Document-Sample")
+public:
+	I18nDocSample();
+	~I18nDocSample();
+public:
+	void query(Orchid::Request* request);
+private:
+	Orchid::DocumentHead m_head;
+	Orchid::Fragment* m_body;
+};
 
 #endif

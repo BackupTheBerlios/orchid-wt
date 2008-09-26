@@ -135,16 +135,18 @@ class XmlFragmentReaderPrivate {
 public:
 	XmlFragmentReaderPrivate(XmlFragmentReader *reader);
 public:
-	void readInline(Document::Tag tag);
+	void readInline();
 	void readParagraph();
 	void readHeading();
 	void readSection();
 	void readFragment();
-	void error(XmlFragmentReader::ErrorCode code, const QString& text);
+	void readBodyPart();
+void error(XmlFragmentReader::ErrorCode code, const QString& text);
 private:
 	DocumentProcessor *dest;
 	QIODevice *device;
 	QXmlStreamReader *xml;
+	QString string;
 	XmlFragmentReader::ErrorCode errorCode;
 	QString errorString;
 	int errorLine;
@@ -169,9 +171,8 @@ void XmlFragmentReaderPrivate::error(XmlFragmentReader::ErrorCode code, const QS
 	errorColumn = xml->columnNumber();
 }
 
-void XmlFragmentReaderPrivate::readInline(Document::Tag tag) {
+void XmlFragmentReaderPrivate::readInline() {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	dest->startElement(tag);
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isCharacters()) {
@@ -191,7 +192,9 @@ void XmlFragmentReaderPrivate::readInline(Document::Tag tag) {
 				case Document::TagTextSubscript:
 				case Document::TagTextSuperscript:
 				case Document::TagTextVariable:
-					readInline(tag);
+					dest->startElement(tag);
+					readInline();
+					dest->endElement();
 					break;
 				default:
 					error(XmlFragmentReader::UnallowedElement, QString("'%1' not allowed here").arg(xml->name().toString()));
@@ -201,7 +204,6 @@ void XmlFragmentReaderPrivate::readInline(Document::Tag tag) {
 			break;
 		}
 	}
-	dest->endElement();
 }
 
 void XmlFragmentReaderPrivate::readHeading() {
@@ -226,7 +228,9 @@ void XmlFragmentReaderPrivate::readHeading() {
 				case Document::TagTextSubscript:
 				case Document::TagTextSuperscript:
 				case Document::TagTextVariable:
-					readInline(tag);
+					dest->startElement(tag);
+					readInline();
+					dest->endElement();
 					break;
 				default:
 					error(XmlFragmentReader::UnallowedElement, QString("'%1' not allowed here").arg(xml->name().toString()));
@@ -261,7 +265,9 @@ void XmlFragmentReaderPrivate::readParagraph() {
 				case Document::TagTextSubscript:
 				case Document::TagTextSuperscript:
 				case Document::TagTextVariable:
-					readInline(tag);
+					dest->startElement(tag);
+					readInline();
+					dest->endElement();
 					break;
 				default:
 					error(XmlFragmentReader::UnallowedElement, QString("'%1' not allowed here").arg(xml->name().toString()));
@@ -296,9 +302,8 @@ void XmlFragmentReaderPrivate::readSection() {
 }
 
 
-void XmlFragmentReaderPrivate::readFragment() {
+void XmlFragmentReaderPrivate::readBodyPart() {
 	XmlFragmentReaderHelper* helper = XmlFragmentReaderHelper::inst();
-	dest->startDocument();
 	while(!xml->atEnd() && !errorCode) {
 		xml->readNext();
 		if(xml->isStartElement()) {
@@ -314,9 +319,13 @@ void XmlFragmentReaderPrivate::readFragment() {
 			break;
 		}
 	}
-	dest->endDocument();
 }
 
+void XmlFragmentReaderPrivate::readFragment() {
+	// NOTE the format of Fragment files will change and
+	// this function will be required
+	readBodyPart();
+}
 
 /**
  * Constructs a fragment reader.
@@ -327,6 +336,8 @@ XmlFragmentReader::XmlFragmentReader() {
 
 /**
  * Constructs a fragment reader that reads from \a xml into \a processor.
+ *
+ * \sa setXmlStreamReader()
  */
 XmlFragmentReader::XmlFragmentReader(DocumentProcessor *processor, QXmlStreamReader *xml) {
 	d_ptr = new XmlFragmentReaderPrivate(this);
@@ -337,6 +348,8 @@ XmlFragmentReader::XmlFragmentReader(DocumentProcessor *processor, QXmlStreamRea
 
 /**
  * Constructs a fragment reader that reads from \a device into \a processor.
+ *
+ * \sa setDevice()
  */
 XmlFragmentReader::XmlFragmentReader(DocumentProcessor *processor, QIODevice *device) {
 	d_ptr = new XmlFragmentReaderPrivate(this);
@@ -344,6 +357,23 @@ XmlFragmentReader::XmlFragmentReader(DocumentProcessor *processor, QIODevice *de
 	d->dest = processor;
 	d->device = device;
 	d->xml = new QXmlStreamReader(device);
+}
+
+/**
+ * Constructs a fragment reader that reads from \a str into \a processor.
+ *
+ * \note If you want to use readBody() the content needs to
+ * enclosed into a \<body\>-tag. If you want to use
+ * readInline() enclose the content into a \<inline\>-tag.
+ *
+ * \sa setString(), setBodyString()
+ */
+XmlFragmentReader::XmlFragmentReader(DocumentProcessor *processor, const QString &str) {
+	d_ptr = new XmlFragmentReaderPrivate(this);
+	Q_D(XmlFragmentReader);
+	d->dest = processor;
+	d->string = str;
+	d->xml = new QXmlStreamReader(str);
 }
 
 /**
@@ -374,7 +404,7 @@ void XmlFragmentReader::setProcessor(DocumentProcessor *processor) {
 /**
  * Returns the device used for reading from, or 0 if no device was set.
  *
- * \sa setDevice(), xmlStreamReader()
+ * \sa setDevice(), string(), xmlStreamReader()
  */
 QIODevice *XmlFragmentReader::device() const {
 	Q_D(const XmlFragmentReader);
@@ -384,41 +414,130 @@ QIODevice *XmlFragmentReader::device() const {
 /**
  * Sets the device used for reading from to \a device.
  *
- * \sa device(), setXmlStreamReader()
+ * \sa device(), setString(), setXmlStreamReader()
  */
 void XmlFragmentReader::setDevice(QIODevice *device) {
 	Q_D(XmlFragmentReader);
-	if(d->device) delete d->xml;
+	if(d->device || !d->string.isEmpty()) {
+		d->string.clear();
+		d->xml->setDevice(device);
+    } else {
+		d->xml = new QXmlStreamReader(device);
+	}
 	d->device = device;
-	d->xml = new QXmlStreamReader(device);
+}
+
+/**
+ * Returns the string used for reading from, or QString() if none was set.
+ *
+ * \sa setString(), device(), xmlStreamReader()
+ */
+QString XmlFragmentReader::string() const {
+	Q_D(const XmlFragmentReader);
+	return d->string;
+}
+
+/**
+ * Sets the string used for reading from to \a str.
+ *
+ * \note If you want to use \a str together with readBody()
+ * or readInline() you might find setBodyString() or
+ * setInlineString() more useful.
+ *
+ * \sa string(), setBodyString(), setInlineString(),
+ * setDevice(), setXmlStreamReader()
+ */
+void XmlFragmentReader::setString(const QString &str) {
+	Q_D(XmlFragmentReader);
+	if(d->device || !d->string.isEmpty()) {
+		d->device = 0;
+		d->xml->clear();
+		d->xml->addData(str);
+	} else {
+		d->xml = new QXmlStreamReader(str);
+	}
+	d->string = str;
+}
+
+/**
+ * Sets the string used for reading from to \a str.
+ * Encloses the content of \a str into a \<body\>-tag
+ * that is needed by readBody().
+ *
+ * \note If you want to use \a str with readDocument()
+ * or readInline you might find setString() or
+ * setInlineString() more useful.
+ *
+ * \sa string(), setString(), setInlineString(), setDevice(),
+ * setXmlStreamReader()
+ */
+void XmlFragmentReader::setBodyString(const QString &str) {
+	Q_D(XmlFragmentReader);
+	if(d->device || !d->string.isEmpty()) {
+		d->device = 0;
+		d->xml->clear();
+	} else {
+		d->xml = new QXmlStreamReader();
+	}
+	d->xml->addData("<body>");
+	d->xml->addData(str);
+	d->xml->addData("</body>");
+	d->string = str;
+}
+
+/**
+ * Sets the string used for reading from to \a str.
+ * Encloses the content of \a str into a \<inline\>-tag
+ * that is needed by readInline().
+ *
+ * \note If you want to use \a str with readDocument() or
+ * readBody() you might find setString() or setBodyString()
+ * more useful.
+ *
+ * \sa string(), setString(), setBodyString(), setDevice(),
+ * setXmlStreamReader()
+ */
+void XmlFragmentReader::setInlineString(const QString &str) {
+	Q_D(XmlFragmentReader);
+	if(d->device || !d->string.isEmpty()) {
+		d->device = 0;
+		d->xml->clear();
+	} else {
+		d->xml = new QXmlStreamReader();
+	}
+	d->xml->addData("<inline>");
+	d->xml->addData(str);
+	d->xml->addData("</inline>");
+	d->string = str;
 }
 
 /**
  * Returns the stream reader used for reading from, or 0 if none was set.
  *
- * \sa setXmlStreamReader(), device()
+ * \sa setXmlStreamReader(), device(), string()
  */
 QXmlStreamReader *XmlFragmentReader::xmlStreamReader() const {
 	Q_D(const XmlFragmentReader);
-	return d->device ? 0 : d->xml;
+	return (d->device || !d->string.isEmpty()) ? 0 : d->xml;
 }
 
 /**
  * Sets the stream reader used for reading from to \a xml.
  *
- * \sa xmlStreamReader(), setDevice()
+ * \sa xmlStreamReader(), setDevice(), setString()
  */
 void XmlFragmentReader::setXmlStreamReader(QXmlStreamReader *xml) {
 	Q_D(XmlFragmentReader);
-	if(d->device) delete d->xml;
+	if(d->device || !d->string.isEmpty()) delete d->xml;
 	d->device = 0;
+	d->string.clear();
 	d->xml = xml;
 }
 
 /**
- * Reads a full document and returns it to the processor.
+ * Reads a full document and forwards it to the processor.
  *
- * \sa readBody()
+ * \sa readBody(), readInline()
  */
 bool XmlFragmentReader::readDocument() {
 	Q_D(XmlFragmentReader);
@@ -428,7 +547,9 @@ bool XmlFragmentReader::readDocument() {
 		d->xml->readNext();
 		if(d->xml->isStartElement()) {
 			if(d->xml->name() == "fragment") {
+				d->dest->startDocument();
 				d->readFragment();
+				d->dest->endDocument();
 			} else {
 				d->error(UnallowedElement, QString("'%1' not allowed here").arg(d->xml->name().toString()));
 			}
@@ -441,15 +562,52 @@ bool XmlFragmentReader::readDocument() {
 }
 
 /**
- * Reads the body of a document and returns it to the processor.
+ * Reads the body part of a document and forwards it to the
+ * processor. The content needs to be enclosed by a
+ * \<body\>-tag.
  *
- * \note not implemented yet
- *
- * \sa readDocument()
+ * \sa readDocument(), readInline()
  */
 bool XmlFragmentReader::readBody() {
-	// TODO might need to be changed
-// 	d->readFragment();
+	Q_D(XmlFragmentReader);
+	while(!d->xml->atEnd() && !d->errorCode) {
+		d->xml->readNext();
+		if(d->xml->isStartElement()) {
+			if(d->xml->name() == "body") {
+				d->readBodyPart();
+			} else {
+				d->error(UnallowedElement, QString("'%1' not allowed here").arg(d->xml->name().toString()));
+			}
+		}
+	}
+	if(d->errorCode) {
+		return false;
+	}
+	return false;
+}
+
+/**
+ * Reads an inline part of a document and forwards it to the
+ * processor. The content needs to be enclosed by a
+ * \<inline\>-tag.
+ *
+ * \sa readDocument(), readBody()
+ */
+bool XmlFragmentReader::readInline() {
+	Q_D(XmlFragmentReader);
+	while(!d->xml->atEnd() && !d->errorCode) {
+		d->xml->readNext();
+		if(d->xml->isStartElement()) {
+			if(d->xml->name() == "inline") {
+				d->readInline();
+			} else {
+				d->error(UnallowedElement, QString("'%1' not allowed here").arg(d->xml->name().toString()));
+			}
+		}
+	}
+	if(d->errorCode) {
+		return false;
+	}
 	return false;
 }
 

@@ -27,7 +27,7 @@
 #include <QtCore/QtDebug>
 
 #include <globals.h>
-#include "fragmentdom.h"
+#include <flower/fragmentdom.h>
 
 namespace Orchid {
 
