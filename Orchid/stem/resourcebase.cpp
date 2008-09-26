@@ -25,22 +25,53 @@ namespace Orchid {
 
 namespace Resource {
 
+/**
+ * \class Base
+ *
+ * \brief Resource::Base is the base class for resources.
+ *
+ * All resources should be derived from Resource::Base
+ *
+ * The resource base provides the keep for temporarily or permanently 
+ * storing child resources. If you want to provide child resources
+ * you have to implement Resource::IDirectory. For other functionality
+ * see the other interfaces.
+ *
+ * \sa Resource::Keep, Resource::IDirectory, Resource::IContainer,
+ * Resource::IQueryable, Resource::IDynamic, Resource::IConfigurable,
+ * Resource::IAdvancedConfigurable
+ */
+
 BasePrivate::BasePrivate(Base *base) {
 	q_ptr = base;
 }
 
+/**
+ * Constructs a resource base.
+ */
 Base::Base() {
 	d_ptr = new BasePrivate(this);
 }
 
+/**
+ * \internal
+ */
 Base::Base(BasePrivate *d) {
 	d_ptr = d;
 }
 
+/**
+ * Desturcts the resource.
+ */
 Base::~Base() {
 	delete d_ptr;
 }
 
+/**
+ * Returns the keep of a resource.
+ *
+ * \sa Resource::Keep
+ */
 Keep *Base::keep() {
 	Q_D(Base);
 	return &d->keep;

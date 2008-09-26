@@ -30,6 +30,13 @@
 
 namespace Orchid {
 
+/**
+ * \class ResourceModel
+ *
+ * \brief ResourceModel provides a model representating the resource
+ * tree.
+ */
+
 class ResourceModelPrivate {
 public:
 	class Node {
@@ -89,7 +96,7 @@ ResourceModelPrivate::Node* ResourceModelPrivate::node(const QModelIndex& index)
 void ResourceModelPrivate::populate(Node* node) const {
 	if(node->populated) return;
 	
-	Resource::Handle handle = node->location.resource();
+	Resource::Handle handle = node->location.resolve();
 	
 	Resource::IDirectory* dir = dynamic_cast<Resource::IDirectory*>(handle.resource());
 	
@@ -111,7 +118,7 @@ void ResourceModelPrivate::populate(Node* node) const {
 }
 
 void ResourceModelPrivate::loadInfos(Node* node) const {
-	Resource::Handle handle = node->location.resource();
+	Resource::Handle handle = node->location.resolve();
 	Resource::Base *res = handle.resource();
 	
 	node->name = handle.name();
@@ -126,14 +133,24 @@ void ResourceModelPrivate::loadInfos(Node* node) const {
 	node->hasInfos = true;
 }
 
+/**
+ * Constructs a new resource model with the given \a root
+ * and \a parent.
+ */
 ResourceModel::ResourceModel(Resource::Handle root, QObject* parent) : QAbstractItemModel(parent) {
 	d_ptr = new ResourceModelPrivate(this, root);
 }
 
+/**
+ * Desturcts the model.
+ */
 ResourceModel::~ResourceModel() {
 	delete d_ptr;
 }
 
+/**
+ * Reimplementation of QAbstractItemModel::index().
+ */
 QModelIndex ResourceModel::index(int row, int column, const QModelIndex &parent) const {
 	Q_D(const ResourceModel);
 
@@ -149,6 +166,9 @@ QModelIndex ResourceModel::index(int row, int column, const QModelIndex &parent)
 	return createIndex(row, column, p->childs[row]);
 }
 
+/**
+ * Reimplementation of QAbstractItemModel::parent().
+ */
 QModelIndex ResourceModel::parent(const QModelIndex &index) const {
 	Q_D(const ResourceModel);
 	
@@ -161,6 +181,9 @@ QModelIndex ResourceModel::parent(const QModelIndex &index) const {
 	return createIndex(parent->row, 0, parent);
 }
 
+/**
+ * Reimplementation of QAbstractItemModel::rowCount()
+ */
 int ResourceModel::rowCount(const QModelIndex &parent) const {
 	Q_D(const ResourceModel);
 
@@ -176,10 +199,16 @@ int ResourceModel::rowCount(const QModelIndex &parent) const {
 	return node->childs.count();
 }
 
+/**
+ * Reimplementation of QAbstractItemModel::columnCount()
+ */
 int ResourceModel::columnCount(const QModelIndex &parent) const {
 	return 2;
 }
 
+/**
+ * Reimplementation of QAbstractItemModel::data()
+ */
 QVariant ResourceModel::data(const QModelIndex &index, int role) const {
 	Q_D(const ResourceModel);
 	switch(role) {
@@ -206,6 +235,9 @@ QVariant ResourceModel::data(const QModelIndex &index, int role) const {
 	return QVariant();
 }
 
+/**
+ * Returns the path of the resource represented by \a index.
+ */
 QString ResourceModel::path(const QModelIndex &index) const {
 	Q_D(const ResourceModel);
 	ResourceModelPrivate::Node *node = d->node(index);
@@ -214,6 +246,9 @@ QString ResourceModel::path(const QModelIndex &index) const {
 	return '/' + node->location.path();
 }
 
+/**
+ * Returns the name of the resource represented by \a index.
+ */
 QString ResourceModel::name(const QModelIndex &index) const {
 	Q_D(const ResourceModel);
 	ResourceModelPrivate::Node *node = d->node(index);
@@ -222,6 +257,10 @@ QString ResourceModel::name(const QModelIndex &index) const {
 	return node->name;
 }
 
+/**
+ * Returns an information string about the resource represented
+ * by \a index.
+ */
 QString ResourceModel::info(const QModelIndex &index) const {
 	Q_D(const ResourceModel);
 	ResourceModelPrivate::Node *node = d->node(index);
@@ -230,6 +269,9 @@ QString ResourceModel::info(const QModelIndex &index) const {
 	return node->info;
 }
 
+/**
+ * Returns the ownership flag of the resource represented by \a index.
+ */
 Resource::Ownership ResourceModel::ownership(const QModelIndex &index) const {
 	Q_D(const ResourceModel);
 	ResourceModelPrivate::Node *node = d->node(index);
@@ -238,15 +280,21 @@ Resource::Ownership ResourceModel::ownership(const QModelIndex &index) const {
 	return node->ownership;
 }
 
+/**
+ * Returns the resource represented by \a index.
+ */
 Resource::Handle ResourceModel::resource(const QModelIndex &index) const {
 	Q_D(const ResourceModel);
 	
 	ResourceModelPrivate::Node *node = d->node(index);
 	if(!node) return Resource::Handle();
 	
-	return node->location.resource();
+	return node->location.resolve();
 }
 
+/**
+ * Updates the item at \a index and its childs.
+ */
 void ResourceModel::update(const QModelIndex &index) {
 	Q_D(const ResourceModel);
 
@@ -256,7 +304,7 @@ void ResourceModel::update(const QModelIndex &index) {
 	
 	d->loadInfos(node);
 
-	Resource::Handle handle = node->location.resource();
+	Resource::Handle handle = node->location.resolve();
 	Resource::Base *res = handle.resource();
 	QStringList childs;
 	Resource::IDirectory *dir = Resource::cast<Resource::IDirectory*>(res);
@@ -320,6 +368,9 @@ void ResourceModel::update(const QModelIndex &index) {
 	}
 }
 
+/**
+ * Updates the whole tree.
+ */
 void ResourceModel::update() {
 	Q_D(ResourceModel);
 	update(QModelIndex());

@@ -36,15 +36,15 @@ class Location {
 public:
 	Location();
 	Location(Handle root, const QString& path);
-	Location(const Location& loc, const QString& rel);
-	Location(const Location& loc);
+	Location(const Location& other, const QString& rel);
+	Location(const Location& other);
 	~Location();
 public:
 	bool isNull() const;
 	Handle root() const;
 	QString path() const;
 	QString name() const;
-	Handle resource() const;
+	Handle resolve() const;
 	Location relative(const QString& rel) const;
 	Location& operator=(const Location &other);
 private:

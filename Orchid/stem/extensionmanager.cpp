@@ -30,6 +30,29 @@
 
 namespace Orchid {
 
+/**
+ * \class FactoryHelper
+ *
+ * \brief FactoryHelper provides an abstract base for all factory
+ * helpers.
+ *
+ * Factory helpers are classes that implement the creation of
+ * of Orchid objects. This is currently limited to resources.
+ */
+
+/**
+ * \fn QString FactoryHelper::key() const = 0
+ *
+ * Returns the key of the object type the factory provides.
+ */
+
+/**
+ * \class ExtensionManager
+ *
+ * \brief ExtensionManager provides an interface for loading and
+ * using extensions to the set of Orchid classes.
+ */
+
 class ExtensionManagerPrivate {
 public:
 	ExtensionManagerPrivate();
@@ -42,6 +65,10 @@ ExtensionManagerPrivate::ExtensionManagerPrivate() {
 
 Q_GLOBAL_STATIC(ExtensionManagerPrivate, extensionManager);
 
+/**
+ * Loads the extension plugin with the filename \a path and
+ * returns true or returns false in the case of an error.
+ */
 bool ExtensionManager::loadExtension(const QString &path) {
 	ExtensionManagerPrivate *d = extensionManager();
 	
@@ -67,11 +94,23 @@ bool ExtensionManager::loadExtension(const QString &path) {
 	return false;
 }
 
+/**
+ * Returns a list of valid keys for \a category.
+ *
+ * \note \a category will currently be ignored as only resources
+ * are available
+ */
 QStringList ExtensionManager::keys(const QString &category) {
 	// TODO use category for lookups
 	return extensionManager()->lookup.keys();
 }
 
+/**
+ * Returns the helper for \a key in \a category.
+ *
+ * \note \a category will currently be ignored as only resources
+ * are available
+ */
 FactoryHelper *ExtensionManager::helper(const QString &category, const QString &key) {
 	// TODO use category for lookups
 	return extensionManager()->lookup.value(key);

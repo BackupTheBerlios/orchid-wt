@@ -93,11 +93,11 @@ public:
 	void setDevice(QIODevice* device);
 	void setReadDevice(QIODevice* device);
 	void setWriteDevice(QIODevice* device);
-	qint64 readData(char*, qint64);
-	qint64 writeData(const char*, qint64);
 	virtual RequestMethod method() const;
 	virtual bool open(QIODevice::OpenMode mode);
 protected:
+	qint64 readData(char*, qint64);
+	qint64 writeData(const char*, qint64);
 	SimpleRequest(SimpleRequestPrivate* dd);
 private:
 	Q_DECLARE_PRIVATE(SimpleRequest);
