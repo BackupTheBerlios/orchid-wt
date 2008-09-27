@@ -20,6 +20,8 @@
 
 #include "documentstreams.h"
 
+#include "xmlfragmentreader.h"
+
 //
 // NOTE due to doxygen only processing one \relates
 // the functions related to both BlockStream and
@@ -31,6 +33,31 @@ namespace Orchid {
 namespace Document {
 	
 // Functions common to BlockStream and InlineStream
+
+/**
+ * \fn MarkupManip markup(const QString &markup)
+ * \relates ::Orchid::Document::BlockStream
+ * \relates ::Orchid::Document::InlineStream
+ *
+ * Applies the content of \a markup to the processor.
+ * While markup manipulators might look simpler than
+ * other manipulators, they have more overhead. You should
+ * only use them where the markup can't be known in advance.
+ * A good example for this are translations of paragraphs.
+ */
+BlockStream &MarkupManip::apply(BlockStream &s) const {
+	XmlFragmentReader reader(s.processor());
+	reader.setBodyString(markup);
+	reader.readBody();
+	return s;
+}
+
+InlineStream &MarkupManip::apply(InlineStream &s) const {
+	XmlFragmentReader reader(s.processor());
+	reader.setInlineString(markup);
+	reader.readInline();
+	return s;
+}
 
 /**
  * \fn RoleManip role(Role val)
@@ -79,6 +106,7 @@ namespace Document {
  * It represents the block level of a document.
  *
  * \note Due to a limitation of doxygen some of the functions relating to BlockStream are not listed under the Related Functions-section:
+ * \li \c MarkupManip markup(const QString &markup)
  * \li \c RoleManip role(Role val)
  * \li \c IdManip id(const QString &val)
  * \li \c ClassnameManip classname(const QString &val)
@@ -161,7 +189,7 @@ BlockStream& end(BlockStream& s) {
  * \fn AbbreviationManip abbreviation(const QString &full)
  * \relates ::Orchid::Document::InlineStream
  *
- * Starts a abbreviation element with the attribute
+ * Starts an abbreviation element with the attribute
  * AttributeInlineFullText set to \a full.
  */
 

@@ -29,6 +29,7 @@ namespace Orchid {
 
 namespace Document {
 
+class MarkupManip;
 class RoleManip;
 class IdManip;
 class ClassnameManip;
@@ -49,6 +50,7 @@ public:
 	inline InlineStream heading();
 	inline InlineStream paragraph();
 	inline InlineStream text();
+	inline BlockStream& operator<<(const MarkupManip &manip);
 	inline BlockStream& operator<<(const HeadingManip& obj);
 	inline BlockStream& operator<<(const ParagraphManip& obj);
 	inline BlockStream& operator<<(const RoleManip& role);
@@ -80,6 +82,7 @@ public:
 	inline InlineStream& operator<<(QChar c);
 	inline InlineStream& operator<<(const QString& str);
 // 	inline InlineStream& operator<<(const TextManip&);
+	inline InlineStream& operator<<(const MarkupManip &manip);
 	inline InlineStream& operator<<(const RoleManip& role);
 	inline InlineStream& operator<<(const IdManip& id);
 	inline InlineStream& operator<<(const AbbreviationManip& abbr);
@@ -144,6 +147,16 @@ InlineStream& end(InlineStream& s);
 // public:
 // 	virtual InlineStream& apply(InlineStream&) = 0;
 // };
+
+class MarkupManip {
+public:
+	inline MarkupManip(const QString &markup) { this->markup = markup; }
+	BlockStream &apply(BlockStream &s) const;
+	InlineStream &apply(InlineStream &s) const;
+private:
+	QString markup;
+};
+inline MarkupManip markup(const QString &markup) { return MarkupManip(markup); }
 
 class RoleManip {
 public:
@@ -266,6 +279,8 @@ inline AbbreviationManip abbreviation(const QString &full) { return Abbreviation
 // }
 
 
+inline BlockStream& BlockStream::operator<<(const MarkupManip& m)
+{ return m.apply(*this); }
 inline BlockStream& BlockStream::operator<<(const HeadingManip& h)
 { return h.apply(*this); }
 inline BlockStream& BlockStream::operator<<(const ParagraphManip& p)
@@ -278,6 +293,8 @@ inline BlockStream& BlockStream::operator<<(const ClassnameManip& name)
 { return name.apply(*this); }
 inline BlockStream& BlockStream::operator<<(const LanguageManip& lang)
 { return lang.apply(*this); }
+inline InlineStream& InlineStream::operator<<(const MarkupManip& m)
+{ return m.apply(*this); }
 inline InlineStream& InlineStream::operator<<(const AbbreviationManip& abbr)
 { return abbr.apply(*this); }
 inline InlineStream& InlineStream::operator<<(const RoleManip& role)

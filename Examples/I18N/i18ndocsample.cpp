@@ -55,30 +55,19 @@ void I18nDocSampleFragment::build(DocumentProcessor* processor) {
 		useTranslator = false;
 	}
 
-	XmlFragmentReader reader(processor);
-
 	BlockStream blocks(processor);
 
 	blocks << heading(TR("Internationalization Example"))
 	       << paragraph(TR("This example resource demonstrates how to internationalice resources."));
 
-	processor->startElement(TagParagraph);
-	reader.setInlineString(TR("Use the <em>Configuration</em> to change the language. (Only \"en\" and \"de\" are supported at moment.)"));
-	reader.readInline();
-	processor->endElement();
+	blocks.paragraph() << markup(TR("Use the <em>Configuration</em> to change the language. (Only \"en\" and \"de\" are supported at moment.)"));
 
-	processor->startElement(TagParagraph);
-	reader.setInlineString(TR("By using the <var>XmlFragmentReader</var> you can translate markup code and insert the result into the processor. This works perfectly even if you output the result to different backend."));
-	reader.readInline();
-	processor->endElement();
+	blocks.paragraph() << markup(TR("By using the <var>XmlFragmentReader</var> you can translate markup code and insert the result into the processor. This works perfectly even if you output the result to different backend."));
 
 	blocks << section
 	       << heading(TR("Demonstration"));
-	
-	processor->startElement(TagParagraph);
-	reader.setInlineString(TR("The current time is <strong>%1</strong>.").arg(QTime::currentTime().toString()));
-	reader.readInline();
-	processor->endElement();
+
+	blocks.paragraph() << markup(TR("The current time is <strong>%1</strong>.").arg(QTime::currentTime().toString()));
 	
 	blocks << end;
 };
