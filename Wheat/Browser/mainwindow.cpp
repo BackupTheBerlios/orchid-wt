@@ -45,11 +45,19 @@ MainWindow::MainWindow() : m_service(8000) {
 	
 	ContainerResource *res = static_cast<ContainerResource*>(ResourceFactory::create("Container"));
 	
+#ifdef Q_OS_WIN
+	ExtensionManager::loadExtension("Orchid/leaf/libimageplugin.dll");
+	ExtensionManager::loadExtension("Orchid/leaf/libmodelplugin.dll");
+	ExtensionManager::loadExtension("Examples/Gallery/libgalleryplugin.dll");
+	ExtensionManager::loadExtension("Examples/DocStreams/libdocstreamsplugin.dll");
+	ExtensionManager::loadExtension("Examples/I18N/libi18ndocplugin.dll");
+#else
 	ExtensionManager::loadExtension("Orchid/leaf/libimageplugin.so");
 	ExtensionManager::loadExtension("Orchid/leaf/libmodelplugin.so");
 	ExtensionManager::loadExtension("Examples/Gallery/libgalleryplugin.so");
 	ExtensionManager::loadExtension("Examples/DocStreams/libdocstreamsplugin.so");
 	ExtensionManager::loadExtension("Examples/I18N/libi18ndocplugin.so");
+#endif
 	
 	m_root.init(res);
 	m_service.setRoot(m_root);

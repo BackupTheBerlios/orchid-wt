@@ -34,7 +34,7 @@ class StyleAttributes;
 class Style;
 
 class DocumentProcessorPrivate;
-class DocumentProcessor {
+class ORCHID_FLOWER_EXPORT DocumentProcessor {
 public:
 	DocumentProcessor();
 	virtual ~DocumentProcessor();

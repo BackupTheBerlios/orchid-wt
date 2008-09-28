@@ -26,7 +26,7 @@
 namespace Orchid {
 
 class Service;
-class ServicePrivate {
+class ORCHID_ROOT_EXPORT ServicePrivate {
 public:
 	ServicePrivate(Service* service) : q_ptr(service) {}
 public:

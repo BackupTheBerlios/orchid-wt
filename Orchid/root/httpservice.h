@@ -26,7 +26,7 @@
 namespace Orchid {
 
 class HttpServicePrivate;
-class HttpService : public Service {
+class ORCHID_ROOT_EXPORT HttpService : public Service {
 	Q_OBJECT
 public:
 	HttpService(int port = 80);

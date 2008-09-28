@@ -29,7 +29,7 @@ class QIODevice;
 namespace Orchid {
 
 class XHtml11StreamWriterPrivate;
-class XHtml11StreamWriter : public DocumentProcessor {
+class ORCHID_FLOWER_EXPORT XHtml11StreamWriter : public DocumentProcessor {
 public:
 	XHtml11StreamWriter(QIODevice* device = 0);
 public:

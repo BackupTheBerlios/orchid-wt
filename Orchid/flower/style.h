@@ -21,16 +21,18 @@
 #ifndef _STYLE_H_
 #define _STYLE_H_
 
+#include "globals.h"
+
 #include <QtCore/QString>
 
 namespace Orchid {
 
-class Style {
+class ORCHID_FLOWER_EXPORT Style {
 public:
 	virtual QString content() const;
 };
 
-class Css30Style : public Style {
+class ORCHID_FLOWER_EXPORT Css30Style : public Style {
 public:
 	QString classdef();
 };

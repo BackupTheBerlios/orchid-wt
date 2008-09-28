@@ -21,6 +21,8 @@
 #ifndef _ORCHID_XMLFRAGMENTWRITER_H_
 #define _ORCHID_XMLFRAGMENTWRITER_H_
 
+#include "globals.h"
+
 #include <QtCore/QtGlobal>
 
 class QXmlStreamWriter;
@@ -30,7 +32,7 @@ namespace Orchid {
 class DomFragment;
 
 class XmlFragmentWriterPrivate;
-class XmlFragmentWriter {
+class ORCHID_FLOWER_EXPORT XmlFragmentWriter {
 public:
 	XmlFragmentWriter();
 	~XmlFragmentWriter();

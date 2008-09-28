@@ -21,6 +21,8 @@
 #ifndef _STYLEATTRIBUTES_H_
 #define _STYLEATTRIBUTES_H_
 
+#include "globals.h"
+
 #include <QSharedData>
 #include <QString>
 
@@ -30,12 +32,12 @@ namespace Orchid {
 
 class StyleAttributes;
 
-class StyleAttributesData : public QSharedData {
+class ORCHID_FLOWER_EXPORT StyleAttributesData : public QSharedData {
 	QString prefix;
 	friend class StyleAttributes;
 };
 
-class StyleAttributes {
+class ORCHID_FLOWER_EXPORT StyleAttributes {
 public:
 	StyleAttributes();
 	StyleAttributes(const QString& prefix);

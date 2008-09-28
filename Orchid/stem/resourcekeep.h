@@ -21,9 +21,10 @@
 #ifndef _RESOURCEKEEP_H_
 #define _RESOURCEKEEP_H_
 
-#include <QObject>
-
+#include "globals.h"
 #include "resourceglobals.h"
+
+#include <QObject>
 
 namespace Orchid {
 namespace Resource {
@@ -40,7 +41,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(KeepingFlags);
 class Handle;
 class KeepItem;
 class KeepPrivate;
-class Keep {
+class ORCHID_STEM_EXPORT Keep {
 	friend class KeepPrivate;
 	friend class Handle;
 public:
@@ -55,7 +56,7 @@ private:
 	KeepPrivate* d;
 };
 
-class Handle {
+class ORCHID_STEM_EXPORT Handle {
 	friend class ::Orchid::Resource::Keep;
 public:
 	Handle();

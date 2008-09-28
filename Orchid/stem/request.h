@@ -21,7 +21,8 @@
 #ifndef _ORCHID_REQUEST_H_
 #define _ORCHID_REQUEST_H_
 
-#include <QtCore/qnamespace.h>
+#include "globals.h"
+
 #include <QtCore/QIODevice>
 
 class QIODevice;
@@ -54,7 +55,7 @@ enum RequestMethod {
 	HttpOptionsMethod = 0x0060,
 };
 
-class Request : public QIODevice {
+class ORCHID_STEM_EXPORT Request : public QIODevice {
 public:
 	Request();
 	virtual ~Request();
@@ -84,7 +85,7 @@ protected:
 class SimpleRequestPrivate;
 
 // simple request forwards the request to other QIODevice instances
-class SimpleRequest : public Request {
+class ORCHID_STEM_EXPORT SimpleRequest : public Request {
 public:
 	SimpleRequest();
 public:

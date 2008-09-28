@@ -59,34 +59,34 @@ namespace Resource {
 
 class Handle;
 
-class IDirectory {
+class ORCHID_STEM_EXPORT IDirectory {
 public:
 	virtual QStringList childs() const = 0;
 	virtual Handle child(const QString& name) = 0;
 };
 
-class IContainer : public IDirectory {
+class ORCHID_STEM_EXPORT IContainer : public IDirectory {
 public:
 	virtual bool addResource(const QString& name, Base* res, Ownership ownership = OwnedExternal) = 0;
 	virtual bool remove(const QString &name) = 0;
 	virtual bool removeAll() = 0;
 };
 
-class IRedirecting {
+class ORCHID_STEM_EXPORT IRedirecting {
 public:
 	virtual ~IRedirecting() {}
 public:
 	virtual Handle locate(const QUrl& url) = 0;
 };
 
-class IQueryable {
+class ORCHID_STEM_EXPORT IQueryable {
 public:
 	virtual ~IQueryable() {}
 public:
 	virtual void query(Request* request) = 0;
 };
 
-class IConfigurable {
+class ORCHID_STEM_EXPORT IConfigurable {
 public:
 	virtual ~IConfigurable() {}
 public:
@@ -97,7 +97,7 @@ public:
 	virtual bool setOption(const QString& option, const QVariant& value) = 0;
 };
 
-class IAdvancedConfigurable : public IConfigurable {
+class ORCHID_STEM_EXPORT IAdvancedConfigurable : public IConfigurable {
 public:
 	virtual QVariant optionProperty(const QString& option, const QString& property) const = 0;
 };
@@ -111,7 +111,7 @@ inline T cast(Base* res) {
 }
 
 class ContainerResourcePrivate;
-class ContainerResource : public Resource::Base, public Resource::IContainer {
+class ORCHID_STEM_EXPORT ContainerResource : public Resource::Base, public Resource::IContainer {
 	ORCHID_RESOURCE("Container")
 public:
 	ContainerResource();

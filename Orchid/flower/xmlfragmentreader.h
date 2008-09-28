@@ -21,6 +21,8 @@
 #ifndef _ORCHID_XMLFRAGMENTREADER_H_
 #define _ORCHID_XMLFRAGMENTREADER_H_
 
+#include "globals.h"
+
 #include <QtCore/QtGlobal>
 
 class QXmlStreamReader;
@@ -31,7 +33,7 @@ namespace Orchid {
 class DocumentProcessor;
 
 class XmlFragmentReaderPrivate;
-class XmlFragmentReader {
+class ORCHID_FLOWER_EXPORT XmlFragmentReader {
 public:
 	enum ErrorCode {
 		NoError = 0,

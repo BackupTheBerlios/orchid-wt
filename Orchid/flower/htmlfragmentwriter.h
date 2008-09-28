@@ -21,6 +21,8 @@
 #ifndef _ORCHID_HTMLFRAGMENTWRITER_H_
 #define _ORCHID_HTMLFRAGMENTWRITER_H_
 
+#include "globals.h"
+
 #include <QtCore/QtGlobal>
 
 namespace Orchid {
@@ -29,7 +31,7 @@ class DocumentProcessor;
 class DomFragment;
 
 class HtmlFragmentWriterPrivate;
-class HtmlFragmentWriter {
+class ORCHID_FLOWER_EXPORT HtmlFragmentWriter {
 public:
 	HtmlFragmentWriter(DocumentProcessor* writer);
 	~HtmlFragmentWriter();

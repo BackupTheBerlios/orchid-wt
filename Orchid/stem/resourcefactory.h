@@ -33,13 +33,13 @@ namespace Resource {
 class Base;
 }
 
-class ResourceFactoryHelperBase : public FactoryHelper {
+class ORCHID_STEM_EXPORT ResourceFactoryHelperBase : public FactoryHelper {
 public:
 	virtual Resource::Base *create() = 0;
 };
 
 template <class T>
-class ResourceFactoryHelper : public ResourceFactoryHelperBase {
+class ORCHID_STEM_EXPORT ResourceFactoryHelper : public ResourceFactoryHelperBase {
 public:
 	ResourceFactoryHelper() {
 		// compiletime check for ORCHID_RESOURCE macro in T
@@ -55,7 +55,7 @@ public:
 	}
 };
 
-class ResourceFactory {
+class ORCHID_STEM_EXPORT ResourceFactory {
 public:
 	static QStringList keys();
 	static Resource::Base *create(const QString &key);

@@ -21,6 +21,8 @@
 #ifndef _ORCHID_RESOURCEBASE_H_
 #define _ORCHID_RESOURCEBASE_H_
 
+#include "globals.h"
+
 #include <QtCore/QString>
 
 // NOTE i hope this check works on other compilers too
@@ -39,7 +41,7 @@ class Keep;
 class KeepPrivate;
 
 class BasePrivate;
-class Base {
+class ORCHID_STEM_EXPORT Base {
 	ORCHID_RESOURCE("Resource")
 	Q_DECLARE_PRIVATE(Base)
 	friend class KeepPrivate;

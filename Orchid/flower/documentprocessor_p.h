@@ -21,11 +21,13 @@
 #ifndef _ORCHID_DOCUMENTPROCESSOR_P_H_
 #define _ORCHID_DOCUMENTPROCESSOR_P_H_
 
+#include "globals.h"
+
 #include <QHash>
 
 namespace Orchid {
 
-class DocumentProcessorPrivate {
+class ORCHID_FLOWER_EXPORT DocumentProcessorPrivate {
 	Q_DECLARE_PUBLIC(DocumentProcessor)
 public:
     DocumentProcessorPrivate(DocumentProcessor *processor);

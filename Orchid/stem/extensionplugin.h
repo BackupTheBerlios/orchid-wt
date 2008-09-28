@@ -21,6 +21,8 @@
 #ifndef _ORCHID_EXTENSIONPLUGIN_H_
 #define _ORCHID_EXTENSIONPLUGIN_H_
 
+#include "globals.h"
+
 #include <QtCore/QList>
 #include <QtCore/QtPlugin>
 
@@ -28,7 +30,7 @@ namespace Orchid {
 
 class FactoryHelper;
 
-class ExtensionPluginInterface {
+class ORCHID_STEM_EXPORT ExtensionPluginInterface {
 public:
 	virtual ~ExtensionPluginInterface() {}
 	virtual QList<FactoryHelper*> helpers() const = 0;
@@ -42,7 +44,7 @@ namespace Orchid {
 
 // An abstract base-class for plugins
 
-class ExtensionPlugin : public QObject, public ExtensionPluginInterface {
+class ORCHID_STEM_EXPORT ExtensionPlugin : public QObject, public ExtensionPluginInterface {
 public:
 	Q_OBJECT
 	Q_INTERFACES(Orchid::ExtensionPluginInterface)

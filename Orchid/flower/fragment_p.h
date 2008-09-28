@@ -25,7 +25,7 @@
 
 namespace Orchid {
 
-class FragmentPrivate {
+class ORCHID_FLOWER_EXPORT FragmentPrivate {
 public:
 	Q_DECLARE_PUBLIC(Fragment);
 protected:

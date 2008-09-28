@@ -12,7 +12,7 @@ namespace Orchid {
 
 namespace Resource {
 
-class Object : public QObject,
+class ORCHID_STEM_EXPORT Object : public QObject,
 	public Base,
 	public IDirectory
 {

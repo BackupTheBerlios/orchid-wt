@@ -28,7 +28,7 @@ namespace Orchid {
 class DomFragment;
 
 class FragmentBuilderPrivate;
-class FragmentBuilder : public DocumentProcessor {
+class ORCHID_FLOWER_EXPORT FragmentBuilder : public DocumentProcessor {
 public:
 	FragmentBuilder();
 	~FragmentBuilder();

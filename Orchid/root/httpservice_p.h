@@ -31,7 +31,7 @@ class QAbstractSocket;
 
 namespace Orchid {
 
-class HttpServiceProcess : public QObject {
+class ORCHID_ROOT_EXPORT HttpServiceProcess : public QObject {
 	Q_OBJECT
 public:
 	HttpServiceProcess(HttpService* service, QAbstractSocket* socket);
@@ -44,7 +44,7 @@ private:
 	QAbstractSocket* m_socket;
 };
 
-class HttpServicePrivate : public ServicePrivate {
+class ORCHID_ROOT_EXPORT HttpServicePrivate : public ServicePrivate {
 public:
 	HttpServicePrivate(HttpService* service) : ServicePrivate(service) {}
 public:

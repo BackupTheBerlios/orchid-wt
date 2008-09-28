@@ -3,6 +3,8 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+add_definitions(-DORCHID_BUILD_FLOWER)
+
 set(orchid_flower_SRC
 	documenthead.cpp
 	documentprocessor.cpp

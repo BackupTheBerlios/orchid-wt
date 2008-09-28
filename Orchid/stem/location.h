@@ -21,6 +21,8 @@
 #ifndef _ORCHID_RESOURCELOCATION_H_
 #define _ORCHID_RESOURCELOCATION_H_
 
+#include "globals.h"
+
 #include <QtCore/QSharedData>
 
 class QString;
@@ -32,7 +34,7 @@ namespace Resource {
 class Handle;
 
 class LocationPrivate;
-class Location {
+class ORCHID_STEM_EXPORT Location {
 public:
 	Location();
 	Location(Handle root, const QString& path);
@@ -52,7 +54,7 @@ private:
 };
 
 class LocationLookupPrivate;
-class LocationLookup {
+class ORCHID_STEM_EXPORT LocationLookup {
 public:
 	LocationLookup();
 	LocationLookup(const Handle& root);

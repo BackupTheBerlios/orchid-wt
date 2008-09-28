@@ -21,6 +21,8 @@
 #ifndef _ORCHID_SERVICE_H_
 #define _ORCHID_SERVICE_H_
 
+#include "globals.h"
+
 #include <QObject>
 
 namespace Orchid {
@@ -31,7 +33,7 @@ class Handle;
 
 class ServicePrivate;
 
-class Service : public QObject {
+class ORCHID_ROOT_EXPORT Service : public QObject {
 	Q_OBJECT
 public:
 	Service();

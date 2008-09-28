@@ -21,6 +21,8 @@
 #ifndef _BAMBOO_FRAGMENT_H_
 #define _BAMBOO_FRAGMENT_H_
 
+#include "globals.h"
+
 #include <QObject>
 
 // TODO makes it really much sense to derive Fragment from QObject ?
@@ -30,7 +32,7 @@ namespace Orchid {
 class DocumentProcessor;
 class FragmentPrivate;
 
-class Fragment : public QObject {
+class ORCHID_FLOWER_EXPORT Fragment : public QObject {
 	Q_OBJECT
 public:
 	explicit Fragment(QObject* parent = 0);

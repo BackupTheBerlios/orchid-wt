@@ -27,7 +27,7 @@ namespace Orchid {
 
 namespace Resource {
 
-class BasePrivate {
+class ORCHID_STEM_EXPORT BasePrivate {
 	Q_DECLARE_PUBLIC(Base)
 public:
 	BasePrivate(Base *base);

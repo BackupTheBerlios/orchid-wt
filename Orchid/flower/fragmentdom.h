@@ -21,6 +21,8 @@
 #ifndef _ORCHID_FRAGMENTDOM_H_
 #define _ORCHID_FRAGMENTDOM_H_
 
+#include "globals.h"
+
 #include <QtCore/QtGlobal>
 #include <QtCore/QVector>
 #include <QtCore/QString>
@@ -44,12 +46,12 @@ enum DomNodeType {
 };
 Q_DECLARE_FLAGS(DomNodeTypes, DomNodeType);
 
-class DomNode {
+class ORCHID_FLOWER_EXPORT DomNode {
 public:
 	virtual DomNodeType type() const;
 };
 
-class DomElement : public DomNode {
+class ORCHID_FLOWER_EXPORT DomElement : public DomNode {
 public:
 	virtual Document::Tag tag() const;
 	virtual bool append(DomNode* node);
@@ -60,7 +62,7 @@ private:
 	QVector<DomNode*> m_childs;
 };
 
-class DomCharacters : public DomNode {
+class ORCHID_FLOWER_EXPORT DomCharacters : public DomNode {
 public:
 	DomNodeType type() const;
 	QString text() const;
@@ -69,34 +71,34 @@ private:
 	QString m_text;
 };
 
-class DomSection : public DomElement {
+class ORCHID_FLOWER_EXPORT DomSection : public DomElement {
 public:
 	Document::Tag tag() const;
 	DomNodeType type() const;
 	bool append(DomNode* node);
 };
 
-class DomHeading : public DomElement {
+class ORCHID_FLOWER_EXPORT DomHeading : public DomElement {
 public:
 	Document::Tag tag() const;
 	virtual DomNodeType type() const;
 	bool append(DomNode* node);
 };
 
-class DomParagraph : public DomElement {
+class ORCHID_FLOWER_EXPORT DomParagraph : public DomElement {
 public:
 	Document::Tag tag() const;
 	virtual DomNodeType type() const;
 	bool append(DomNode* node);
 };
 
-class DomFragment : public DomElement {
+class ORCHID_FLOWER_EXPORT DomFragment : public DomElement {
 public:
 	DomNodeType type() const;
 	bool append(DomNode* node);
 };
 
-class DomTextElement : public DomElement {
+class ORCHID_FLOWER_EXPORT DomTextElement : public DomElement {
 public:
 	DomTextElement(Document::Tag tag);
 public:

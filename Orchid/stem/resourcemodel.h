@@ -30,7 +30,7 @@
 namespace Orchid {
 
 class ResourceModelPrivate;
-class ResourceModel : public QAbstractItemModel {
+class ORCHID_STEM_EXPORT ResourceModel : public QAbstractItemModel {
 	Q_OBJECT
 public:
 	ResourceModel(Resource::Handle root, QObject* parent = 0);

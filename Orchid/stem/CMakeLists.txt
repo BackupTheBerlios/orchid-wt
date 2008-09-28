@@ -3,6 +3,8 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+add_definitions(-DORCHID_BUILD_STEM)
+
 set(orchid_stem_SRC
 	extensionmanager.cpp
 	extensionplugin.cpp

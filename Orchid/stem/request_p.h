@@ -28,7 +28,7 @@
 
 namespace Orchid {
 
-class RequestPrivate {
+class ORCHID_STEM_EXPORT RequestPrivate {
 	Q_DECLARE_PUBLIC(Request)
 public:
     RequestPrivate(Request *request)
@@ -42,7 +42,7 @@ private:
 	Resource::LocationLookup locations;
 };
 
-class SimpleRequestPrivate : public RequestPrivate {
+class ORCHID_STEM_EXPORT SimpleRequestPrivate : public RequestPrivate {
 	Q_DECLARE_PUBLIC(SimpleRequest)
 public:
 	SimpleRequestPrivate(SimpleRequest *request)

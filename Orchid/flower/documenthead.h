@@ -21,6 +21,8 @@
 #ifndef _ORCHID_DOCUMENTHEAD_H_
 #define _ORCHID_DOCUMENTHEAD_H_
 
+#include "globals.h"
+
 #include <QtCore/QSharedData>
 #include <QtCore/QString>
 
@@ -32,7 +34,7 @@ namespace Orchid {
 class Style;
 
 class DocumentHeadPrivate;
-class DocumentHead {
+class ORCHID_FLOWER_EXPORT DocumentHead {
 public:
 	DocumentHead();
 	DocumentHead(const DocumentHead &other);

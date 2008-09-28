@@ -41,7 +41,7 @@ class ParagraphManip;
 class AbbreviationManip;
 
 class InlineStream;
-class BlockStream {
+class ORCHID_FLOWER_EXPORT BlockStream {
 public:
 	inline BlockStream(DocumentProcessor* processor);
 public:
@@ -70,7 +70,7 @@ inline BlockStream& BlockStream::operator<<(BlockStream&(*fp)(BlockStream&))
 
 
 // class TextManip;
-class InlineStream {
+class ORCHID_FLOWER_EXPORT InlineStream {
 	friend class BlockStream;
 public:
 	inline InlineStream(DocumentProcessor* processor);
@@ -124,31 +124,31 @@ inline InlineStream BlockStream::text()
 
 
 // tags
-BlockStream& section(BlockStream& s);
+ORCHID_FLOWER_EXPORT BlockStream& section(BlockStream& s);
 // end
-BlockStream& end(BlockStream& s);
+ORCHID_FLOWER_EXPORT BlockStream& end(BlockStream& s);
 
 // tags
-InlineStream& code(InlineStream& s);
-InlineStream& definition(InlineStream& s);
-InlineStream& emphasis(InlineStream& s);
-InlineStream& keyboard(InlineStream& s);
-InlineStream& quote(InlineStream& s);
-InlineStream& sample(InlineStream& s);
-InlineStream& span(InlineStream& s);
-InlineStream& strong(InlineStream& s);
-InlineStream& subscript(InlineStream& s);
-InlineStream& superscript(InlineStream& s);
-InlineStream& variable(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& code(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& definition(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& emphasis(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& keyboard(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& quote(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& sample(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& span(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& strong(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& subscript(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& superscript(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& variable(InlineStream& s);
 // end
-InlineStream& end(InlineStream& s);
+ORCHID_FLOWER_EXPORT InlineStream& end(InlineStream& s);
 
 // class TextManip {
 // public:
 // 	virtual InlineStream& apply(InlineStream&) = 0;
 // };
 
-class MarkupManip {
+class ORCHID_FLOWER_EXPORT MarkupManip {
 public:
 	inline MarkupManip(const QString &markup) { this->markup = markup; }
 	BlockStream &apply(BlockStream &s) const;
@@ -158,7 +158,7 @@ private:
 };
 inline MarkupManip markup(const QString &markup) { return MarkupManip(markup); }
 
-class RoleManip {
+class ORCHID_FLOWER_EXPORT RoleManip {
 public:
 	inline RoleManip(Role val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
@@ -174,7 +174,7 @@ private:
 };
 inline RoleManip role(Role val) { return RoleManip(val); }
 
-class IdManip {
+class ORCHID_FLOWER_EXPORT IdManip {
 public:
 	inline IdManip(const QString &val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
@@ -190,7 +190,7 @@ private:
 };
 inline IdManip id(const QString &val) { return IdManip(val); }
 
-class ClassnameManip {
+class ORCHID_FLOWER_EXPORT ClassnameManip {
 public:
 	inline ClassnameManip(const QString &val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
@@ -206,7 +206,7 @@ private:
 };
 inline ClassnameManip classname(const QString &val) { return ClassnameManip(val); }
 
-class LanguageManip {
+class ORCHID_FLOWER_EXPORT LanguageManip {
 public:
 	inline LanguageManip(const QString &val) { this->val = val; }
 	inline BlockStream& apply(BlockStream& s) const {
@@ -222,7 +222,7 @@ private:
 };
 inline LanguageManip language(const QString &val) { return LanguageManip(val); }
 
-class HeadingManip {
+class ORCHID_FLOWER_EXPORT HeadingManip {
 public:
 	inline HeadingManip(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
@@ -236,7 +236,7 @@ private:
 };
 inline HeadingManip heading(const QString &text) { return HeadingManip(text); }
 
-class ParagraphManip {
+class ORCHID_FLOWER_EXPORT ParagraphManip {
 public:
 	inline ParagraphManip(const QString& text) {  this->text = text; }
 	inline BlockStream& apply(BlockStream& s) const {
@@ -250,7 +250,7 @@ private:
 };
 inline ParagraphManip paragraph(const QString &text) { return ParagraphManip(text); }
 
-class AbbreviationManip {
+class ORCHID_FLOWER_EXPORT AbbreviationManip {
 public:
 	inline AbbreviationManip(const QString& full) { this->full = full; }
 	inline InlineStream& apply(InlineStream& s) const {
