@@ -86,13 +86,6 @@ public:
 	virtual void query(Request* request) = 0;
 };
 
-class IDynamic {
-public:
-	virtual ~IDynamic() {}
-public:
-	virtual bool provides(InterfaceId id) = 0;
-};
-
 class IConfigurable {
 public:
 	virtual ~IConfigurable() {}
@@ -111,9 +104,7 @@ public:
 
 template <class T>
 inline T cast(Base* res) {
-	IDynamic* dyn = dynamic_cast<IDynamic*>(res);
-	if(dyn && !dyn->provides(interfacePtrId<T>()))
-		return 0;
+	// TODO change this cast to using a cast helper in Resource::Base
 	return dynamic_cast<T>(res);
 }
 
@@ -153,7 +144,6 @@ ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IDirectory);
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IContainer);
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IRedirecting);
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IQueryable);
-ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IDynamic);
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IConfigurable);
 ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IAdvancedConfigurable);
 

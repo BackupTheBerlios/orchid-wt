@@ -11,8 +11,7 @@ class ScriptedResource :
 	public QObject,
 	public Resource::Base,
 	public Resource::IQueryable,
-	public Resource::IDirectory,
-	public Resource::IDynamic
+	public Resource::IDirectory
 {
 	Q_OBJECT
 public:
@@ -20,7 +19,6 @@ public:
 	~ScriptedResource();
 public:
 	void query(Orchid::Request*);
-	bool provides(InterfaceId id);
 	QStringList childs() const;
 	Resource::Handle child(const QString& name);
 protected:

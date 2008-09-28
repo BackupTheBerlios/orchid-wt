@@ -13,12 +13,10 @@ namespace Orchid {
 class ScriptResource :
 	public Resource::Base,
 	public Resource::IQueryable,
-	public Resource::IDirectory,
-	public Resource::IDynamic
+	public Resource::IDirectory
 {
 public:
 	void query(Orchid::Request*);
-	bool provides(InterfaceId id);
 	QStringList childs() const;
 	Resource::Handle child(const QString& name);
 public:
@@ -44,7 +42,10 @@ private:
 
 
 void ScriptResource::query(Orchid::Request* request) {
-	if(!m_object.isValid()) return;
+	if(!m_object.isValid()) {
+		// TODO set request status 404
+		return;
+	}
 	
 	QScriptValue f(m_object.property("query"));
 	if(f.isFunction()) {
@@ -53,18 +54,6 @@ void ScriptResource::query(Orchid::Request* request) {
 	} else {
 		qWarning() << "call to disabled resource.query in object" << m_object.toString();
 	}
-}
-
-bool ScriptResource::provides(InterfaceId id) {
-	if(!m_object.isValid()) return false;
-	
-	if(id == interfaceId<Resource::IQueryable>()) {
-		return m_object.property("query").isFunction();
-	} else if(id == interfaceId<Resource::IDirectory>()) {
-		return m_object.property("childList").isFunction() &&
-			m_object.property("getChild").isFunction();
-	}
-	return false;
 }
 
 QStringList ScriptResource::childs() const {
@@ -150,11 +139,6 @@ ScriptedResource::~ScriptedResource() {
 void ScriptedResource::query(Orchid::Request *request) {
 	Q_D(ScriptedResource);
 	d->self.query(request);
-}
-
-bool ScriptedResource::provides(InterfaceId id) {
-	Q_D(ScriptedResource);
-	return d->self.provides(id);
 }
 
 QStringList ScriptedResource::childs() const {
