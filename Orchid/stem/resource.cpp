@@ -155,6 +155,25 @@ namespace Resource {
  */
 
 /**
+ * \class IDynamic
+ *
+ * \brief Resource::IDynamic allows disabling of interfaces
+ *
+ * \deprecated Use implementations of interfaces that do nothing
+ * if they are to be disabled.
+ */
+
+/**
+ * \fn bool IDynamic::provides(InterfaceId id) = 0
+ *
+ * An implementation should return true if an interface is enabled,
+ * otherwise false.
+ *
+ * \deprecated Use implementations of the interfaces that
+ * simply do nothing if they are to be disabled.
+ */
+
+/**
  * \class IConfigurable
  *
  * \brief Resource::IConfigurable is an interface for configuring
@@ -227,9 +246,9 @@ int regInterface(const char *name) {
 }
 
 /**
- * \class Container
+ * \class ContainerResource
  *
- * \brief Container provides an standard implementation of
+ * \brief ContainerResource provides an standard implementation of
  * containers.
  *
  * Use this class everywhere where you need to add container

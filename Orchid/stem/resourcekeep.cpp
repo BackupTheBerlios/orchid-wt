@@ -38,14 +38,14 @@ namespace Resource {
  *
  * \brief The Keep class can be used to manage a list of resources.
  *
- * The Keep is a container class that stores associoation of names and resources.
- * It allows to access resources from different threads in a managed way and to
- * hold resources for the time they are needed.
- 
+ * The Keep is a container class that stores associoation of names
+ * and resources and manage them in a thread save way.
  *
- * It adds some managment to them in that it is able to manage them in a thread-safe way
+ * By using Keeps and Handles you can ensure, that resources
+ * live only for so lang required. If no code uses a resources
+ * it will be destructed.
  * 
- * \sa Base
+ * \sa Resource::Base, Resource::Handle
  */
 
 
@@ -224,11 +224,16 @@ KeepItem *KeepPrivate::releaseItem(KeepItem* item) {
 	return nextToBeRemoved;
 }
 
-
+/**
+ * Constructs a new keep.
+ */
 Keep::Keep() {
 	d = new KeepPrivate(this);
 }
 
+/**
+ * Destructs the keep.
+ */
 Keep::~Keep() {
 	// make sure that no item stays in the keep
 	resetAll();
@@ -236,6 +241,16 @@ Keep::~Keep() {
 	delete d;
 }
 
+/**
+ * Acquires a handle for \a name.
+ *
+ * \note This method waits until all empty Handles with \a name
+ * refering to this keep got released or initialized. Therefore
+ * you should never store an empty handle beyond the time you need
+ * to initialize it.
+ *
+ * \sa Handle::init(), Handle::isEmpty()
+ */
 Handle Keep::acquireHandle(const QString& name) {
 	// Secure this operation
 	QMutexLocker locker(&d->mutex);
@@ -295,6 +310,12 @@ Handle Keep::acquireHandle(const QString& name) {
 	return Handle(item);
 }
 
+/**
+ * Same as \c acquireHandle(\a name) but if it can't return a handle
+ * immediately it doesn't wait and returns Handle().
+ *
+ * \sa acquireHandle()
+ */
 Handle Keep::tryAcquireHandle(const QString& name) {
 	// Secure this operation
 	QMutexLocker locker(&d->mutex);
@@ -321,6 +342,15 @@ Handle Keep::tryAcquireHandle(const QString& name) {
 	return Handle(item);
 }
 
+/**
+ * Resets resource \a name and returns true or false if the keep
+ * contains no resource \a name. This will not reset uninitialized
+ * handles for \a name.
+ *
+ * If \a name identifies an existing resource and there are handles
+ * for it they  will stay valid and the resource will not be
+ * deleted until the the last handle was gone.
+ */
 bool Keep::reset(const QString &name) {
 	// Secure this operation
 	QMutexLocker locker(&d->mutex);
@@ -343,7 +373,7 @@ bool Keep::reset(const QString &name) {
 	
 	if(!item->resource) {
 		// item is not initialized yet so no ned to reset it
-		return true;
+		return false;
 	}
 	
 	// Move item out of the keep
@@ -366,6 +396,13 @@ bool Keep::reset(const QString &name) {
 	return true;
 }
 
+/**
+ * Resets all resources. This will not reset uninitialized
+ * handles.
+ *
+ * If resources have handles those handles stay valid and
+ * the resources will not be deleted until all handles are gone.
+ */
 void Keep::resetAll() {
 	// Secure this operation
 	QMutexLocker locker(&d->mutex);
@@ -408,20 +445,44 @@ void Keep::resetAll() {
 	d->items.clear();
 }
 
+/**
+ * \class Handle
+ *
+ * \brief Handle ensures the availability of a resource.
+ *
+ * As lang as a handle for a resource exists it is not allowed
+ * to be deleted. Once the last handle for a resource is gone
+ * it either deletes the resource itself or in case of named
+ * handles tells the keep of the resource, that it is no longer
+ * needed.
+ */
 
+/**
+ * Constructs an invalid handle.
+ */
 Handle::Handle() : m_item(0) {
 }
 
-Handle::Handle(const Handle& handle) : m_item(handle.m_item) {
+/**
+ * Constructs a copy of \a other
+ */
+Handle::Handle(const Handle &other) : m_item(other.m_item) {
 	// add reference to the item
 	if(m_item) m_item->handleRefs.ref();
 }
 
+/**
+ * \internal
+ */
 Handle::Handle(KeepItem* item) : m_item(item) {
 	// add reference to the item
 	if(item) item->handleRefs.ref();
 }
 
+/**
+ * Destructs the handle and releases the resource if no more
+ * handles to it exist.
+ */
 Handle::~Handle() {
 	if(m_item && !m_item->handleRefs.deref()) {
 		KeepItem *toBeRemoved = m_item;
@@ -439,30 +500,52 @@ Handle::~Handle() {
 	}
 }
 
+/**
+ * Returns true if the handle is invalid, otherwise returns false.
+ */
 bool Handle::isNull() const {
 	return !m_item;
 }
 
+/**
+ * Returns true if the handle has no resource associoated to it,
+ * otherwise returns false.
+ */
 bool Handle::isEmpty() const {
 	if(!m_item) return true;
 	return !m_item->resource;
 }
 
+/**
+ * Returns the ownership of the handle resource, or OwnedPrivate
+ * if no resource was assinged to it.
+ */
 Ownership Handle::ownership() const {
 	if(!m_item) return OwnedPrivate;
 	return m_item->ownership;
 }
 
+/**
+ * Returns the resource assinged to the handle.
+ */
 Base* Handle::resource() const {
 	if(!m_item) return 0;
 	return m_item->resource;
 }
 
 /**
- * \warning Using resources from different threads BEFORE having initialized
- * its handle might not be thread-safe. Allways initialize the handle for
- * resource before you use the resource in other threads than the one where
- * you will call init().
+ * Initializes a handle and assigns \a resource to it. If the
+ * handle is a named handle the keep will store \a resource with
+ * \a flags under the handles name. This will also update all other
+ * handles with the same name and keep.
+ *
+ * \warning Using resources from different threads \em before having
+ * initialized  its handle might not be thread-safe. Allways
+ * initialize the handle for resource before you use the resource
+ * in other threads than the one where you will call init().
+ *
+ * \note Also never initialize different handles with the same
+ * resource. This will result in a SEGFAULT.
  */
 bool Handle::init(Base* resource, Ownership ownership, KeepingFlags flags) {
 	if(!m_item) {
@@ -488,12 +571,20 @@ bool Handle::init(Base* resource, Ownership ownership, KeepingFlags flags) {
 	}
 }
 
+/**
+ * Returns the handles name if its a named handle, otherwise returns
+ * a null string.
+ */
 QString Handle::name() const {
 	if(!m_item) return QString();
 	
 	return m_item->name;
 }
 
+/**
+ * Assigns \a other to this handle and returns a reference to this
+ * handle.
+ */
 Handle& Handle::operator=(const Handle& other) {
 	if(m_item == other.m_item) return *this;
 	
@@ -519,6 +610,10 @@ Handle& Handle::operator=(const Handle& other) {
 	return *this;
 }
 
+/**
+ * Returns true if this handle is equal to \a other, otherwise
+ * returns false.
+ */
 bool Handle::operator==(const Handle &other) const {
 	if(!m_item) {
 		if(!other.m_item) return true;
@@ -531,6 +626,10 @@ bool Handle::operator==(const Handle &other) const {
 }
 }
 
+/**
+ * Returns the calculated hash of the handle.
+ * \note All empty handles will result in the same hash.
+ */
 uint qHash(const Orchid::Resource::Handle &handle) {
 	return ::qHash(handle.resource());
 }

@@ -187,7 +187,7 @@ void DomCharacters::setText(const QString& text) {
 /**
  * \class DomSection
  *
- * Represents a section in the DOM.
+ * \brief Represents a section in the DOM.
  */
 
 /**
@@ -220,7 +220,7 @@ bool DomSection::append(DomNode* node) {
 /**
  * \class DomHeading
  *
- * Represents a heading in the DOM.
+ * \brief Represents a heading in the DOM.
  */
 
 /**
@@ -253,7 +253,7 @@ bool DomHeading::append(DomNode* node) {
 /**
  * \class DomParagraph
  *
- * Represents a paragraph in the DOM.
+ * \brief Represents a paragraph in the DOM.
  */
 
 /**
@@ -286,7 +286,7 @@ bool DomParagraph::append(DomNode* node) {
 /**
  * \class DomFragment
  *
- * Represents a body fragment in the DOM.
+ * \brief Represents a body fragment in the DOM.
  */
 
 /**
@@ -312,7 +312,7 @@ bool DomFragment::append(DomNode* node) {
 /**
  * \class DomTextElement
  *
- * Represents a text element in the DOM.
+ * \brief Represents a text element in the DOM.
  */
 
 /**

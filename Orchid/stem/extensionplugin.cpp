@@ -21,3 +21,27 @@
 #include "extensionplugin.h"
 
 #include "extensionplugin.moc"
+
+namespace Orchid {
+
+/**
+ * \class ExtensionPluginInterface
+ *
+ * \brief ExtensionPluginInterface is an interface that all
+ * extension plugins must implement.
+ */
+
+/**
+ * \fn QList<FactoryHelper*> ExtensionPluginInterface::helpers() const = 0
+ *
+ * The implementation shoud return the list of helpers it provides.
+ */
+
+/**
+ * \class ExtensionPlugin
+ *
+ * \brief ExtensionPlugin provides an abstract base class you should
+ * use for your extension plugins.
+ */
+
+}

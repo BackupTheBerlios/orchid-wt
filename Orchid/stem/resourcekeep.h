@@ -59,7 +59,7 @@ class Handle {
 	friend class ::Orchid::Resource::Keep;
 public:
 	Handle();
-	Handle(const Handle& handle);
+	Handle(const Handle &other);
 	~Handle();
 public:
 	bool isNull() const;

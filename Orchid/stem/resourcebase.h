@@ -46,6 +46,7 @@ class Base {
 public:
 	Base();
 	virtual ~Base();
+	virtual QString typeName() const = 0;
 protected:
 	Keep *keep();
 	Base(BasePrivate *d);

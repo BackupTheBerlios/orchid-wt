@@ -23,7 +23,44 @@
 #include "resource.h"
 
 namespace Orchid {
-	
+
+/**
+ * \class ResourceFactoryHelperBase
+ *
+ * \brief ResourceFactoryHelperBase is the base class for resource
+ * factory helpers.
+ *
+ * \note The key the helper returns has to be what calling
+ * \c create()->typeName() would return.
+ *
+ * \note You shouldn't need to use this directly. Use
+ * ResourceFactoryHelper\<T\> instead.
+ */
+
+/**
+ * \fn Resource::Base *ResourceFactoryHelperBase::create() = 0
+ *
+ * An implementation of this should return a newly created resource
+ */
+
+/**
+ * \class ResourceFactoryHelper
+ *
+ * \brief ResourceFactoryHelper<T> provides an factory helper for
+ * creation of resources of type \a T.
+ *
+ * \sa ResourceFactory
+ */
+
+/**
+ * \class ResourceFactory
+ *
+ * \brief The ResourceFactory creates resource objects.
+ */
+
+/**
+ * Returns a list of valid keys.
+ */
 QStringList ResourceFactory::keys() {
 	QStringList list;
 	list << ContainerResource::staticTypeName();
@@ -31,6 +68,11 @@ QStringList ResourceFactory::keys() {
 	return list;
 }
 
+/**
+ * Creates and returns the resource \a key. \a key is also
+ * the name of the resource-type you can get by calling
+ * Resource::Base::typeName().
+ */
 Resource::Base *ResourceFactory::create(const QString &key) {
 	Resource::Base *res = 0;
 	if(key == ContainerResource::staticTypeName()) {
