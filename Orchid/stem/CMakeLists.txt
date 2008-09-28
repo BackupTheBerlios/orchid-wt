@@ -13,6 +13,7 @@ set(orchid_stem_SRC
 	resourcefactory.cpp
 	resourcekeep.cpp
 	resourcemodel.cpp
+	resourceobject.cpp
 )
 
 qt4_automoc(${orchid_stem_SRC})
