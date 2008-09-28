@@ -39,3 +39,10 @@
  * \brief Document contains classes related to document handling.
  * and document content.
  */
+
+/**
+ * \namespace Orchid::Resource
+ *
+ * \brief Resource contains the base class for resources,
+ * standard interfaces and some tools for working with resources.
+ */

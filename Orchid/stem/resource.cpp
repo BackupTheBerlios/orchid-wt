@@ -32,12 +32,25 @@
 
 namespace Orchid {
 
+/**
+ * \file resource.h
+ * \brief Provides all you need for implmenting standard resources.
+ */
+
+/**
+ * \def ORCHID_DECLARE_INTERFACE(type)
+ *
+ * Makes interface \a type a valid Orchid interface that can be
+ * cast to by Resource::cast<T>()
+ */
+
 namespace Resource {
 
 /**
  * \class IDirectory
  *
- * \brief IDirectory is an interface for access to children
+ * \brief Resource::IDirectory is an interface for access to
+ * children
  *
  * If IDirectory was added to an class its child resources are
  * accessible via locations.
@@ -68,7 +81,8 @@ namespace Resource {
 /**
  * \class IContainer
  *
- * \brief IContainer is an interface for managing child resources.
+ * \brief Resource::IContainer is an interface for managing child
+ * resources.
  *
  * IContainer is the interface for adding and removing of child
  * resources.
@@ -105,8 +119,8 @@ namespace Resource {
 /**
  * \class IRedirecting
  *
- * \brief IRedirecting is an interface for redirecting requests to
- * for resources to other resources.
+ * \brief Resource::IRedirecting is an interface for redirecting
+ * requests to for resources to other resources.
  *
  * When a Location resolves a path and this path contains a resource
  * with the IRedirecting interface, it calls locate() with the rest
@@ -116,7 +130,7 @@ namespace Resource {
  */
 
 /**
- * \fn Handle locate(const QUrl &url) = 0
+ * \fn Handle IRedirecting::locate(const QUrl &url) = 0
  *
  * Returns the handle for the resource specified by \a url.
  * This locate call can redirect to anywhere...
@@ -124,7 +138,74 @@ namespace Resource {
  * \deprecated This function might be removed in later versions.
  */
 
-// TODO add other documentation
+/**
+ * \class IQueryable
+ *
+ * \brief Resource::IQueryable is an interface for resources that
+ * can be requested over the web.
+ *
+ * \sa Request::Base
+ */
+
+/**
+ * \fn void IQueryable::query(Request* request) = 0
+ *
+ * Queries the resource with \a request. You can respond to this
+ * request by opening \a request and writing to it.
+ */
+
+/**
+ * \class IConfigurable
+ *
+ * \brief Resource::IConfigurable is an interface for configuring
+ * resources.
+ *
+ * Resources that implement IConfigurable can be configured in
+ * the Orchid Browser tool and their configuration can be stored
+ * in an service setup file.
+ */
+
+/**
+ * \fn QList<Option> IConfigurable::optionList() const = 0
+ *
+ * Returns a list of supported options as pairs of the name as
+ * QString and the qMetaTypeId of the supported type as integer.
+ */
+
+/**
+ * \fn QVariant IConfigurable::option(const QString &option) const = 0
+ *
+ * Returns the current value of \a option or QVariant() if
+ * \a option does not exist or has no value.
+ */
+
+/**
+ * \fn bool IConfigurable:setOption(const QString &option, const QVariant &value) = 0
+ *
+ * Sets the option \a option to \a value and returns true or false
+ * when \a option is not a supported option or \a value is
+ * currently not allowed for \a option.
+ */
+
+/**
+ * \class IAdvancedConfigurable
+ * 
+ * \brief Resource::IAdvancedConfigurable is an extension to
+ * IConfigurable that provides more information about options.
+ *
+ * IAdvancedConfigurable provides can provide advanced information
+ * about options, like possible values or a short description.
+ *
+ * Currently no list of possible properties is defined.
+ * This will change in future versions.
+ */
+
+/**
+ * \fn QVariant IAdvancedConfigurable::optionProperty(const QString &option, const QString &property) const = 0
+ *
+ * Returns the property \a property for \a option if one is provided
+ * or QVariant() otherwise.
+ */
 
 }
 
@@ -145,6 +226,16 @@ int regInterface(const char *name) {
 	return id;
 }
 
+/**
+ * \class Container
+ *
+ * \brief Container provides an standard implementation of
+ * containers.
+ *
+ * Use this class everywhere where you need to add container
+ * which you can add resources to.
+ */
+
 class ContainerResourcePrivate : public Resource::BasePrivate {
 	Q_DECLARE_PUBLIC(ContainerResource)
 public:
@@ -157,13 +248,25 @@ ContainerResourcePrivate::ContainerResourcePrivate(ContainerResource* resource)
 	: BasePrivate(resource)
 { }
 
+/**
+ * Cosntructs a new container.
+ */
 ContainerResource::ContainerResource() : Base(new ContainerResourcePrivate(this)) {
 }
 
+/**
+ * Desturcts the container.
+ */
 ContainerResource::~ContainerResource() {
 }
 
-
+/**
+ * Adds \a res to the container as \a name with the ownership
+ * \a ownership. Returns true if no resource with this name
+ * is allready present or false otherwise.
+ *
+ * \sa IContainer
+ */
 bool ContainerResource::addResource(const QString& name, Resource::Base* res, Resource::Ownership ownership) {
 	Q_D(ContainerResource);
 	Resource::Handle handle = keep()->acquireHandle(name);
@@ -173,10 +276,21 @@ bool ContainerResource::addResource(const QString& name, Resource::Base* res, Re
 	return true;
 }
 
+/**
+ * Removes child \a name from the container and returns true on
+ * success or false if the container had no such child.
+ *
+ * \sa IContainer
+ */
 bool ContainerResource::remove(const QString &name) {
 	return keep()->reset(name);
 }
 
+/**
+ * Removes all childs and returns true.
+ *
+ * \sa IContainer
+ */
 bool ContainerResource::removeAll() {
 	Q_D(ContainerResource);
 	keep()->resetAll();
@@ -184,11 +298,22 @@ bool ContainerResource::removeAll() {
 	return true;
 }
 
+/**
+ * Returns a list of childs.
+ *
+ * \sa IDirectory
+ */
 QStringList ContainerResource::childs() const {
 	Q_D(const ContainerResource);
 	return d->m_childs;
 }
 
+/**
+ * Returns child \a name or Handle() if \a name is no child
+ * of the container.
+ *
+ * \sa IDirectory
+ */
 Orchid::Resource::Handle ContainerResource::child(const QString& name) {
 	Q_D(ContainerResource);
 	Resource::Handle handle = keep()->acquireHandle(name);

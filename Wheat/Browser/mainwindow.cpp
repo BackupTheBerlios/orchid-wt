@@ -30,6 +30,7 @@
 #include <leaf/scriptedresource.h>
 
 #include <QFile>
+#include <QtGui/QMessageBox>
 
 #include <stem/resourcefactory.h>
 
@@ -94,6 +95,9 @@ void MainWindow::setupActions() {
 	connect(actionSave, SIGNAL(triggered()), this, SLOT(fileSave()));
 	connect(actionSaveAs, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
 	connect(actionQuit, SIGNAL(triggered()), this, SLOT(close()));
+	connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+	connect(actionAboutOrchid, SIGNAL(triggered()), this, SLOT(aboutOrchid()));
+	connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 	connect(addResourceButton, SIGNAL(clicked(bool)), this, SLOT(addResource()));
 	connect(configResourceButton, SIGNAL(clicked(bool)), this, SLOT(configResource()));
 }
@@ -188,4 +192,29 @@ void MainWindow::fileSave() {
 
 void MainWindow::fileSaveAs() {
 	qDebug() << "fileSaveAs";
+}
+
+void MainWindow::about() {
+	QMessageBox::about(this, "About Orchid Browser",
+		"<h1>Orchid Browser</h1>"
+		"<p>The Orchid-Browser can be used to browse and configure "
+		"Orchid-services.</p>"
+		"<p>Copyright (C) 2008 Johannes Bergmeier</p>"
+		"<p>This program is free software: you can redistribute it "
+		"and/or modify it under the terms of the GNU General Public "
+		"License version 3 as published by the Free Software "
+		"Foundation.</p>"
+		"<p>This program is distributed in the hope that it will be "
+		"useful, but WITHOUT ANY WARRANTY; without even the implied "
+		"warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR "
+		"PURPOSE.  See the GNU General Public License for more "
+		"details.</p>"
+		"<p>You should have received a copy of the GNU General Public "
+		"License along with this program.  If not, see "
+		"<a href=\"http://www.gnu.org/licenses/\">"
+		"http://www.gnu.org/licenses/</a>.</p>");
+}
+
+void MainWindow::aboutOrchid() {
+	QMessageBox::about(this, "", "");
 }

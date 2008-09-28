@@ -48,6 +48,8 @@ private slots:
 	void fileOpen();
 	void fileSave();
 	void fileSaveAs();
+	void about();
+	void aboutOrchid();
 private:
 	void setupActions();
 private:
