@@ -29,7 +29,7 @@
 public: \
 	template<class T> inline void checkForResourceMacro(T*) const { const T* p = this; } \
 	inline static QString staticTypeName() { return NAME; } \
-	virtual QString typeName() const { return NAME; } \
+	virtual QString typeNameInternal() const { return NAME; } \
 private:
 
 namespace Orchid {
@@ -46,13 +46,19 @@ class Base {
 public:
 	Base();
 	virtual ~Base();
-	virtual QString typeName() const = 0;
+public:
+	inline QString typeName() const;
 protected:
 	Keep *keep();
 	Base(BasePrivate *d);
 protected:
 	BasePrivate *d_ptr;
 };
+
+inline QString Base::typeName() const {
+	return typeNameInternal();
+}
+
 }
 
 }

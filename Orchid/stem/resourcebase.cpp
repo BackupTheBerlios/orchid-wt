@@ -42,6 +42,14 @@ namespace Resource {
  * Resource::IAdvancedConfigurable
  */
 
+/**
+ * \fn QString Base::typeName() const
+ *
+ * Returns the name of the resources type in extensions.
+ *
+ * \sa ResourceFactory::create()
+ */
+
 BasePrivate::BasePrivate(Base *base) {
 	q_ptr = base;
 }

@@ -123,13 +123,7 @@ void ResourceModelPrivate::loadInfos(Node* node) const {
 	
 	node->name = handle.name();
 	node->ownership = handle.ownership();
-	if(Resource::cast<Resource::IDirectory*>(res)) {
-		node->info = "Directory";
-	} else if(Resource::cast<Resource::IQueryable*>(res)) {
-		node->info = "Queryable";
-	} else {
-		node->info = "Resource";
-	}
+	node->info = res->typeName();
 	node->hasInfos = true;
 }
 
