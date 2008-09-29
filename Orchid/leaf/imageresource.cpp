@@ -18,7 +18,9 @@
  */
 
 
-#include "imageresource.h" 
+#include "imageresource.h"
+
+#include "imageresource.moc"
 
 #include <stem/resourcebase_p.h>
 #include <stem/request.h>
@@ -27,7 +29,7 @@
 
 namespace Orchid {
 
-class ImageResourcePrivate : Resource::BasePrivate {
+class ImageResourcePrivate {
 public:
 	ImageResourcePrivate(ImageResource* res);
 private:
@@ -35,36 +37,36 @@ private:
 	QString path;
 	int sizeX, sizeY;
 	bool useScaling : 1;
+protected:
+	ImageResource *q_ptr;
 private:
 	Q_DECLARE_PUBLIC(ImageResource)
 };
 
 
-ImageResourcePrivate::ImageResourcePrivate(ImageResource* res)
-	: BasePrivate(res)
-{
+ImageResourcePrivate::ImageResourcePrivate(ImageResource* res) {
+	q_ptr = res;
 	useScaling = false;
 }
 
-ImageResource::ImageResource()
-	: Base(new ImageResourcePrivate(this))
-{ }
+ImageResource::ImageResource() {
+	d_ptr = new ImageResourcePrivate(this);
+}
 
-ImageResource::ImageResource(const QString& path)
-	: Base(new ImageResourcePrivate(this))
-{
+ImageResource::ImageResource(const QString& path) {
+	d_ptr = new ImageResourcePrivate(this);
 	Q_D(ImageResource);
 	d->path = path;
 }
 
-ImageResource::ImageResource(const QImage& image)
-	: Base(new ImageResourcePrivate(this))
-{
+ImageResource::ImageResource(const QImage& image) {
+	d_ptr = new ImageResourcePrivate(this);
 	Q_D(ImageResource);
 	d->image = image;
 }
 
 ImageResource::~ImageResource() {
+	delete d_ptr;
 }
 
 QString ImageResource::path() const {

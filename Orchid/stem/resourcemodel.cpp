@@ -98,7 +98,7 @@ void ResourceModelPrivate::populate(Node* node) const {
 	
 	Resource::Handle handle = node->location.resolve();
 	
-	Resource::IDirectory* dir = dynamic_cast<Resource::IDirectory*>(handle.resource());
+	Resource::IDirectory* dir = Resource::cast<Resource::IDirectory*>(handle.resource());
 	
 	if(!dir) { node->populated = true; return; }
 	

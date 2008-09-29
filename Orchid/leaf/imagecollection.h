@@ -21,8 +21,7 @@
 #ifndef _ORCHID_IMAGECOLLECTION_H_
 #define _ORCHID_IMAGECOLLECTION_H_
 
-#include <stem/resource.h>
-#include <stem/resourcekeep.h>
+#include <stem/resourceobject.h>
 
 namespace Orchid {
 
@@ -31,11 +30,13 @@ class ImageCollectionMod;
 
 class ImageCollectionPrivate;
 class ImageCollection : 
-	public Resource::Base,
+	public Resource::Object,
 	public Resource::IContainer,
 	public Resource::IConfigurable
 {
 	ORCHID_RESOURCE("ImageCollection")
+	Q_OBJECT
+	Q_INTERFACES(Orchid::Resource::IContainer Orchid::Resource::IConfigurable)
 public:
 	ImageCollection();
 	ImageCollection(const QVector<QPair<QString,QString> > &files);
@@ -60,13 +61,15 @@ public:
 	bool setOption(const QString &option, const QVariant &value);
 protected:
 	ImageCollection(ImageCollectionPrivate*);
+	ImageCollectionPrivate *d_ptr;
 private:
 	Q_DECLARE_PRIVATE(ImageCollection)
 };
 
 class ImageCollectionModPrivate;
-class ImageCollectionMod : public Resource::Base, public Resource::IDirectory {
+class ImageCollectionMod : public Resource::Object {
 	ORCHID_RESOURCE("ImageCollectionMod-unused")
+	Q_OBJECT
 public:
 	ImageCollectionMod();
 	~ImageCollectionMod();
@@ -79,6 +82,7 @@ protected:
 	virtual ImageResource* createResource(const ImageResource *other) = 0;
 protected:
 	ImageCollectionMod(ImageCollectionModPrivate *d);
+	ImageCollectionModPrivate *d_ptr;
 private:
 	Q_DECLARE_PRIVATE(ImageCollectionMod);
 };
@@ -87,6 +91,8 @@ class ImageCollectionScalingPrivate;
 class ImageCollectionScaling : public ImageCollectionMod, public Resource::IConfigurable
 {
 	ORCHID_RESOURCE("ImageCollectionScaling")
+	Q_OBJECT
+	Q_INTERFACES(Orchid::Resource::IConfigurable)
 public:
 	ImageCollectionScaling();
 	ImageCollectionScaling(int width, int height);

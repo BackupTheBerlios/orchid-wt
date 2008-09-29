@@ -32,12 +32,14 @@ class ImageCollection;
 class ImageCollectionMod;
 class ImageCollectionScaling;
 
-class ImageCollectionPrivate : public Resource::BasePrivate {
+class ImageCollectionPrivate {
 	Q_DECLARE_PUBLIC(ImageCollection)
 public:
 	ImageCollectionPrivate(ImageCollection* collection);
 public:
 	void resetFiles();
+protected:
+	ImageCollection *q_ptr;
 private:
 	QStringList imageList;
 	QStringList fileList;
@@ -45,12 +47,14 @@ private:
 	QSet<QString> mods;
 };
 
-class ImageCollectionModPrivate : public Resource::BasePrivate {
+class ImageCollectionModPrivate  {
 	Q_DECLARE_PUBLIC(ImageCollectionMod)
 public:
 	ImageCollectionModPrivate(ImageCollectionMod* mod);
 public:
 	void resetKeep();
+protected:
+	ImageCollectionMod *q_ptr;
 private:
 	ImageCollection* collection;
 };

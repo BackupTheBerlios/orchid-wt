@@ -28,13 +28,14 @@ class QAbstractItemModel;
 
 namespace Orchid {
 
-class ModelResourcePrivate : public Resource::BasePrivate {
+class ModelResourcePrivate {
 public:
-	ModelResourcePrivate(ModelResource* res)
-		: BasePrivate(res)
-	{
+	ModelResourcePrivate(ModelResource* res) {
+		q_ptr = res;
 		model = 0;
 	}
+protected:
+	ModelResource *q_ptr;
 private:
 	Q_DECLARE_PUBLIC(ModelResource)
 	QAbstractItemModel* model;

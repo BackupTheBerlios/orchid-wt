@@ -21,7 +21,7 @@
 #ifndef _ORCHID_I18NDOCSAMPLE_H_
 #define _ORCHID_I18NDOCSAMPLE_H_
 
-#include <stem/resource.h>
+#include <stem/resourceobject.h>
 #include <flower/documenthead.h>
 
 namespace Orchid {
@@ -30,11 +30,13 @@ class Fragment;
 
 class I18nDocSampleFragment;
 class I18nDocSample :
-	public Orchid::Resource::Base,
+	public Orchid::Resource::Object,
 	public Orchid::Resource::IQueryable,
 	public Orchid::Resource::IConfigurable
 {
 	ORCHID_RESOURCE("I18N-Document-Sample")
+	Q_OBJECT
+	Q_INTERFACES(Orchid::Resource::IQueryable Orchid::Resource::IConfigurable)
 public:
 	I18nDocSample();
 	~I18nDocSample();

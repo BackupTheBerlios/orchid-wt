@@ -27,6 +27,8 @@
 #include <stem/location.h>
 #include <QtCore/QAbstractItemModel>
 
+#include "xmlmodelresource.moc"
+
 namespace Orchid {
 
 class XmlModelResourcePrivate : public ModelResourcePrivate {
@@ -56,6 +58,7 @@ void XmlModelResource::query(Orchid::Request* request) {
 void XmlModelResource::query(Orchid::Request* request, const QModelIndex& index) {
 	if(!model()) return;
 
+	request->setMimeType("text/xml");
 	if(!request->open(QIODevice::ReadWrite)) return;
 	QXmlStreamWriter xml(request);
 

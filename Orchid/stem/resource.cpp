@@ -207,6 +207,17 @@ namespace Resource {
  * or QVariant() otherwise.
  */
 
+/**
+ * \fn T cast(Base *res)
+ *
+ * Returns \a res cast to the interface T. This uses the Qt object
+ * metatype system for classes derived from Resource::Object or
+ * Resource::Base::interfaceCast() otherwise.
+ *
+ * T needs to be declared as an resource interface by
+ * ORCHID_DECLARE_INTERFACE(T, name).
+ */
+
 }
 
 static QMutex interfaceRegMutex;
@@ -320,6 +331,15 @@ Orchid::Resource::Handle ContainerResource::child(const QString& name) {
 	if(handle.isEmpty())
 		return Resource::Handle();
 	return handle;
+}
+
+/**
+ * \internal
+ */
+void *ContainerResource::interfaceCast(const char *name) {
+	ORCHID_PROVIDE_CAST(name, Resource::IDirectory*)
+	ORCHID_PROVIDE_CAST(name, Resource::IContainer*)
+	return 0;
 }
 
 }

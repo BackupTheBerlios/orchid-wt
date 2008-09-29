@@ -21,7 +21,7 @@
 #ifndef _ORCHID_MODELRESOURCE_H_
 #define _ORCHID_MODELRESOURCE_H_
 
-#include <stem/resource.h>
+#include <stem/resourceobject.h>
 
 class QAbstractItemModel;
 class QModelIndex;
@@ -30,11 +30,12 @@ namespace Orchid {
 
 class ModelResourcePrivate;
 class ModelResource :
-	public Resource::Base,
-	public Resource::IDirectory,
+	public Resource::Object,
 	public Resource::IConfigurable
 {
 	ORCHID_RESOURCE("Model")
+	Q_OBJECT
+	Q_INTERFACES(Orchid::Resource::IConfigurable)
 public:
 	ModelResource(QAbstractItemModel* model = 0);
 	~ModelResource();
@@ -53,6 +54,7 @@ public:
 	virtual bool setOption(const QString&, const QVariant&);
 protected:
 	ModelResource(ModelResourcePrivate* d, QAbstractItemModel* model = 0);
+	ModelResourcePrivate *d_ptr;
 private:
 	Q_DECLARE_PRIVATE(ModelResource)
 };

@@ -40,11 +40,15 @@ namespace Resource {
 class Keep;
 class KeepPrivate;
 
+class Base;
+inline void *orchid_interface_cast(Base *res, const char *name);
+
 class BasePrivate;
 class ORCHID_STEM_EXPORT Base {
 	ORCHID_RESOURCE("Resource")
 	Q_DECLARE_PRIVATE(Base)
 	friend class KeepPrivate;
+	friend void *orchid_interface_cast(Base *res, const char *name);
 public:
 	Base();
 	virtual ~Base();
@@ -53,6 +57,7 @@ public:
 protected:
 	Keep *keep();
 	Base(BasePrivate *d);
+	virtual void *interfaceCast(const char *name);
 protected:
 	BasePrivate *d_ptr;
 };

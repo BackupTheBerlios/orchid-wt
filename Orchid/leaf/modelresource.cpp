@@ -21,6 +21,8 @@
 #include "modelresource.h"
 #include "modelresource_p.h"
 
+#include "modelresource.moc"
+
 #include <QtCore/QAbstractItemModel>
 #include <stem/request.h>
 #include <QtCore/QTextStream>
@@ -35,6 +37,8 @@ public:
 	QStringList childs() const;
 	Orchid::Resource::Handle child(const QString&);
 	void query(Orchid::Request*);
+protected:
+	void *interfaceCast(const char *name);
 private:
 	ModelResource* root;
 	QModelIndex index;
@@ -62,22 +66,26 @@ void ModelItemResource::query(Orchid::Request* request) {
 	root->query(request, index);
 }
 
-	
-ModelResource::ModelResource(QAbstractItemModel* model)
-	: Base(new ModelResourcePrivate(this))
-{
+void *ModelItemResource::interfaceCast(const char *name) {
+	ORCHID_PROVIDE_CAST(name, Resource::IDirectory*)
+	ORCHID_PROVIDE_CAST(name, Resource::IQueryable*)
+	return 0;
+}
+
+ModelResource::ModelResource(QAbstractItemModel* model) {
+	d_ptr = new ModelResourcePrivate(this);
 	Q_D(ModelResource);
 	d->model = model;
 }
 
-ModelResource::ModelResource(ModelResourcePrivate* dptr, QAbstractItemModel* model)
-	: Base(dptr)
-{
+ModelResource::ModelResource(ModelResourcePrivate* dptr, QAbstractItemModel* model) {
+	d_ptr = dptr;
 	Q_D(ModelResource);
 	d->model = model;
 }
 
 ModelResource::~ModelResource() {
+	delete d_ptr;
 }
 
 QAbstractItemModel* ModelResource::model() const {

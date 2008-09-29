@@ -21,16 +21,18 @@
 #ifndef _ORCHID_GALLERY_H_
 #define _ORCHID_GALLERY_H_
 
-#include <stem/resource.h>
+#include <stem/resourceobject.h>
 
 class GalleryPrivate;
 class Gallery :
-	public Orchid::Resource::Base,
+	public Orchid::Resource::Object,
 	public Orchid::Resource::IQueryable,
-	public Orchid::Resource::IDirectory,
 	public Orchid::Resource::IConfigurable
 {
 	ORCHID_RESOURCE("Gallery")
+	Q_OBJECT
+	Q_INTERFACES(Orchid::Resource::IQueryable
+		Orchid::Resource::IConfigurable)
 public:
 	Gallery();
 	~Gallery();

@@ -21,7 +21,7 @@
 #ifndef _ORCHID_DOCSTREAMSSAMPLE_H_
 #define _ORCHID_DOCSTREAMSSAMPLE_H_
 
-#include <stem/resource.h>
+#include <stem/resourceobject.h>
 #include <flower/documenthead.h>
 
 namespace Orchid {
@@ -29,8 +29,10 @@ class Fragment;
 class Style;
 }
 
-class DocStreamsSample : public Orchid::Resource::Base, public Orchid::Resource::IQueryable {
+class DocStreamsSample : public Orchid::Resource::Object, public Orchid::Resource::IQueryable {
 	ORCHID_RESOURCE("Document-Streams-Sample")
+	Q_OBJECT
+	Q_INTERFACES(Orchid::Resource::IQueryable)
 public:
 	DocStreamsSample();
 	~DocStreamsSample();

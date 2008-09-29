@@ -2,18 +2,18 @@
 #define _ORCHID_SCRIPTEDRESOURCE_H_
 
 #include <QObject>
-#include <stem/resource.h>
+#include <stem/resourceobject.h>
 
 namespace Orchid {
 
 class ScriptedResourcePrivate;
 class ScriptedResource :
-	public QObject,
-	public Resource::Base,
-	public Resource::IQueryable,
-	public Resource::IDirectory
+	public Resource::Object,
+	public Resource::IQueryable
 {
+	ORCHID_RESOURCE_OBJECT("Scripted-Resource")
 	Q_OBJECT
+	Q_INTERFACES(Orchid::Resource::IQueryable)
 public:
 	ScriptedResource(const QString& script, const QString& type);
 	~ScriptedResource();

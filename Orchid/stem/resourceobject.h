@@ -5,8 +5,7 @@
 #include "resource.h"
 
 #define ORCHID_RESOURCE_OBJECT(NAME) \
-	ORCHID_RESOURCE(NAME) \
-	Q_OBJECT
+	ORCHID_RESOURCE(NAME)
 
 namespace Orchid {
 
@@ -16,11 +15,14 @@ class ORCHID_STEM_EXPORT Object : public QObject,
 	public Base,
 	public IDirectory
 {
-	ORCHID_RESOURCE_OBJECT("Object");
+	ORCHID_RESOURCE_OBJECT("Object")
+	Q_OBJECT
+	Q_INTERFACES(Orchid::Resource::IDirectory)
 public:
 	QStringList childs() const;
 	Handle child(const QString& name);
 protected:
+	void *interfaceCast(const char *name);
 	virtual void childResource(Handle &handle);
 };
 

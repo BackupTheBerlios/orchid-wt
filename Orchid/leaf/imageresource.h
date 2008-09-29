@@ -22,7 +22,7 @@
 #define _ORCHID_IMAGERESOURCE_H_
 
 #include <QtCore/QtGlobal>
-#include <stem/resource.h>
+#include <stem/resourceobject.h>
 
 class QString;
 class QImage;
@@ -31,11 +31,13 @@ namespace Orchid {
 
 class ImageResourcePrivate;
 class ImageResource :
-	public Resource::Base,
+	public Resource::Object,
 	public Resource::IQueryable,
 	public Resource::IConfigurable
 {
 	ORCHID_RESOURCE("Image")
+	Q_OBJECT
+	Q_INTERFACES(Orchid::Resource::IQueryable Orchid::Resource::IConfigurable)
 public:
 	ImageResource();
 	ImageResource(const QString& path);
@@ -52,6 +54,8 @@ public:
 	QVariant option(const QString&) const;
 	bool setOption(const QString&, const QVariant&);
 	virtual ImageResource *clone() const;
+protected:
+	ImageResourcePrivate *d_ptr;
 private:
 	Q_DECLARE_PRIVATE(ImageResource)
 };

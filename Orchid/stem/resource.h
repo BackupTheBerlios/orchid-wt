@@ -29,29 +29,10 @@
 
 #include "resourcebase.h"
 
-namespace Orchid {
-
-typedef int InterfaceId;
-int regInterface(const char *name);
-
-}
-
-template<class T>
-struct OrchidInterfaceIdDecl {
-	enum { Defined = 0 };
-};
+template<typename T>
+const char *orchid_interface_name() { return 0.0; }
 
 namespace Orchid {
-
-template<class T>
-inline InterfaceId interfaceId() {
-	return OrchidInterfaceIdDecl<T*>::id();
-}
-
-template<class T>
-inline InterfaceId interfacePtrId() {
-	return OrchidInterfaceIdDecl<T>::id();
-}
 
 class Request;
 
@@ -102,10 +83,13 @@ public:
 	virtual QVariant optionProperty(const QString& option, const QString& property) const = 0;
 };
 
+inline void *orchid_interface_cast(Base *res, const char *name) {
+	return res ? res->interfaceCast(name) : 0;
+}
+
 template <class T>
 inline T cast(Base* res) {
-	// TODO change this cast to using a cast helper in Resource::Base
-	return dynamic_cast<T>(res);
+	return reinterpret_cast<T>(orchid_interface_cast(res, orchid_interface_name<T>()));
 }
 
 }
@@ -122,29 +106,45 @@ public:
 	bool removeAll();
 	QStringList childs() const;
 	Orchid::Resource::Handle child(const QString& name);
+protected:
+	void *interfaceCast(const char *name);
 private:
 	Q_DECLARE_PRIVATE(ContainerResource)
 };
 
 }
 
-#define ORCHID_DECLARE_INTERFACE(type) \
-template <> \
-struct OrchidInterfaceIdDecl<type*> { \
-	enum { Defined = 1 }; \
-	static ::Orchid::InterfaceId id() { \
-		static QAtomicInt id(0); \
-		if(!id) \
-			id = ::Orchid::regInterface(#type); \
-		return id; \
-	} \
-};
+#define ORCHID_DECLARE_INTERFACE(TYPE, NAME) \
+template <> inline const char *orchid_interface_name<TYPE*>() { return NAME; }
 
-ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IDirectory);
-ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IContainer);
-ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IRedirecting);
-ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IQueryable);
-ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IConfigurable);
-ORCHID_DECLARE_INTERFACE(::Orchid::Resource::IAdvancedConfigurable);
+#define ORCHID_PROVIDE_CAST(STR, TYPE) \
+	if(strcmp(STR, orchid_interface_name<TYPE>()) == 0) \
+		return static_cast<TYPE>(this);
+
+
+ORCHID_DECLARE_INTERFACE( Orchid::Resource::IDirectory,
+	"org.orchid-wt.Orchid.ResourceInterfaces/Directory")
+Q_DECLARE_INTERFACE(Orchid::Resource::IDirectory,
+	"org.orchid-wt.Orchid.ResourceInterfaces/Directory")
+ORCHID_DECLARE_INTERFACE(Orchid::Resource::IContainer,
+	"org.orchid-wt.Orchid.ResourceInterfaces/Container")
+Q_DECLARE_INTERFACE(Orchid::Resource::IContainer,
+	"org.orchid-wt.Orchid.ResourceInterfaces/Container")
+ORCHID_DECLARE_INTERFACE(Orchid::Resource::IRedirecting,
+	"org.orchid-wt.Orchid.ResourceInterfaces/Redirecting")
+Q_DECLARE_INTERFACE(Orchid::Resource::IRedirecting,
+	"org.orchid-wt.Orchid.ResourceInterfaces/Redirecting")
+ORCHID_DECLARE_INTERFACE(Orchid::Resource::IQueryable,
+	"org.orchid-wt.Orchid.ResourceInterfaces/Queryable")
+Q_DECLARE_INTERFACE(Orchid::Resource::IQueryable,
+	"org.orchid-wt.Orchid.ResourceInterfaces/Queryable")
+ORCHID_DECLARE_INTERFACE(Orchid::Resource::IConfigurable,
+	"org.orchid-wt.Orchid.ResourceInterfaces/Configurable")
+Q_DECLARE_INTERFACE(Orchid::Resource::IConfigurable,
+	"org.orchid-wt.Orchid.ResourceInterfaces/Configurable")
+ORCHID_DECLARE_INTERFACE(Orchid::Resource::IAdvancedConfigurable,
+	"org.orchid-wt.Orchid.ResourceInterfaces/AdvancedConfigurable");
+Q_DECLARE_INTERFACE(Orchid::Resource::IAdvancedConfigurable,
+	"org.orchid-wt.Orchid.ResourceInterfaces/AdvancedConfigurable")
 
 #endif

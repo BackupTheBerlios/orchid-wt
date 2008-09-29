@@ -85,6 +85,17 @@ Keep *Base::keep() {
 	return &d->keep;
 }
 
+/**
+ * Returns the interface \a name of the resource or 0 if the resource
+ * has no interface \a name. Reimplement if you add new interfaces.
+ * Classes derived from Resource::Object will use Qts mets object system.
+ *
+ * \sa Resource::Object
+ */
+void *Base::interfaceCast(const char *name) {
+	return 0;
+}
+
 }
 
 }

@@ -21,6 +21,8 @@ public:
 	Resource::Handle child(const QString& name);
 public:
 	void setObject(const QScriptValue& object);
+protected:
+	void *interfaceCast(const char *name);
 private:
 	Resource::Keep m_keep;
 	QScriptValue m_object;
@@ -98,6 +100,12 @@ Resource::Handle ScriptResource::child(const QString& name) {
 
 void ScriptResource::setObject(const QScriptValue &object) {
 	m_object = object;
+}
+
+void *ScriptResource::interfaceCast(const char *name) {
+	ORCHID_PROVIDE_CAST(name, Resource::IQueryable*)
+	ORCHID_PROVIDE_CAST(name, Resource::IDirectory*)
+	return 0;
 }
 
 

@@ -20,6 +20,8 @@
 
 #include "docstreamssample.h"
 
+#include "docstreamssample.moc"
+
 #include <stem/request.h>
 
 #include <flower/fragment.h>

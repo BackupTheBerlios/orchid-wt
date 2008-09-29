@@ -20,6 +20,8 @@
 
 #include "i18ndocsample.h"
 
+#include "i18ndocsample.moc"
+
 #include <stem/request.h>
 
 #include <flower/fragment.h>

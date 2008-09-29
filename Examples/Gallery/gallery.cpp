@@ -20,6 +20,8 @@
 
 #include "gallery.h"
 
+#include "gallery.moc"
+
 #include <stem/location.h>
 #include <stem/request.h>
 #include <stem/resourcefactory.h>
@@ -53,8 +55,10 @@ GalleryPrivate::GalleryPrivate(Gallery* gal) {
 Gallery::Gallery() {
 	d_ptr = new GalleryPrivate(this);
 	Q_D(Gallery);
-	Q_ASSERT(d->thumbs = ResourceFactory::create("ImageCollectionScaling"));
-	Q_ASSERT(d->collection = ResourceFactory::create("ImageCollection"));
+	d->thumbs = ResourceFactory::create("ImageCollectionScaling");
+	Q_ASSERT(d->thumbs);
+	d->collection = ResourceFactory::create("ImageCollection");
+	Q_ASSERT(d->collection);
 	
 	IContainer *collection = cast<IContainer*>(d->collection);
 	Q_ASSERT(collection);
