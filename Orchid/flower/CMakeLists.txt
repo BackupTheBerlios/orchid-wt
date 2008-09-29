@@ -27,3 +27,8 @@ add_library(orchid-flower SHARED ${orchid_flower_SRC})
 target_link_libraries(orchid-flower
 	${QT_LIBRARIES}
 )
+
+install(TARGETS orchid-flower
+	RUNTIME DESTINATION ${EXE_INSTALL_DIR}
+	LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+	ARCHIVE DESTINATION ${LIB_INSTALL_DIR})

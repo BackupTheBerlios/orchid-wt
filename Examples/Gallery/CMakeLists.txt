@@ -20,3 +20,5 @@ target_link_libraries(galleryplugin
 	orchid-flower
 	orchid-stem
 )
+
+install(TARGETS galleryplugin DESTINATION ${PLUGIN_INSTALL_DIR})

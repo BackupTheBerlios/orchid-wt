@@ -47,3 +47,10 @@ target_link_libraries(modelplugin
 	${QT_LIBRARIES}
 	orchid-leaf
 )
+
+install(TARGETS orchid-leaf
+	RUNTIME DESTINATION ${EXE_INSTALL_DIR}
+	LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+	ARCHIVE DESTINATION ${LIB_INSTALL_DIR})
+install(TARGETS imageplugin modelplugin DESTINATION ${PLUGIN_INSTALL_DIR})
+

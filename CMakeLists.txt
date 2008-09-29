@@ -18,6 +18,10 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/Orchid
 )
 
+set(LIB_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib)
+set(PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/Orchid/plugins)
+set(EXE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
+
 add_subdirectory(Orchid)
 add_subdirectory(Wheat)
 add_subdirectory(Examples)

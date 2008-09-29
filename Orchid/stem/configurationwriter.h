@@ -1,6 +1,8 @@
 #ifndef _ORCHID_CONFIGURATIONWRITER_H_
 #define _ORCHID_CONFIGURATIONWRITER_H_
 
+#include "globals.h"
+
 #include <QtCore/QtGlobal>
 
 class QIODevice;
@@ -13,7 +15,7 @@ class Handle;
 }
 
 class ConfigurationWriterPrivate;
-class ConfigurationWriter {
+class ORCHID_STEM_EXPORT ConfigurationWriter {
 	Q_DECLARE_PRIVATE(ConfigurationWriter)
 public:
 	ConfigurationWriter(const QString &fileName);

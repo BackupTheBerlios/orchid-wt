@@ -32,3 +32,4 @@ target_link_libraries(orchid-browser
 	orchid-leaf
 )
  
+install(TARGETS orchid-browser DESTINATION ${EXE_INSTALL_DIR})

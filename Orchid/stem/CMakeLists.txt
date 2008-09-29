@@ -27,3 +27,8 @@ add_library(orchid-stem SHARED ${orchid_stem_SRC})
 target_link_libraries(orchid-stem
 	${QT_LIBRARIES}
 )
+
+install(TARGETS orchid-stem
+	RUNTIME DESTINATION ${EXE_INSTALL_DIR}
+	LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+	ARCHIVE DESTINATION ${LIB_INSTALL_DIR})

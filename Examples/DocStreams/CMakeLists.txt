@@ -17,3 +17,5 @@ target_link_libraries(docstreamsplugin
 	orchid-flower
 	orchid-stem
 )
+
+install(TARGETS docstreamsplugin DESTINATION ${PLUGIN_INSTALL_DIR})

@@ -1,6 +1,8 @@
 #ifndef _ORCHID_CONFIGURATIONLOADER_H_
 #define _ORCHID_CONFIGURATIONLOADER_H_
 
+#include "globals.h"
+
 #include <QtCore/QtGlobal>
 
 class QIODevice;
@@ -13,7 +15,7 @@ class Handle;
 }
 
 class ConfigurationLoaderPrivate;
-class ConfigurationLoader {
+class ORCHID_STEM_EXPORT ConfigurationLoader {
 public:
 	ConfigurationLoader(const QString &fileName);
 	ConfigurationLoader(QIODevice *device);

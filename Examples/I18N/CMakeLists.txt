@@ -28,3 +28,5 @@ target_link_libraries(i18ndocplugin
 	orchid-flower
 	orchid-stem
 )
+
+install(TARGETS i18ndocplugin DESTINATION ${PLUGIN_INSTALL_DIR})

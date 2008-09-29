@@ -19,3 +19,8 @@ target_link_libraries(orchid-root
 	${QT_QTNETWORK_LIBRARY}
 	orchid-stem
 )
+
+install(TARGETS orchid-root
+	RUNTIME DESTINATION ${EXE_INSTALL_DIR}
+	LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+	ARCHIVE DESTINATION ${LIB_INSTALL_DIR})
