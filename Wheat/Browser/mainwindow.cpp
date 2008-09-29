@@ -33,9 +33,13 @@
 #include <QtGui/QMessageBox>
 
 #include <stem/resourcefactory.h>
+#include <stem/configurationloader.h>
+#include <stem/configurationwriter.h>
 
 #include "newresourcedialog.h"
 #include "resourceconfig.h"
+
+#include <QFileDialog>
 
 using namespace Orchid;
 using namespace Orchid::Resource;
@@ -191,15 +195,42 @@ void MainWindow::fileNew() {
 }
 
 void MainWindow::fileOpen() {
-	qDebug() << "fileOpen";
+	QString fileName = QFileDialog::getOpenFileName(this);
+	if (!fileName.isEmpty()) {
+		ConfigurationLoader loader(fileName);
+		// TODO change this to load into a new root
+		Handle newRoot = loader.load();
+		if(!newRoot.isNull()) {
+			m_currentFile = fileName;
+			m_root = newRoot;
+			m_service.setRoot(m_root);
+			delete m_model;
+			m_model = new ResourceModel(m_root, this);
+			treeView->setModel(m_model);
+		} else {
+			qDebug() << "failed loading";
+		}
+		m_model->update();
+	}
 }
 
 void MainWindow::fileSave() {
-	qDebug() << "fileSave";
+	if(m_currentFile.isEmpty()) {
+		fileSaveAs();
+	} else {
+		ConfigurationWriter writer(m_currentFile);
+		writer.store(m_root);
+	}
 }
 
 void MainWindow::fileSaveAs() {
-	qDebug() << "fileSaveAs";
+    QString fileName = QFileDialog::getSaveFileName(this);
+    if(fileName.isEmpty()) return;
+
+	ConfigurationWriter writer(fileName);
+	if(writer.store(m_root)) {
+		m_currentFile = fileName;
+	}
 }
 
 void MainWindow::about() {

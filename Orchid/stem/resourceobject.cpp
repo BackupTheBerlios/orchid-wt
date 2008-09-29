@@ -11,7 +11,7 @@ namespace Resource {
 /**
  * \class Object
  *
- * \brief Resource::Object provides the base for standard object.
+ * \brief Resource::Object provides the base for standard resources.
  */
 
 /**
@@ -43,6 +43,9 @@ Handle Object::child(const QString &name) {
 	return handle;
 }
 
+/**
+ * \internal
+ */
 void *Object::interfaceCast(const char *name) {
 	// NOTE: qt_metacast is not part of the documented API
 	// but as it is accessed inline in the Q_DECLARE_INTERFACE macro

@@ -58,6 +58,8 @@ private:
 	Orchid::HttpService m_service;
 	QHttp reader;
 	QBuffer result;
+
+	QString m_currentFile;
 };
 
 #endif

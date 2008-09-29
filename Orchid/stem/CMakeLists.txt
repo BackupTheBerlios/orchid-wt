@@ -6,6 +6,8 @@ include_directories(
 add_definitions(-DORCHID_BUILD_STEM)
 
 set(orchid_stem_SRC
+	configurationloader.cpp
+	configurationwriter.cpp
 	extensionmanager.cpp
 	extensionplugin.cpp
 	location.cpp
