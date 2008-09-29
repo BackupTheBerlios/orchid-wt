@@ -47,50 +47,13 @@ using namespace Orchid::Resource;
 MainWindow::MainWindow() : m_service(8000) {
 	setupUi(this);
 	
-	ContainerResource *res = static_cast<ContainerResource*>(ResourceFactory::create("Container"));
+	loadPlugins();
 	
-#ifdef Q_OS_WIN
-	ExtensionManager::loadExtension("Orchid/leaf/libimageplugin.dll");
-	ExtensionManager::loadExtension("Orchid/leaf/libmodelplugin.dll");
-	ExtensionManager::loadExtension("Examples/Gallery/libgalleryplugin.dll");
-	ExtensionManager::loadExtension("Examples/DocStreams/libdocstreamsplugin.dll");
-	ExtensionManager::loadExtension("Examples/I18N/libi18ndocplugin.dll");
-#else
-	ExtensionManager::loadExtension("Orchid/leaf/libimageplugin.so");
-	ExtensionManager::loadExtension("Orchid/leaf/libmodelplugin.so");
-	ExtensionManager::loadExtension("Examples/Gallery/libgalleryplugin.so");
-	ExtensionManager::loadExtension("Examples/DocStreams/libdocstreamsplugin.so");
-	ExtensionManager::loadExtension("Examples/I18N/libi18ndocplugin.so");
-#endif
+	ContainerResource *res = static_cast<ContainerResource*>(ResourceFactory::create("Container"));
 	
 	m_root.init(res);
 	m_service.setRoot(m_root);
 	m_model = new ResourceModel(m_root, this);
-	
-	res->addResource("sample.html", ResourceFactory::create("Document-Streams-Sample"));
-	res->addResource("i18n.html", ResourceFactory::create("I18N-Document-Sample"));
-
-	Base *xmlres = ResourceFactory::create("XmlModel");
-	IConfigurable *config = cast<IConfigurable*>(xmlres);
-	config->setOption("model", qVariantFromValue<QObject*>(m_model));
-	res->addResource("resource.model", xmlres);
-	
-	res->addResource("testcontainer", ResourceFactory::create("Container"));
-	
-	Base *demo = ResourceFactory::create("Hardcoded-Gallery-Demo");
-	res->addResource("demo", demo);
-
-	Base *imgres = ResourceFactory::create("Image");
-	config = cast<IConfigurable*>(imgres);
-	config->setOption("path", ":/flower2.jpg");
-	res->addResource("image.jpg", imgres);
-
-	QFile scriptFile(":/test.js");
-	scriptFile.open(QIODevice::ReadOnly);
-	QString program(scriptFile.readAll());
-	scriptFile.close();
-
-	res->addResource("scripted", new Orchid::ScriptedResource(program, "MyResource"));
 
 	treeView->setModel(m_model);
 	connect(treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activateResource(const QModelIndex&)));
@@ -99,6 +62,42 @@ MainWindow::MainWindow() : m_service(8000) {
 	reader.setHost("localhost", 8000);
 
 	setupActions();
+	
+	setupExamples();
+}
+
+void MainWindow::loadPlugins() {
+	QDir pluginsDir = QDir(qApp->applicationDirPath());
+
+	pluginsDir.cdUp();
+
+#ifdef ORCHID_LOAD_LOCAL_PLUGINS
+	// This code can be used to load the uninstalled plugins for testing
+	QDir local(pluginsDir);
+	local.cdUp();
+	QString localPath = local.path();
+	qDebug() << localPath;
+#ifdef Q_OS_WIN
+	ExtensionManager::loadExtension(localPath+"/Orchid/leaf/libimageplugin.dll");
+	ExtensionManager::loadExtension(localPath+"/Orchid/leaf/libmodelplugin.dll");
+	ExtensionManager::loadExtension(localPath+"/Examples/Gallery/libgalleryplugin.dll");
+	ExtensionManager::loadExtension(localPath+"/Examples/DocStreams/libdocstreamsplugin.dll");
+	ExtensionManager::loadExtension(localPath+"/Examples/I18N/libi18ndocplugin.dll");
+#else
+	ExtensionManager::loadExtension(localPath+"/Orchid/leaf/libimageplugin.so");
+	ExtensionManager::loadExtension(localPath+"/Orchid/leaf/libmodelplugin.so");
+	ExtensionManager::loadExtension(localPath+"/Examples/Gallery/libgalleryplugin.so");
+	ExtensionManager::loadExtension(localPath+"/Examples/DocStreams/libdocstreamsplugin.so");
+	ExtensionManager::loadExtension(localPath+"/Examples/I18N/libi18ndocplugin.so");
+#endif
+#endif
+
+    pluginsDir.cd("share/Orchid/plugins");
+
+    foreach(QString fileName, pluginsDir.entryList(QDir::Files)) {
+		QString path = pluginsDir.absoluteFilePath(fileName);
+		ExtensionManager::loadExtension(path);
+    }
 }
 
 void MainWindow::setupActions() {
@@ -112,6 +111,49 @@ void MainWindow::setupActions() {
 	connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 	connect(addResourceButton, SIGNAL(clicked(bool)), this, SLOT(addResource()));
 	connect(configResourceButton, SIGNAL(clicked(bool)), this, SLOT(configResource()));
+}
+
+void MainWindow::setupExamples() {
+	QStringList availableResources(ResourceFactory::keys());
+	IContainer *container = Resource::cast<IContainer*>(m_root.resource());
+	
+	if(availableResources.contains("Document-Streams-Sample")) {
+		container->addResource("sample.html", ResourceFactory::create("Document-Streams-Sample"));
+	}
+	
+	if(availableResources.contains("I18N-Document-Sample")) {
+		container->addResource("i18n.html", ResourceFactory::create("I18N-Document-Sample"));
+	}
+
+	if(availableResources.contains("XmlModel")) {
+		Base *xmlres = ResourceFactory::create("XmlModel");
+		IConfigurable *config = cast<IConfigurable*>(xmlres);
+		config->setOption("model", qVariantFromValue<QObject*>(m_model));
+		container->addResource("resource.model", xmlres);
+	}
+	
+	if(availableResources.contains("Hardcoded-Gallery-Demo")) {
+		Base *demo = ResourceFactory::create("Hardcoded-Gallery-Demo");
+		container->addResource("demo", demo);
+	}
+
+	if(availableResources.contains("Image")) {
+		Base *imgres = ResourceFactory::create("Image");
+		IConfigurable *config = cast<IConfigurable*>(imgres);
+		config->setOption("path", ":/flower2.jpg");
+		container->addResource("image.jpg", imgres);
+	}
+
+// 	if(availableResources.contains("Scripted-Resource")) {
+		QFile scriptFile(":/test.js");
+		scriptFile.open(QIODevice::ReadOnly);
+		QString program(scriptFile.readAll());
+		scriptFile.close();
+
+		container->addResource("scripted", new Orchid::ScriptedResource(program, "MyResource"));
+// 	}
+
+	m_model->update();
 }
 
 void MainWindow::activateResource(const QModelIndex& index) {

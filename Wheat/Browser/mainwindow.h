@@ -51,7 +51,9 @@ private slots:
 	void about();
 	void aboutOrchid();
 private:
+	void loadPlugins();
 	void setupActions();
+	void setupExamples();
 private:
 	Orchid::ResourceModel* m_model;
 	Orchid::Resource::Handle m_root;
