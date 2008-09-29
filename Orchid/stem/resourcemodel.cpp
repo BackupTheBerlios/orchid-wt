@@ -48,6 +48,7 @@ public:
 			hasInfos = false;
 		}
 		Node(Node* parent, Resource::Location location) {
+			row = 0;
 			this->parent = parent;
 			this->location = location;
 			populated = false;
@@ -89,7 +90,7 @@ ResourceModelPrivate::ResourceModelPrivate(ResourceModel* model, Resource::Handl
 }
 
 ResourceModelPrivate::Node* ResourceModelPrivate::node(const QModelIndex& index) const {
-	if(!index.isValid()) return root;
+	if(!index.isValid()) return 0;
 	return static_cast<Node*>(index.internalPointer());
 }
 
@@ -121,10 +122,17 @@ void ResourceModelPrivate::loadInfos(Node* node) const {
 	Resource::Handle handle = node->location.resolve();
 	Resource::Base *res = handle.resource();
 	
-	node->name = handle.name();
-	node->ownership = handle.ownership();
-	node->info = res->typeName();
-	node->hasInfos = true;
+	if(node == root) {
+		node->name = "Root";
+		node->ownership = Resource::OwnedExternal;
+		node->info = "";
+		node->hasInfos = true;
+	} else {
+		node->name = handle.name();
+		node->ownership = handle.ownership();
+		node->info = res->typeName();
+		node->hasInfos = true;
+	}
 }
 
 /**
@@ -148,11 +156,12 @@ ResourceModel::~ResourceModel() {
 QModelIndex ResourceModel::index(int row, int column, const QModelIndex &parent) const {
 	Q_D(const ResourceModel);
 
-	if(parent.isValid() && parent.column() != 0) return QModelIndex();
-	
-	ResourceModelPrivate::Node* p = parent.isValid() ? d->node(parent) : d->root;
+	if(!parent.isValid()) return createIndex(row, column, d->root);
+	if(parent.column() != 0) return QModelIndex();
 
-	if(!p) return QModelIndex();
+	ResourceModelPrivate::Node* p = d->node(parent);
+
+	Q_ASSERT(p);
 
 	if(!p->populated)
 		d->populate(p);
@@ -168,9 +177,8 @@ QModelIndex ResourceModel::parent(const QModelIndex &index) const {
 	
 	ResourceModelPrivate::Node* node = d->node(index);
 	ResourceModelPrivate::Node* parent = node ? node->parent : 0;
-	ResourceModelPrivate::Node* pp = parent ? parent->parent : 0;
 	
-	if(!pp) return QModelIndex();
+	if(!parent) return QModelIndex();
 	
 	return createIndex(parent->row, 0, parent);
 }
@@ -181,11 +189,12 @@ QModelIndex ResourceModel::parent(const QModelIndex &index) const {
 int ResourceModel::rowCount(const QModelIndex &parent) const {
 	Q_D(const ResourceModel);
 
-	if(parent.isValid() && parent.column() != 0) return 0;
-
-	ResourceModelPrivate::Node* node = parent.isValid() ? d->node(parent) : d->root;
+	if(!parent.isValid()) return 1;
 	
-	if(!node) return 0;
+	if(parent.column() != 0) return 0;
+
+	ResourceModelPrivate::Node* node = d->node(parent);
+	Q_ASSERT(node);
 	
 	if(!node->populated)
 		d->populate(node);
@@ -291,7 +300,7 @@ Resource::Handle ResourceModel::resource(const QModelIndex &index) const {
  */
 void ResourceModel::update(const QModelIndex &index) {
 	Q_D(const ResourceModel);
-
+	
 	ResourceModelPrivate::Node *node = d->node(index);
 	if(!node) return;
 		// ok reached a point where src and dest differ
@@ -367,7 +376,7 @@ void ResourceModel::update(const QModelIndex &index) {
  */
 void ResourceModel::update() {
 	Q_D(ResourceModel);
-	update(QModelIndex());
+	update(createIndex(0, 0, d->root));
 }
 
 }
