@@ -121,6 +121,8 @@ void ResourceModelPrivate::populate(Node* node) const {
 void ResourceModelPrivate::loadInfos(Node* node) const {
 	Resource::Handle handle = node->location.resolve();
 	Resource::Base *res = handle.resource();
+
+	Q_ASSERT(res);
 	
 	if(node == root) {
 		node->name = "Root";

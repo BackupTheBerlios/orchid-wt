@@ -41,6 +41,7 @@ public:
 public slots:
 	void activateResource(const QModelIndex& index);
 	void addResource();
+	void removeResource();
 	void configResource();
 private slots:
 	void requestFinished(int id, bool error);
@@ -49,7 +50,7 @@ private slots:
 	void fileSave();
 	void fileSaveAs();
 	void about();
-	void aboutOrchid();
+// 	void aboutOrchid();
 private:
 	void loadPlugins();
 	void setupActions();

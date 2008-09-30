@@ -57,6 +57,7 @@ MainWindow::MainWindow() : m_service(8000) {
 
 	treeView->setModel(m_model);
 	connect(treeView, SIGNAL(activated(const QModelIndex&)), this, SLOT(activateResource(const QModelIndex&)));
+	connect(treeView, SIGNAL(clicked(const QModelIndex&)), this, SLOT(activateResource(const QModelIndex&)));
 
 	connect(&reader, SIGNAL(requestFinished(int,bool)), this, SLOT(requestFinished(int,bool)));
 	reader.setHost("localhost", 8000);
@@ -107,9 +108,10 @@ void MainWindow::setupActions() {
 	connect(actionSaveAs, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
 	connect(actionQuit, SIGNAL(triggered()), this, SLOT(close()));
 	connect(actionAbout, SIGNAL(triggered()), this, SLOT(about()));
-	connect(actionAboutOrchid, SIGNAL(triggered()), this, SLOT(aboutOrchid()));
+// 	connect(actionAboutOrchid, SIGNAL(triggered()), this, SLOT(aboutOrchid()));
 	connect(actionAboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 	connect(addResourceButton, SIGNAL(clicked(bool)), this, SLOT(addResource()));
+	connect(removeResourceButton, SIGNAL(clicked(bool)), this, SLOT(removeResource()));
 	connect(configResourceButton, SIGNAL(clicked(bool)), this, SLOT(configResource()));
 }
 
@@ -174,6 +176,13 @@ void MainWindow::activateResource(const QModelIndex& index) {
 		addResourceButton->setEnabled(false);
 	}
 	
+	Handle parent(m_model->resource(m_model->parent(index)));
+	if(cast<IContainer*>(parent.resource()) && handle.ownership() == OwnedExternal) {
+		removeResourceButton->setEnabled(true);
+	} else {
+		removeResourceButton->setEnabled(false);
+	}
+	
 	QString path = m_model->path(index);
 	reader.get(path, &result);
 }
@@ -197,6 +206,18 @@ void MainWindow::addResource() {
 			delete resource;
 		}
 	}
+}
+
+void MainWindow::removeResource() {
+	QModelIndex index = treeView->currentIndex();
+	Ownership ownership = m_model->resource(index).ownership();
+	Handle parent(m_model->resource(m_model->parent(index)));
+	
+	IContainer *container = cast<IContainer*>(parent.resource());
+	if(container && ownership == OwnedExternal) {
+		container->remove(m_model->name(index));
+	}
+	m_model->update();
 }
 
 void MainWindow::configResource() {
@@ -296,6 +317,6 @@ void MainWindow::about() {
 		"http://www.gnu.org/licenses/</a>.</p>");
 }
 
-void MainWindow::aboutOrchid() {
-	QMessageBox::about(this, "", "");
-}
+// void MainWindow::aboutOrchid() {
+// 	QMessageBox::about(this, "", "");
+// }

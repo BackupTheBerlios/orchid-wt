@@ -294,7 +294,10 @@ bool ContainerResource::addResource(const QString& name, Resource::Base* res, Re
  * \sa IContainer
  */
 bool ContainerResource::remove(const QString &name) {
-	return keep()->reset(name);
+	Q_D(ContainerResource);
+	if(!keep()->reset(name)) return false;
+	d->m_childs.removeOne(name);
+	return true;
 }
 
 /**

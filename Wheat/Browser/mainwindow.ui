@@ -35,6 +35,16 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="removeResourceButton" >
+          <property name="enabled" >
+           <bool>false</bool>
+          </property>
+          <property name="text" >
+           <string>Remove</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="configResourceButton" >
           <property name="enabled" >
            <bool>false</bool>
@@ -46,70 +56,43 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="layoutWidget" >
-       <layout class="QVBoxLayout" name="verticalLayout" >
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3" >
-          <item>
-           <widget class="QLabel" name="label" >
-            <property name="text" >
-             <string>Arguments:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="argumentEdit" />
-          </item>
-          <item>
-           <widget class="QPushButton" name="argumentApply" >
-            <property name="text" >
-             <string>Apply</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QTabWidget" name="tabWidget" >
-          <property name="currentIndex" >
-           <number>0</number>
-          </property>
-          <widget class="QWidget" name="tab" >
-           <attribute name="title" >
-            <string>Web View</string>
-           </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout" >
-            <item>
-             <widget class="QWebView" name="webView" >
-              <property name="url" >
-               <url>
-                <string>about:blank</string>
-               </url>
-              </property>
-             </widget>
-            </item>
-           </layout>
+      <widget class="QTabWidget" name="tabWidget" >
+       <property name="currentIndex" >
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tab" >
+        <attribute name="title" >
+         <string>Web View</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout" >
+         <item>
+          <widget class="QWebView" name="webView" >
+           <property name="url" >
+            <url>
+             <string>about:blank</string>
+            </url>
+           </property>
           </widget>
-          <widget class="QWidget" name="tab_2" >
-           <attribute name="title" >
-            <string>Source View</string>
-           </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_2" >
-            <item>
-             <widget class="QPlainTextEdit" name="sourceView" >
-              <property name="lineWrapMode" >
-               <enum>QPlainTextEdit::NoWrap</enum>
-              </property>
-              <property name="readOnly" >
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_2" >
+        <attribute name="title" >
+         <string>Source View</string>
+        </attribute>
+        <layout class="QHBoxLayout" name="horizontalLayout_2" >
+         <item>
+          <widget class="QPlainTextEdit" name="sourceView" >
+           <property name="lineWrapMode" >
+            <enum>QPlainTextEdit::NoWrap</enum>
+           </property>
+           <property name="readOnly" >
+            <bool>true</bool>
+           </property>
           </widget>
-         </widget>
-        </item>
-       </layout>
+         </item>
+        </layout>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -141,7 +124,6 @@
      <string>Help</string>
     </property>
     <addaction name="actionAbout" />
-    <addaction name="actionAboutOrchid" />
     <addaction name="actionAboutQt" />
    </widget>
    <addaction name="menuFile" />
