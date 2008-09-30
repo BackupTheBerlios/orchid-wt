@@ -25,17 +25,41 @@
 
 namespace Orchid {
 
+/**
+ * \class Service
+ * 
+ * \brief Service provides the base class for resource based services.
+ *
+ * \sa Resource::Object, HttpService
+ */
+
+/**
+ * Constructs a new service
+ */
 Service::Service() : d_ptr(new ServicePrivate(this)) {
 }
 
+/**
+ * \internal
+ */
 Service::Service(ServicePrivate* dd) : d_ptr(dd) {
 }
 
+/**
+ * Sets \a root of the resource-tree used by the service.
+ *
+ * \sa root()
+ */
 void Service::setRoot(const Resource::Handle& root) {
 	Q_D(Service);
 	d->root = root;
 }
 
+/**
+ * Resturns the root resource of the service.
+ *
+ * \sa setRoot()
+ */
 Resource::Handle Service::root() const {
 	Q_D(const Service);
 	return d->root;

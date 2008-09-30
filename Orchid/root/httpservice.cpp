@@ -39,6 +39,16 @@
 
 namespace Orchid {
 
+/**
+ * \class HttpService
+ *
+ * \brief HttpService provides an HTTP server for resources.
+ *
+ * \note This server is only thought to be used for testing
+ * purposes. It was not optimised for usage in real world
+ * scenarios.
+ */
+
 class HttpServiceRequest : public SimpleRequest {
 public:
 	HttpServiceRequest(const QHttpRequestHeader& header, const Resource::Location& location);
@@ -148,6 +158,10 @@ void HttpServiceProcess::read() {
 }
 
 
+/**
+ * Constructs a new service with a http server that listens for
+ * incoming connections on \a port.
+ */
 HttpService::HttpService(int port) : Service(new HttpServicePrivate(this)) {
 	Q_D(HttpService);
 	d->port = port;
@@ -157,11 +171,17 @@ HttpService::HttpService(int port) : Service(new HttpServicePrivate(this)) {
 	}
 }
 
+/**
+ * Returns the port the server is listening on.
+ */
 int HttpService::port() const {
 	Q_D(const HttpService);
 	return d->port;
 }
 
+/**
+ * \internal
+ */
 void HttpService::acceptConnection() {
 	Q_D(HttpService);
 	qDebug() << "acceptConnection";
