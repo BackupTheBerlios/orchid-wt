@@ -1,0 +1,102 @@
+<html>
+  <head>
+    <title></title>
+    <meta content="">
+    <style></style>
+  </head>
+  <body>
+    <h1>Orchid</h1>
+	<h2>Introduction</h2>
+	<p>The aim of the Orchid project is, to make web-services and web-sites developable with C++ and especially Qt. Unlike Wt Orchid concentrates on resources and generation of generating applications, that run on the browser (mainly written in but not limited to HTML, CSS and Javascript).</p>
+	<p>This is the first release provides the resource managment, the generation of documents (currently only XHTML 1.1), tools and some demonstrations. All parts except for the resource managment are incomplete and more for demonstrating the way the project will go. I conentrated on quality and not on as many features as possible.</p>
+	<h2>Installing</h2>
+	<p>You can build Orchid either with QMake or CMake. CMake was choosed as features are planned that can't be achieved that easily with QMake. CMake provides building and installing while with QMake you can only build as I had no time to finish this work.</p>
+	<h2>Whats there?</h2>
+	<h3>Libraries</h3>
+	<p>Orchid libraries and standard plugins have their source in the Orchid directory</p>
+	<h4>Orchid-stem</h4>
+	<p>Location: <a href="Orchid/stem">Orchid/stem</a></p>
+	<p>The stem is the core part of Orchid. It is responsible for managing the structure of resources. Resources are thought to either stay in memory if they are part of the configuration or get generated on request. If resources are not longer needed they will be released. This is thought to be a key for highly scalable applications.</p>
+	<h4>Orchid-flower</h4>
+	<p>Location: <a href="Orchid/flower">Orchid/flower</a></p>
+	<p>Flower is responsible for the generation of the user-visible documents. Its classes allow to easily write documents with C++. By using DocumentProcessor the documents can be converted to other formats. Currently only a small subset of the Html is supported.</p>
+	<p>Orchid-flower can be used independantly from other parts of Orchid. This means if you only look for a way for generating documents as reports from within an application Orchid is still for you.</p>
+	<h4>Orchid-root</h4>
+	<p>Location: <a href="Orchid/root">Orchid/root</a></p>
+	<p>Root integrates Orchid into its environment like applications. It currently provides a http server for testing resources in browsers</p>
+	
+	<h3>Applications</h3>
+	<h4>Orchid-Browser</h4>
+	<p>Location: <a href="Wheat/Browser">Wheat/Browser</a></p>
+	<p>The browser is a bowser and configuration tool for web-services. As there is no standalone webserver or fcgi-extension for Orchid this is .</p>
+	<h4>Webpage-Compiler</h4>
+	<p>Location: <a href="Wheat/WPC">Wheat/WPC</a></p>
+	<p>The wpc can be used to generate c++ code from fragment files.</p>
+	
+	<h3>Plugins</h3>
+	<p>The Leafs are the plugins that provide the actual power</p>
+	<h4>Image-Plugin</h4>
+	<p>Location: <a href="Orchid/leaf/imageplugin">Orchid/leaf/imageplugin</a>
+	(installs to <a href="share/Orchid/plugins">share/Orchid/plugins</a>)</p>
+	<p>The imageplugin provides the following resource-types:</p>
+	<dl>
+	<dh>Image</dh>
+	<dd>Provides a single image that can requested</dd>
+	<dh>ImageCollection</dh>
+	<dd>Provides a directory full of images. Images can be either specified in the url config or as child resources. Other possible child resources are modifications that provide a subdirectory with modifcated versions of the images.</dd>
+	<dh>ImageCollectionScaling</dh>
+	<dd>Provides a modification for image collections. It allows to access scaled versions of the images.</dd>
+	</dl>
+	<h4>Model-Plugin</h4>
+	<p>Location: <a href="Orchid/leaf/modelplugin">Orchid/leaf/modelplugin</a>
+	(installs to share/Orchid/plugins</a>)</p>
+	<p>The idea of the model plugin is to make Qt item models accessible over the net. A disadvantage is, that they need to be setup
+	programmatically, as their association to a model can't be saved.</p>
+	<p>The model plugin provides the following resource-types:</p>
+	<dl>
+	<dh>Model</dh>
+	<dd>A simple resource which provides per row a nested child resource.</dd>
+	<dh>XmlModel</dh>
+	<dd>A model resource that provides its information in a xml format</dd>
+	</dl>
+	<h4>Script-Plugin</h4>
+	<p>Location: <a href="Orchid/leaf/scriptplugin">Orchid/leaf/scriptplugin</a>
+	(installs to share/Orchid/plugins</a>)</p>	<p>
+	<p>
+	<dl>
+	<dh>Scripted-Resource</dh>
+	<dd></dd>
+	</dl>
+	
+	<h3>Examples</h3>
+	<p>All examples get installed into share/Orchid/plugins</p>
+	<h4>Document-Streams</h4>
+	<p>Location: <a href="Examples/DocStreams">Examples/DocStreams</a></p>
+	<dl>
+	<dh>Document-Streams-Sample</dh>
+	<dd>A sample resource for document streams.</dd>
+	</dl>
+	<h4>Gallery</h4>
+	<p>Location: <a href="Examples/Gallery">Examples/Gallery</a></p>
+	<dl>
+	<dh>Gallery</dh>
+	<dd>Gallery behaves similar to ImageCollections but provides also a html representation.</dd>
+	<dh>Hardcoded-Gallery-Demo</dh>
+	<dd>The gallery demo is gets initialized with some demo images.</dd>
+	</dl>
+	<h4>Internationalization</h4>
+	<p>Location: <a href="Examples/I18N">Examples/I18N</a></p>
+	<p>The internationalization example demonstrates how to translate with document streams.</p>
+	<dl>
+	<dh>I18N-Document-Sample</dh>
+	<dd>The i18n-demo resource</dd>
+	</dl>
+	
+	<h2>Thanks</h2>
+	Many thanks to:<br/>
+	Meli K&uuml;hnert (for the pictures used in the examples and for motivating me in the last weeks)<br/>
+	The guys at Akademy 2008 (for making me feel like a part of the whole KDE and Qt family)<br/>
+	My family<br/>
+	and last but not least all my friends
+  </body>
+</html>
