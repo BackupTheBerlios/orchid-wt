@@ -1,12 +1,10 @@
 #include "scriptedresource.h"
 
-#include "scriptedresource.moc"
 #include <stem/request.h>
 #include <stem/resourcekeep.h>
 
 #include <QtCore/QtDebug>
-// #include <QtCore/QExplicitlySharedDataPointer>
-#include <QtScript>
+#include <QtScript/QtScript>
 
 namespace Orchid {
 	
@@ -38,7 +36,8 @@ protected:
 private:
 	static QScriptValue write(QScriptContext *context, QScriptEngine *engine);
 private:
-	QScriptEngine engine;
+	QScriptEngine *engine;
+	QString path;
 	ScriptResource self;
 };
 
@@ -53,8 +52,6 @@ void ScriptResource::query(Orchid::Request* request) {
 	if(f.isFunction()) {
 		QScriptValue r(m_object.engine()->newQObject(request));
 		f.call(m_object, QScriptValueList() << r);
-	} else {
-		qWarning() << "call to disabled resource.query in object" << m_object.toString();
 	}
 }
 
@@ -110,6 +107,7 @@ void *ScriptResource::interfaceCast(const char *name) {
 
 
 QScriptValue ScriptedResourcePrivate::write(QScriptContext *context, QScriptEngine *engine) {
+	Q_UNUSED(engine);
 	QIODevice* device = dynamic_cast<QIODevice*>(context->argument(0).toQObject());
 	if(device) {
 		if(!(device->isOpen() || device->open(QIODevice::ReadWrite))) {
@@ -127,21 +125,44 @@ QScriptValue ScriptedResourcePrivate::write(QScriptContext *context, QScriptEngi
 
 ScriptedResourcePrivate::ScriptedResourcePrivate(ScriptedResource* res) {
 	q_ptr = res;
+	engine = 0;
 }
 
-ScriptedResource::ScriptedResource(const QString &script, const QString &type) {
+
+ScriptedResource::ScriptedResource() {
 	d_ptr = new ScriptedResourcePrivate(this);
-	Q_D(ScriptedResource);
-	
-	d->engine.globalObject().setProperty("write", d->engine.newFunction(ScriptedResourcePrivate::write));
-	
-	d->engine.evaluate(script);
-	QScriptValue ctor = d->engine.evaluate(type);
-	d->self.setObject(ctor.construct());
+}
+
+ScriptedResource::ScriptedResource(const QString &path) {
+	d_ptr = new ScriptedResourcePrivate(this);
+	loadScript(path);
 }
 
 ScriptedResource::~ScriptedResource() {
 	delete d_ptr;
+}
+
+bool ScriptedResource::loadScript(const QString &url) {
+	Q_D(ScriptedResource);
+	
+	int splitter = url.lastIndexOf('#');
+	QString path(url.left(splitter));
+	QString type(url.right(url.length()-splitter-1));
+
+	QFile scriptFile(path);
+	if(!scriptFile.open(QIODevice::ReadOnly))
+		return false;
+	QString program(scriptFile.readAll());
+	scriptFile.close();
+
+	d->engine = new QScriptEngine();
+	d->engine->globalObject().setProperty("write", d->engine->newFunction(ScriptedResourcePrivate::write));
+	d->engine->evaluate(program);
+	QScriptValue ctor = d->engine->evaluate(type);
+	d->self.setObject(ctor.construct());
+	
+	d->path = path;
+	return true;
 }
 
 void ScriptedResource::query(Orchid::Request *request) {
@@ -159,5 +180,32 @@ Resource::Handle ScriptedResource::child(const QString& name) {
 	return d->self.child(name);
 }
 
+QList<Resource::IConfigurable::Option> ScriptedResource::optionList() const {
+	QList<Option> optionList;
+	optionList << Option("path", qMetaTypeId<QString>());
+	return optionList;
+}
+
+QVariant ScriptedResource::option(const QString &option) const {
+	Q_D(const ScriptedResource);
+	QVariant res;
+	if(option == "path")
+		res = QVariant(d->path);
+	return res;
+}
+
+bool ScriptedResource::setOption(const QString &option, const QVariant &value) {
+	Q_D(ScriptedResource);
+	bool result = false;
+	if(option == "path") {
+		QString newPath = value.toString();
+		if(d->path != newPath) {
+			result = loadScript(newPath);
+		} else {
+			result = true;
+		}
+	}
+	return result;
+}
 
 }

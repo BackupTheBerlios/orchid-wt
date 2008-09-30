@@ -20,8 +20,6 @@
 
 #include "galleryplugin.h"
 
-#include "galleryplugin.moc"
-
 #include <stem/resourcefactory.h>
 #include "gallerydemo.h"
 

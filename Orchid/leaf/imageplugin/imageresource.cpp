@@ -20,8 +20,6 @@
 
 #include "imageresource.h"
 
-#include "imageresource.moc"
-
 #include <stem/resourcebase_p.h>
 #include <stem/request.h>
 #include <QtCore/QVariant>

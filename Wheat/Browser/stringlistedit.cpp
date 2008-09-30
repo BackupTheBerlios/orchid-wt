@@ -20,8 +20,6 @@
 
 #include "stringlistedit.h"
 
-#include "stringlistedit.moc"
-
 StringListEdit::StringListEdit() {
 	setupUi(this);
 

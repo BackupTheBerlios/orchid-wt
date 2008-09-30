@@ -7,6 +7,7 @@ add_definitions(-DORCHID_BUILD_ROOT)
 
 set(orchid_root_SRC
 	httpservice.cpp
+	mocs.cpp
 	service.cpp
 )
 

@@ -21,8 +21,6 @@
 #include "modelresource.h"
 #include "modelresource_p.h"
 
-#include "modelresource.moc"
-
 #include <QtCore/QAbstractItemModel>
 #include <stem/request.h>
 #include <QtCore/QTextStream>

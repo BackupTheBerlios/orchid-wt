@@ -34,9 +34,6 @@
 #include <stem/resourcekeep.h>
 #include <stem/location.h>
 
-#include "httpservice.moc"
-#include "httpservice_p.moc"
-
 namespace Orchid {
 
 /**

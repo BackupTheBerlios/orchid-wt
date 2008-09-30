@@ -20,14 +20,10 @@
 
 #include "mainwindow.h"
 
-#include "mainwindow.moc"
-
 #include <QtDebug>
 
 #include <stem/resourcemodel.h>
 #include <stem/location.h>
-
-#include <leaf/scriptedresource.h>
 
 #include <QFile>
 #include <QtGui/QMessageBox>
@@ -67,6 +63,7 @@ MainWindow::MainWindow() : m_service(8000) {
 	setupExamples();
 }
 
+#define ORCHID_LOAD_LOCAL_PLUGINS
 void MainWindow::loadPlugins() {
 	QDir pluginsDir = QDir(qApp->applicationDirPath());
 
@@ -79,18 +76,16 @@ void MainWindow::loadPlugins() {
 	QString localPath = local.path();
 	qDebug() << localPath;
 #ifdef Q_OS_WIN
-	ExtensionManager::loadExtension(localPath+"/Orchid/leaf/libimageplugin.dll");
-	ExtensionManager::loadExtension(localPath+"/Orchid/leaf/libmodelplugin.dll");
-	ExtensionManager::loadExtension(localPath+"/Examples/Gallery/libgalleryplugin.dll");
-	ExtensionManager::loadExtension(localPath+"/Examples/DocStreams/libdocstreamsplugin.dll");
-	ExtensionManager::loadExtension(localPath+"/Examples/I18N/libi18ndocplugin.dll");
+#	define DLL_EXTENSION ".dll"
 #else
-	ExtensionManager::loadExtension(localPath+"/Orchid/leaf/libimageplugin.so");
-	ExtensionManager::loadExtension(localPath+"/Orchid/leaf/libmodelplugin.so");
-	ExtensionManager::loadExtension(localPath+"/Examples/Gallery/libgalleryplugin.so");
-	ExtensionManager::loadExtension(localPath+"/Examples/DocStreams/libdocstreamsplugin.so");
-	ExtensionManager::loadExtension(localPath+"/Examples/I18N/libi18ndocplugin.so");
+#	define DLL_EXTENSION ".so"
 #endif
+	ExtensionManager::loadExtension(localPath+"/Orchid/leaf/imageplugin/libimageplugin"DLL_EXTENSION);
+	ExtensionManager::loadExtension(localPath+"/Orchid/leaf/modelplugin/libmodelplugin"DLL_EXTENSION);
+	ExtensionManager::loadExtension(localPath+"/Orchid/leaf/scriptplugin/libscriptplugin"DLL_EXTENSION);
+	ExtensionManager::loadExtension(localPath+"/Examples/Gallery/libgalleryplugin"DLL_EXTENSION);
+	ExtensionManager::loadExtension(localPath+"/Examples/DocStreams/libdocstreamsplugin"DLL_EXTENSION);
+	ExtensionManager::loadExtension(localPath+"/Examples/I18N/libi18ndocplugin"DLL_EXTENSION);
 #endif
 
     pluginsDir.cd("share/Orchid/plugins");
@@ -146,14 +141,14 @@ void MainWindow::setupExamples() {
 		container->addResource("image.jpg", imgres);
 	}
 
-// 	if(availableResources.contains("Scripted-Resource")) {
-		QFile scriptFile(":/test.js");
-		scriptFile.open(QIODevice::ReadOnly);
-		QString program(scriptFile.readAll());
-		scriptFile.close();
+	if(availableResources.contains("Scripted-Resource")) {
+		Base* scriptres = ResourceFactory::create("Scripted-Resource");
 
-		container->addResource("scripted", new Orchid::ScriptedResource(program, "MyResource"));
-// 	}
+		IConfigurable *config = cast<IConfigurable*>(scriptres);
+		config->setOption("path", ":/test.js#MyResource");
+
+		container->addResource("scripted", scriptres);
+	}
 
 	m_model->update();
 }

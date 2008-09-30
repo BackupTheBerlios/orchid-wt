@@ -7,6 +7,7 @@ set(galleryplugin_SRC
 	gallery.cpp
 	gallerydemo.cpp
 	galleryplugin.cpp
+	mocs.cpp
 )
 
 qt4_automoc(${galleryplugin_SRC})

@@ -9,18 +9,25 @@ namespace Orchid {
 class ScriptedResourcePrivate;
 class ScriptedResource :
 	public Resource::Object,
-	public Resource::IQueryable
+	public Resource::IQueryable,
+	public Resource::IConfigurable
 {
 	ORCHID_RESOURCE_OBJECT("Scripted-Resource")
 	Q_OBJECT
-	Q_INTERFACES(Orchid::Resource::IQueryable)
+	Q_INTERFACES(Orchid::Resource::IQueryable
+	             Orchid::Resource::IConfigurable)
 public:
-	ScriptedResource(const QString& script, const QString& type);
+	ScriptedResource();
+	ScriptedResource(const QString &path);
 	~ScriptedResource();
 public:
+	bool loadScript(const QString &path);
 	void query(Orchid::Request*);
 	QStringList childs() const;
 	Resource::Handle child(const QString& name);
+	QList<Option> optionList() const;
+	QVariant option(const QString&) const;
+	bool setOption(const QString&, const QVariant&);
 protected:
 	ScriptedResourcePrivate* d_ptr;
 private:

@@ -20,8 +20,6 @@
 
 #include "gallery.h"
 
-#include "gallery.moc"
-
 #include <stem/location.h>
 #include <stem/request.h>
 #include <stem/resourcefactory.h>

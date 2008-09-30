@@ -21,8 +21,6 @@
 #include "service.h"
 #include "service_p.h"
 
-#include "service.moc"
-
 namespace Orchid {
 
 /**

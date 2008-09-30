@@ -18,28 +18,25 @@
  */
 
 
-#include "extensionplugin.h"
+#include "modelplugin.h"
 
-namespace Orchid {
+#include <stem/resourcefactory.h>
+#include "xmlmodelresource.h"
 
-/**
- * \class ExtensionPluginInterface
- *
- * \brief ExtensionPluginInterface is an interface that all
- * extension plugins must implement.
- */
+using namespace Orchid;
 
-/**
- * \fn QList<FactoryHelper*> ExtensionPluginInterface::helpers() const = 0
- *
- * The implementation shoud return the list of helpers it provides.
- */
-
-/**
- * \class ExtensionPlugin
- *
- * \brief ExtensionPlugin provides an abstract base class you should
- * use for your extension plugins.
- */
-
+ModelPlugin::ModelPlugin() {
+	m_helpers << new ResourceFactoryHelper<ModelResource>();
+	m_helpers << new ResourceFactoryHelper<XmlModelResource>();
 }
+
+ModelPlugin::~ModelPlugin() {
+	foreach(FactoryHelper *helper, m_helpers)
+		delete helper;
+}
+
+QList<FactoryHelper*> ModelPlugin::helpers() const {
+	return m_helpers;
+}
+
+Q_EXPORT_PLUGIN2(orchid_modelres_extension, ModelPlugin)

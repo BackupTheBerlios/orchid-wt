@@ -13,6 +13,7 @@ set(orchid_flower_SRC
 	fragment.cpp
 	fragmentdom.cpp
 	htmlfragmentwriter.cpp
+	mocs.cpp
 	styleattributes.cpp
 	style.cpp
 	xhtmlstreamwriter.cpp

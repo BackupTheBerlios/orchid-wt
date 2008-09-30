@@ -18,27 +18,27 @@
  */
 
 
-#include "modelplugin.h"
-
-#include "modelplugin.moc"
+#include "imageplugin.h"
 
 #include <stem/resourcefactory.h>
-#include <leaf/xmlmodelresource.h>
+#include "imageresource.h"
+#include "imagecollection.h"
 
 using namespace Orchid;
 
-ModelPlugin::ModelPlugin() {
-	m_helpers << new ResourceFactoryHelper<ModelResource>();
-	m_helpers << new ResourceFactoryHelper<XmlModelResource>();
+ImagePlugin::ImagePlugin() {
+	m_helpers << new ResourceFactoryHelper<ImageResource>();
+	m_helpers << new ResourceFactoryHelper<ImageCollection>();
+	m_helpers << new ResourceFactoryHelper<ImageCollectionScaling>();
 }
 
-ModelPlugin::~ModelPlugin() {
+ImagePlugin::~ImagePlugin() {
 	foreach(FactoryHelper *helper, m_helpers)
 		delete helper;
 }
 
-QList<FactoryHelper*> ModelPlugin::helpers() const {
+QList<FactoryHelper*> ImagePlugin::helpers() const {
 	return m_helpers;
 }
 
-Q_EXPORT_PLUGIN2(orchid_modelres_extension, ModelPlugin)
+Q_EXPORT_PLUGIN2(orchid_imageres_extension, ImagePlugin)

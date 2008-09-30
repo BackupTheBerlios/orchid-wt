@@ -6,6 +6,7 @@ include_directories(
 set(orchid_browser_SRC
 	main.cpp
 	mainwindow.cpp
+	mocs.cpp
 	newresourcedialog.cpp
 	resourceconfig.cpp
 	stringlistedit.cpp
@@ -29,7 +30,6 @@ target_link_libraries(orchid-browser
 	orchid-flower
 	orchid-root
 	orchid-stem
-	orchid-leaf
 )
  
 install(TARGETS orchid-browser DESTINATION ${EXE_INSTALL_DIR})

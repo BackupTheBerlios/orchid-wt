@@ -18,29 +18,21 @@
  */
 
 
-#include "imageplugin.h"
+#ifndef _ORCHID_SCRIPTPLUGIN_H_
+#define _ORCHID_SCRIPTPLUGIN_H_
 
-#include "imageplugin.moc"
+#include <stem/extensionplugin.h>
 
-#include <stem/resourcefactory.h>
-#include <leaf/imageresource.h>
-#include <leaf/imagecollection.h>
+class ScriptPlugin : public Orchid::ExtensionPlugin {
+	Q_OBJECT
+public:
+	ScriptPlugin();
+	~ScriptPlugin();
+public:
+	QList<Orchid::FactoryHelper*> helpers() const;
+private:
+	QList<Orchid::FactoryHelper*> m_helpers;
+};
 
-using namespace Orchid;
-
-ImagePlugin::ImagePlugin() {
-	m_helpers << new ResourceFactoryHelper<ImageResource>();
-	m_helpers << new ResourceFactoryHelper<ImageCollection>();
-	m_helpers << new ResourceFactoryHelper<ImageCollectionScaling>();
-}
-
-ImagePlugin::~ImagePlugin() {
-	foreach(FactoryHelper *helper, m_helpers)
-		delete helper;
-}
-
-QList<FactoryHelper*> ImagePlugin::helpers() const {
-	return m_helpers;
-}
-
-Q_EXPORT_PLUGIN2(orchid_imageres_extension, ImagePlugin)
+#endif
+ 

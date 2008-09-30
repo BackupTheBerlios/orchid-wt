@@ -6,6 +6,7 @@ include_directories(
 set(docstreamsplugin_SRC
 	docstreamsplugin.cpp
 	docstreamssample.cpp
+	mocs.cpp
 )
 
 qt4_automoc(${docstreamsplugin_SRC})

@@ -21,8 +21,6 @@
 #include "fragment.h"
 #include "fragment_p.h"
 
-#include "fragment.moc"
-
 namespace Orchid {
 
 /**

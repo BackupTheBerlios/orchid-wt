@@ -18,28 +18,24 @@
  */
 
 
-#include "extensionplugin.h"
+#include "scriptplugin.h"
 
-namespace Orchid {
+#include <stem/resourcefactory.h>
+#include "scriptedresource.h"
 
-/**
- * \class ExtensionPluginInterface
- *
- * \brief ExtensionPluginInterface is an interface that all
- * extension plugins must implement.
- */
+using namespace Orchid;
 
-/**
- * \fn QList<FactoryHelper*> ExtensionPluginInterface::helpers() const = 0
- *
- * The implementation shoud return the list of helpers it provides.
- */
-
-/**
- * \class ExtensionPlugin
- *
- * \brief ExtensionPlugin provides an abstract base class you should
- * use for your extension plugins.
- */
-
+ScriptPlugin::ScriptPlugin() {
+	m_helpers << new ResourceFactoryHelper<ScriptedResource>();
 }
+
+ScriptPlugin::~ScriptPlugin() {
+	foreach(FactoryHelper *helper, m_helpers)
+		delete helper;
+}
+
+QList<FactoryHelper*> ScriptPlugin::helpers() const {
+	return m_helpers;
+}
+
+Q_EXPORT_PLUGIN2(orchid_scriptedres_extension, ScriptPlugin)

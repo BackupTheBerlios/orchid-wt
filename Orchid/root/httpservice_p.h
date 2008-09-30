@@ -21,6 +21,7 @@
 #ifndef _ORCHID_HTTPSERVICE_PRIVATE_H_
 #define _ORCHID_HTTPSERVICE_PRIVATE_H_
 
+#include "httpservice.h"
 #include "service_p.h"
 
 #include <QtCore/QString>

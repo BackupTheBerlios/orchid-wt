@@ -20,8 +20,6 @@
 
 #include "i18ndocplugin.h"
 
-#include "i18ndocplugin.moc"
-
 #include <stem/resourcefactory.h>
 #include "i18ndocsample.h"
 

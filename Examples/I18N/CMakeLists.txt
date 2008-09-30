@@ -17,6 +17,7 @@ add_custom_target(translations ALL DEPENDS ${i18n_TRANSLATIONS})
 set(i18ndocplugin_SRC
 	i18ndocplugin.cpp
 	i18ndocsample.cpp
+	mocs.cpp
 )
 
 qt4_automoc(${i18ndocplugin_SRC})

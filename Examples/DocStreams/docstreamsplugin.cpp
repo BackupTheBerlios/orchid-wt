@@ -20,8 +20,6 @@
 
 #include "docstreamsplugin.h"
 
-#include "docstreamsplugin.moc"
-
 #include <stem/resourcefactory.h>
 #include "docstreamssample.h"
 

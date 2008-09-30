@@ -20,8 +20,6 @@
 
 #include "resourcemodel.h"
 
-#include "resourcemodel.moc"
-
 #include "location.h"
 
 // TODO clean up

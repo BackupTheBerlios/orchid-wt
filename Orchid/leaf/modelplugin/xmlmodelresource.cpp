@@ -27,8 +27,6 @@
 #include <stem/location.h>
 #include <QtCore/QAbstractItemModel>
 
-#include "xmlmodelresource.moc"
-
 namespace Orchid {
 
 class XmlModelResourcePrivate : public ModelResourcePrivate {

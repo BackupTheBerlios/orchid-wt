@@ -1,7 +1,5 @@
 #include "resourceobject.h"
 
-#include "resourceobject.moc"
-
 #include "resourcekeep.h"
 
 namespace Orchid {

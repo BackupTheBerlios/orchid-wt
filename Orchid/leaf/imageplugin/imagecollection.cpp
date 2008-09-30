@@ -20,8 +20,6 @@
 
 #include "imagecollection.h"
 
-#include "imagecollection.moc"
-
 #include "imagecollection_p.h"
 
 #include <stem/location.h>

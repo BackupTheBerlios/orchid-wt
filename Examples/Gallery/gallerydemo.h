@@ -25,6 +25,7 @@
 
 class GalleryDemo : public Gallery {
 	ORCHID_RESOURCE("Hardcoded-Gallery-Demo")
+	Q_OBJECT
 public:
 	GalleryDemo();
 };

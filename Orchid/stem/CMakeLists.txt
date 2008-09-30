@@ -11,6 +11,7 @@ set(orchid_stem_SRC
 	extensionmanager.cpp
 	extensionplugin.cpp
 	location.cpp
+	mocs.cpp
 	request.cpp
 	resource.cpp
 	resourcebase.cpp
