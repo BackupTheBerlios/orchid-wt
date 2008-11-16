@@ -21,7 +21,9 @@
 #ifndef _ORCHID_GLOBALS_H_
 #define _ORCHID_GLOBALS_H_
 
-#define ORCHID_VERSION_STR "0.1 alpha 2"
+#define ORCHID_VERSION_MAJOR 0
+#define ORCHID_VERSION_MINOR 1
+#define ORCHID_VERSION_STR "0.1"
 
 #include <QtCore/QtGlobal>
 

@@ -87,11 +87,8 @@ int process(const QString outFile, const QString &inFile) {
 }
 
 void printUsage(const QString &appname) {
-	QFile cout;
-	cout.open(stdout, QIODevice::WriteOnly);
-	QTextStream usage(&cout);
+	QTextStream usage(stdout, QIODevice::WriteOnly);
 	usage << "Usage: " << appname << " [-o outfile] infile\n";
-	cout.close();
 }
 
 int main(int argc, char **argv) {
