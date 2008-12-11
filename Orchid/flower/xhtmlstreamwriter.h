@@ -38,7 +38,7 @@ public:
 public:
 	void startDocument(const DocumentHead &head = DocumentHead());
 	void endDocument();
-	void startElement(Document::Tag special);
+	void startElement(Document::Tag tag);
 	void endElement();
 	void insertCharacters(const QString& str);
 	void setAttribute(Document::Attribute attr, const QVariant& val);

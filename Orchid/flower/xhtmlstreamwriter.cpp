@@ -67,7 +67,7 @@ public:
 	QIODevice* device;
 	QXmlStreamWriter xml;
 	int section;
-	QStack<Entry> specialStack;
+	QStack<Entry> tagStack;
 	QHash<Document::Attribute, QVariant> attributes;
 };
 
@@ -210,13 +210,13 @@ void XHtml11StreamWriter::startElement(Document::Tag tag) {
 		d->xml.writeAttribute("xml", "lang", d->attributes.value(Document::AttributeLanguage).toString());
 	}
 	entry.tag = tag;
-	d->specialStack.push(entry);
+	d->tagStack.push(entry);
 	d->attributes.clear();
 }
 
 void XHtml11StreamWriter::endElement() {
 	Q_D(XHtml11StreamWriter);
-	XHtml11StreamWriterPrivate::Entry entry(d->specialStack.pop());
+	XHtml11StreamWriterPrivate::Entry entry(d->tagStack.pop());
 	switch(entry.tag) {
 		case Document::TagUnknown: break;
 		case Document::TagBlock: break;

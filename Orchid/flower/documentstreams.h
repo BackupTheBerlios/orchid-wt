@@ -273,7 +273,7 @@ inline AbbreviationManip abbreviation(const QString &full) { return Abbreviation
 // 	inline InlineStream& apply(InlineStream& s) const {
 // 		s.processor()->setAttribute(AttributeQuoteStartMark, mark1);
 // 		s.processor()->setAttribute(AttributeQuoteEndMark, mark2);
-// 		s.processor()->writeBeginTag(SpecialTestAbbreviation);
+// 		s.processor()->writeBeginTag(TagTextAbbreviation);
 // 		return s;
 // 	}
 // }
